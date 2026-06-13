@@ -2,7 +2,7 @@
 
 **Path:** `docs/planning/add-spicetify-skill/codex-handoff.md`
 **Purpose:** Compact execution prompt for Codex or a coding agent.
-**Status:** Proposed
+**Status:** Implemented baseline; use for focused extensions and review.
 **Load/use when:** Ready to hand implementation/review work to a coding agent.
 
 ## Prompt
@@ -11,14 +11,18 @@ You are Codex implementing OpenSpec change `add-spicetify-skill`.
 
 ### Objective
 
-Build `/spicetify`: a safe, transactional AI skill/local CLI architecture for Spicetify workflows. The MVP must inspect, doctor, snapshot, audit, plan, apply, verify, repair after Spotify updates, report, and rollback without arbitrary shell access or live Spotify mutation in CI.
+Work on `/spicetify`: a safe, transactional AI skill plus installable Python
+CLI for Spicetify workflows. Preserve the current MVP kernel: inspect, doctor,
+snapshot, audit, plan, apply, verify, repair planning, report, and rollback
+metadata without arbitrary shell access or live Spotify mutation in CI.
 
 ### Done when
 
-- Required MVP tasks through `TASK-042-implement-repair-spotify-update` are complete or explicitly deferred with evidence.
+- Any newly assigned task is complete or explicitly deferred with evidence.
 - All emitted JSON contracts validate against `schemas/*.schema.json`.
 - Fake Spicetify integration tests cover healthy, broken, malicious, and post-update states.
-- `spicetify` invocations are produced only by the registry with `shell: false`.
+- `spicetify` invocations are produced only by the Python command registry and
+  central runner with `shell=False`.
 - Mutating operations are dry-run-first, snapshot-protected, policy-decided, verified, and rollbackable.
 - Third-party code cannot install/enable without staging, audit, provenance, and explicit confirmation.
 
@@ -42,11 +46,16 @@ Build `/spicetify`: a safe, transactional AI skill/local CLI architecture for Sp
 
 ### Starting task
 
-Start with `TASK-001-read-context`, then implement dependency waves in order. Do not jump to theme/extension features before command registry, policy, fake fixtures, and snapshots exist.
+Start with `TASK-001-read-context`, then verify the current implementation
+boundary in `PLANS.md` before selecting the next task. Do not add theme,
+extension, marketplace, or platform-repair execution before command registry,
+policy, fake fixtures, snapshots, and rollback checks cover that behavior.
 
 ### Allowed write scope
 
-For implementation in a future repo, write only to the approved project paths from `tasks.md`. For this planning bundle, write only to docs, schemas, evals, and validation tools unless the user explicitly requests production code.
+Write only to the approved paths for the selected task. Shared files such as
+`pyproject.toml`, root scripts, schemas, and generated docs references must be
+edited sequentially, with validation evidence recorded in `PLANS.md`.
 
 ### Prohibited actions
 
@@ -57,18 +66,25 @@ Do not install packages, run third-party scripts, access network, mutate real Sp
 Run or explain why unavailable:
 
 ```bash
-python tools/validate_bundle.py --root .
-python -m json.tool evals/regression-prompts.json >/dev/null
-python - <<'PY'
+python3 tools/validate_bundle.py --root .
+python3 -m json.tool evals/regression-prompts.json >/dev/null
+python3 - <<'PY'
 from pathlib import Path
 import json
 for p in Path('schemas').glob('*.json'):
     json.load(open(p))
 print('schemas ok')
 PY
-pnpm test
-pnpm lint
-pnpm typecheck
+uv run --frozen pytest
+uv run --frozen ruff check .
+uv run --frozen ruff format --check .
+uv run --frozen mypy src
+uv build --no-index
+uvx --from . spicetify-agent --help
+pnpm --filter docs lint
+pnpm --filter docs typecheck
+pnpm --filter docs validate:content
+pnpm --filter docs build
 openspec validate add-spicetify-skill --strict
 openspec validate --all --strict
 ```
@@ -93,7 +109,15 @@ Report completed task IDs, changed files, validation results, unresolved risks, 
 
 ## Docs-site handoff addendum
 
-For TASK-070 through TASK-073, read `DESIGN.md`, `fumadocs-site-plan.md`, `docs-site.md`, `docs-content-architecture.md`, `docs-site-content-map.md`, `docs-site-design-system.md`, `docs-site-implementation-plan.md`, and `workflows/fumadocs-site.md` before editing. Write only under the approved docs app root and planning docs unless the handoff explicitly expands scope. Stop before package installation, package-manager migration, deployment, analytics, hosted search, external registries, feedback storage, or any generated content that would expose secrets/private paths. Do not install Fumadocs, shadcn/ui, or any package without explicit approval.
+For TASK-070 through TASK-073 follow-up work, read `DESIGN.md`,
+`fumadocs-site-plan.md`, `docs-site.md`, `docs-content-architecture.md`,
+`docs-site-content-map.md`, `docs-site-design-system.md`,
+`docs-site-implementation-plan.md`, and `workflows/fumadocs-site.md` before
+editing. Write only under the approved docs app root and planning docs unless
+the handoff explicitly expands scope. Stop before package installation,
+package-manager migration, deployment, analytics, hosted search, external
+registries, feedback storage, or any generated content that would expose
+secrets/private paths.
 
 ## Swarm kickoff
 

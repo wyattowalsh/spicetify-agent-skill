@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Docs Site Config",
+  "type": "object",
+  "required": [
+    "site",
+    "framework",
+    "content",
+    "designSystem",
+    "validation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "site": {
+      "type": "object",
+      "required": [
+        "name",
+        "title",
+        "description",
+        "basePath"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "spicetify-docs"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "basePath": {
+          "type": "string",
+          "pattern": "^/.*"
+        }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "required": [
+        "docsFramework",
+        "uiSystem",
+        "packageManagerPolicy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "docsFramework": {
+          "type": "string",
+          "const": "fumadocs"
+        },
+        "uiSystem": {
+          "type": "string",
+          "const": "shadcn/ui"
+        },
+        "packageManagerPolicy": {
+          "type": "string",
+          "enum": [
+            "preserve-detected",
+            "new-repo-pnpm-default"
+          ]
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "required": [
+        "requiredSections",
+        "syntheticExamplesOnly",
+        "sourceTraceRequired"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "requiredSections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "syntheticExamplesOnly": {
+          "type": "boolean",
+          "const": true
+        },
+        "sourceTraceRequired": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "designSystem": {
+      "type": "object",
+      "required": [
+        "riskStates",
+        "customComponents"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "riskStates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "read",
+              "low",
+              "medium",
+              "high",
+              "blocked"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "customComponents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "checks",
+        "redactionRequired"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "redactionRequired": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    }
+  }
+}

@@ -3,20 +3,31 @@
 from __future__ import annotations
 
 import json
+from importlib import resources
 from pathlib import Path
 from typing import Any
 
 from .util import repo_root
 
 
-def schema_dir() -> Path:
-    return repo_root() / "schemas"
+def schema_dir() -> Path | None:
+    candidate = repo_root() / "schemas"
+    if candidate.is_dir() and any(candidate.glob("*.json")):
+        return candidate
+    return None
 
 
 def load_schema(name: str) -> dict[str, Any]:
-    path = schema_dir() / name
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    directory = schema_dir()
+    if directory is not None:
+        with (directory / name).open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    else:
+        data = json.loads(
+            resources.files("spicetify_agent.schema_data")
+            .joinpath(name)
+            .read_text(encoding="utf-8")
+        )
     if not isinstance(data, dict):
         raise ValueError(f"{name} must contain a JSON object")
     return data
@@ -24,10 +35,20 @@ def load_schema(name: str) -> dict[str, Any]:
 
 def parse_all_schemas() -> list[str]:
     parsed: list[str] = []
-    for path in sorted(schema_dir().glob("*.json")):
-        with path.open("r", encoding="utf-8") as fh:
-            json.load(fh)
-        parsed.append(path.name)
+    directory = schema_dir()
+    if directory is not None:
+        for path in sorted(directory.glob("*.json")):
+            with path.open("r", encoding="utf-8") as fh:
+                json.load(fh)
+            parsed.append(path.name)
+    else:
+        schema_package = resources.files("spicetify_agent.schema_data")
+        for resource in sorted(schema_package.iterdir(), key=lambda item: item.name):
+            if resource.name.endswith(".json") and resource.is_file():
+                json.loads(resource.read_text(encoding="utf-8"))
+                parsed.append(resource.name)
+    if not parsed:
+        raise ValueError("No bundled schemas were found")
     return parsed
 
 

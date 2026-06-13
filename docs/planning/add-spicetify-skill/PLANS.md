@@ -86,6 +86,14 @@ only until executable steps exist.
 - `pnpm --filter docs lint`, `pnpm --filter docs typecheck`, and `pnpm --filter docs build` invoke pnpm dependency state checks before script execution. After explicit approval, `pnpm install --frozen-lockfile` succeeded with tracked `onlyBuiltDependencies` for `esbuild` and `sharp`; docs lint, typecheck, build, and content validation now pass.
 - A local structural OpenSpec validator now covers required change files, configured spec domains, `### Requirement:` / `#### Scenario:` headings, `## ADDED Requirements` sections, and task graph presence. The global `openspec` binary remains unavailable, but approved package-scoped OpenSpec strict validation passes through `npx`.
 - Package metadata no longer includes a personal author field, and `LICENSE` uses a contributor-owned copyright holder.
+- Post-commit cleanup found and fixed residual TypeScript-era handoff docs in
+  `repo-structure.md`, `goal.md`, `codex-handoff.md`, and `manifest.md`; the
+  planning docs now point agents at the Python package runtime and isolated
+  docs workspace.
+- Package audit found `validate-schemas` could return success with zero schemas
+  outside the repo checkout. Root schemas remain authoritative for repo work,
+  and synchronized package data under `src/spicetify_agent/schema_data/` now
+  supports installed `pip`/`uvx` runs.
 
 ## Decision log
 
@@ -150,7 +158,7 @@ only until executable steps exist.
 | Check | Result | Notes |
 |---|---|---|
 | `python tools/validate_bundle.py --root .` | failed locally, exit 127 | 2026-06-13: `python` command is not available on PATH. |
-| `python3 tools/validate_bundle.py --root .` | passed | 2026-06-13: validator reported 219 files, 23 spec domains, 28 schemas, 22 mode docs, 14 workflows, 35 evals, no errors or warnings. |
+| `python3 tools/validate_bundle.py --root .` | passed | 2026-06-13: validator reported 248 files, 23 spec domains, 28 root schemas, 22 mode docs, 14 workflows, 35 evals, no errors or warnings. |
 | `python -m json.tool evals/regression-prompts.json >/dev/null` | failed locally, exit 127 | 2026-06-13: `python` command is not available on PATH. |
 | `python3 -m json.tool evals/regression-prompts.json >/dev/null` | passed | 2026-06-13: eval JSON parsed successfully. |
 | JSON schema parse | passed with `python3` | 2026-06-13: all `schemas/*.json` parsed; output `schemas ok`. |

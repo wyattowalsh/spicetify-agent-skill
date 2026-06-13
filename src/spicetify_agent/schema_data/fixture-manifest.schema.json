@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/fixture-manifest.schema.json",
+  "title": "/spicetify Fake Environment Fixture Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fixtureId",
+    "platform",
+    "scenario",
+    "expectedFindings",
+    "spicetifyResponses"
+  ],
+  "properties": {
+    "fixtureId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "platform": {
+      "enum": [
+        "win32",
+        "darwin",
+        "linux"
+      ]
+    },
+    "scenario": {
+      "type": "string"
+    },
+    "expectedFindings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "spicetifyResponses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "argv",
+          "exitCode"
+        ],
+        "properties": {
+          "argv": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "exitCode": {
+            "type": "integer"
+          },
+          "stdout": {
+            "type": "string"
+          },
+          "stderr": {
+            "type": "string"
+          },
+          "mutates": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "filesystem": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "forbidLiveSpotifyMutation": {
+      "const": true
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/policy.schema.json",
+  "title": "/spicetify Policy Rule",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ruleId",
+    "appliesTo",
+    "risk",
+    "decision",
+    "rationale"
+  ],
+  "$defs": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "inspect",
+        "doctor",
+        "snapshot",
+        "restore",
+        "repair",
+        "apply",
+        "config",
+        "profile",
+        "theme",
+        "extension",
+        "custom-app",
+        "snippet",
+        "marketplace",
+        "audit",
+        "devtools",
+        "watch",
+        "migrate",
+        "update",
+        "rollback",
+        "uninstall",
+        "report"
+      ]
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "read",
+        "low",
+        "medium",
+        "high",
+        "blocked"
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "(^/|^[A-Za-z]:|(^|/)\\.\\.(/|$)|\\x00)"
+      }
+    },
+    "approvalGate": {
+      "type": "string",
+      "enum": [
+        "none",
+        "snapshot",
+        "confirm",
+        "separate-confirm",
+        "manual-only",
+        "blocked"
+      ]
+    },
+    "findingSeverity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  },
+  "properties": {
+    "ruleId": {
+      "type": "string",
+      "pattern": "^POL-[0-9]{3}-[a-z0-9-]+$"
+    },
+    "appliesTo": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mode"
+      },
+      "minItems": 1
+    },
+    "risk": {
+      "$ref": "#/$defs/risk"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "allow",
+        "require-snapshot",
+        "require-confirmation",
+        "require-separate-confirmation",
+        "manual-only",
+        "block"
+      ]
+    },
+    "triggers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mustRecord": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "overrideAllowed": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

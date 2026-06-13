@@ -1,20 +1,23 @@
 # Codex Goal: MVP `/spicetify`
 
 **Path:** `docs/planning/add-spicetify-skill/goal.md`
-**Purpose:** Bounded Codex Goal prompt for implementing the MVP safely.
-**Status:** Proposed
+**Purpose:** Bounded Codex Goal prompt for extending the safe MVP.
+**Status:** Implemented baseline; deep workflow expansion remains active
 **Load/use when:** Work is larger than one prompt but has a measurable finish line.
 
 ## Goal
 
-Implement the MVP of `/spicetify` from OpenSpec change `add-spicetify-skill`.
+Extend the implemented `/spicetify` safe MVP from OpenSpec change
+`add-spicetify-skill` without weakening the dry-run, snapshot, confirmation, or
+fake-fixture boundaries.
 
 ## Done when
 
-- `inspect`, `doctor`, `snapshot`, `audit`, `config`, `theme`, `profile`, `apply`, `repair`, `rollback`, and `report` are implemented or stubbed behind documented feature flags with passing tests.
+- New executable behavior is covered by fake Spicetify tests and schema-backed
+  reports.
 - All mutating plans are dry-run-first and require policy decisions.
 - All mutating executions require snapshots and support rollback.
-- `CommandRegistry` is the only path to Spicetify CLI execution.
+- The command registry is the only path to Spicetify CLI execution.
 - Third-party code is staged, audited, and provenance-locked before installation or enablement.
 - No tests mutate real Spotify/Spicetify.
 
@@ -34,7 +37,8 @@ Implement the MVP of `/spicetify` from OpenSpec change `add-spicetify-skill`.
 ## Constraints
 
 - Use fake Spicetify fixtures for integration tests.
-- No arbitrary shell; `spawn("spicetify", args, { shell:false })` only.
+- No arbitrary shell; use argv arrays through the central Python runner with
+  `shell=False` only.
 - No package-manager, network, permission, launch-flag, or publishing actions without approval.
 - No secrets, real prefs content, or unredacted logs.
 - Preserve `/spicetify` as the skill name.
@@ -53,8 +57,11 @@ Summarize completed tasks, changed files, validation results, unresolved risks, 
 
 ## Docs-site goal addendum
 
-Optional bounded goal: implement the accompanying Fumadocs + shadcn/ui documentation site only after runtime safety contracts are stable and package-manager approval is granted. Done when the docs app builds locally, core pages render, generated references are source-linked, search and AI-readable routes are present or explicitly deferred, and docs validation passes or failures are explained.
+The accompanying docs app is now present under `apps/docs`. Future docs-site
+work should keep Node tooling isolated from the Python operator and preserve the
+synthetic/redacted evidence boundary.
 
 ## Docs-site scope note
 
-The goal includes planning and, when explicitly approved in a target repo, implementing the companion Fumadocs + shadcn/ui site. Package installs, network-backed shadcn registry actions, deployment, analytics, hosted search, and publishing remain approval-gated.
+Package installs, network-backed shadcn registry actions, deployment, analytics,
+hosted search, and publishing remain approval-gated.

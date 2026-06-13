@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/verification-report.schema.json",
+  "title": "/spicetify Verification Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verificationId",
+    "planId",
+    "status",
+    "checks"
+  ],
+  "properties": {
+    "verificationId": {
+      "type": "string",
+      "pattern": "^ver_[A-Za-z0-9_-]+$"
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^plan_[A-Za-z0-9_-]+$"
+    },
+    "status": {
+      "enum": [
+        "passed",
+        "failed",
+        "partial",
+        "skipped"
+      ]
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "cli-output",
+              "config",
+              "filesystem",
+              "snapshot",
+              "audit",
+              "devtools-log",
+              "screenshot",
+              "doctor",
+              "schema"
+            ]
+          },
+          "status": {
+            "enum": [
+              "passed",
+              "failed",
+              "skipped"
+            ]
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "redacted": {
+            "type": "boolean",
+            "default": true
+          },
+          "errorCode": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "newHighFindings": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "lastKnownGoodUpdated": {
+      "type": "boolean"
+    },
+    "rollbackRecommended": {
+      "type": "boolean"
+    }
+  }
+}

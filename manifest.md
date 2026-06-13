@@ -1,8 +1,8 @@
-# Manifest: `/spicetify` planning bundle
+# Manifest: `/spicetify`
 
 **Path:** `manifest.md`
 **Purpose:** Root artifact index and progressive-disclosure read map.
-**Status:** Proposed
+**Status:** Implemented baseline
 **Load/use when:** Locating the source of truth for review or implementation.
 
 ## Source of truth
@@ -59,7 +59,11 @@
 
 ## Status
 
-This repository now contains the promoted planning artifacts plus the local `spicetify-agent` implementation. Real Spotify mutation, network fetches, permission changes, Marketplace publishing, dependency changes, pushes, PRs, and deployment remain approval-gated.
+This repository contains the promoted planning artifacts, OpenSpec change,
+schemas, skill docs, Python `spicetify-agent` implementation, fake-fixture
+tests, validation tools, and isolated companion docs app. Real Spotify
+mutation, network fetches, permission changes, Marketplace publishing,
+dependency changes, pushes, PRs, and deployment remain approval-gated.
 
 ## Docs-site additions
 

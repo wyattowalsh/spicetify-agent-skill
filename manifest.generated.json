@@ -1,6 +1,6 @@
 {
   "root": ".",
-  "file_count": 219,
+  "file_count": 248,
   "flat": false,
   "self_hash_note": "manifest.generated.json omits its own hash to avoid self-reference",
   "files": [
@@ -176,8 +176,8 @@
     },
     {
       "path": "docs/planning/add-spicetify-skill/PLANS.md",
-      "bytes": 22260,
-      "sha256": "e7d8ff60564d259bd71cf4a522502d8252eb18c42cdf394aa5fc34b715233e13"
+      "bytes": 22788,
+      "sha256": "9a204d23b820c69b4cad00d1b7c0c18e2aaad1d89ed74347d4423d791c03d26f"
     },
     {
       "path": "docs/planning/add-spicetify-skill/README.md",
@@ -216,8 +216,8 @@
     },
     {
       "path": "docs/planning/add-spicetify-skill/codex-handoff.md",
-      "bytes": 5001,
-      "sha256": "c9bb90712fcb4e953d7e165e7f3af9243865250e9ab9890ec7b431d19ee22b06"
+      "bytes": 5363,
+      "sha256": "3f44da341afb4b524315a90e95c3c61416909f58528eb03c96633b1e58bf8615"
     },
     {
       "path": "docs/planning/add-spicetify-skill/codex-kickoff-prompt.md",
@@ -286,8 +286,8 @@
     },
     {
       "path": "docs/planning/add-spicetify-skill/goal.md",
-      "bytes": 3234,
-      "sha256": "f6c51feb0b6c78161912ab43aec7bb602e296bbdc36521577bc81a2754dd5006"
+      "bytes": 2968,
+      "sha256": "468e6570d8a2780df69589c2cfff77e868da425a61e10e119acca1a2523368de"
     },
     {
       "path": "docs/planning/add-spicetify-skill/implementation-plan.md",
@@ -451,8 +451,8 @@
     },
     {
       "path": "docs/planning/add-spicetify-skill/repo-structure.md",
-      "bytes": 2006,
-      "sha256": "c7df5502030d7ae062397889f8ea423ac7683b0725628684c01c8a50ecb6c184"
+      "bytes": 2118,
+      "sha256": "fdbb6c8a37047047cbb4ee3d9a85f85483e938acd0101fd8cb285328a5901af8"
     },
     {
       "path": "docs/planning/add-spicetify-skill/research.md",
@@ -586,8 +586,8 @@
     },
     {
       "path": "manifest.md",
-      "bytes": 7433,
-      "sha256": "fbbbf7b520f7aa9e574752413c8b04e9eccb77757ff9ab95404a3d9823c9b178"
+      "bytes": 7527,
+      "sha256": "d8a724cd604c91e1baa86a86abc0ab40009feecae1a2df5d0eba1463ed0ea3da"
     },
     {
       "path": "openspec/changes/add-spicetify-skill/design.md",
@@ -975,9 +975,154 @@
       "sha256": "e48e4b3ad3b2c9fad0c7bdd384be0e5b8f7d53cad11cf8e631a3173c5964d0d5"
     },
     {
+      "path": "src/spicetify_agent/schema_data/__init__.py",
+      "bytes": 63,
+      "sha256": "eac155c8c8b8ac73e2975046330c543e83048d680d489bf4502750e3fafec6f0"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/asset-manifest.schema.json",
+      "bytes": 1860,
+      "sha256": "530f1ec864df8785d7cef7bda7931bfe357b55b74a07873d81e79b42903be0e2"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/audit-report.schema.json",
+      "bytes": 3219,
+      "sha256": "7a7c43b50a39ba45dee2f966ef0022ab59c108cd7875273ed6f16b288a4222bb"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/command-invocation.schema.json",
+      "bytes": 1943,
+      "sha256": "bcb60e1102462fee00faad1f51f568ad424b8629c9fb608e2386fd390f9de14e"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/command-registry.schema.json",
+      "bytes": 2318,
+      "sha256": "9b73b134beb59120d92c8244e43c7188695c17364099339938cba1822465cc28"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/confirmation.schema.json",
+      "bytes": 2043,
+      "sha256": "f995d4637b63ea01380dec88f465e1d774fadb74d01e815700932aa685f45ebd"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/consent-grant.schema.json",
+      "bytes": 1277,
+      "sha256": "30ffd27c2eb01a2c89ef8cfb5aa7d5e1e742c0ab46c3de8a80468851d68857f3"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/desired-state-manifest.schema.json",
+      "bytes": 3309,
+      "sha256": "ebe5396bfb187d71cda773fc72ed88b440a646f411de3b528e9518dee2321f3e"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/docs-page.schema.json",
+      "bytes": 1273,
+      "sha256": "8a7b4a3b59b4f4ded5e23b24e840d90dd5ce30dbdb8eb026e6457d4be974d830"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/docs-site-config.schema.json",
+      "bytes": 3104,
+      "sha256": "f3df229889d0d41c5be3b4737edff54dd7a4144f7838b2953a29cc0dede273dc"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/docs-site-content.schema.json",
+      "bytes": 1415,
+      "sha256": "fcc61275ba3fc3a5710a3ed89de3df0e0585d8f55851cc63456530914fd73316"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/docs-site-manifest.schema.json",
+      "bytes": 2768,
+      "sha256": "d89a533f338461fca7e45f501f34aa2250eb296a01b33bcbbce5d3633137dd0c"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/error.schema.json",
+      "bytes": 922,
+      "sha256": "4145622e4c08b27483c32249da90be095af312e2d8b9d8a5d722bd2a8f22ebb4"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/failure-recovery.schema.json",
+      "bytes": 1617,
+      "sha256": "8357cef98b0516f5f9997032d3b6e6d77f27f227388ce756de73f8523e0d1118"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/fixture-manifest.schema.json",
+      "bytes": 1600,
+      "sha256": "9ce7e51fd20db9f8ddd26d3760a397d012273eabdc0939652464105eefd4626a"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/invariant.schema.json",
+      "bytes": 1084,
+      "sha256": "16b30eb29b2c5b5feb44cfb3217c7c1438156f4dbccacba998b0b08011ddda5c"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/operation-plan.schema.json",
+      "bytes": 8970,
+      "sha256": "9e254df39485755366f50b6ff61d52ade1a7537ffdaeb7833518e0b5b7cc863c"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/operation-report.schema.json",
+      "bytes": 2623,
+      "sha256": "6100134fcaf96ac3fbd1de7c7c25a2bc502bc82399e6a2215c09b74985524d55"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/operation-run.schema.json",
+      "bytes": 2222,
+      "sha256": "9da3b21623a437ea01da21235eb1573c5f9cf0cbb6fd45f707adad0f30b97105"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/policy-decision.schema.json",
+      "bytes": 2475,
+      "sha256": "49eec69ce502b9f6660358d3745cb2a906cebead371cc9f04f457b4e15f63348"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/policy.schema.json",
+      "bytes": 2508,
+      "sha256": "73f37f0b77cb1aff8ef4fbbd08198a4055039269e05c9f7e491e52a5120bb33f"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/profile.schema.json",
+      "bytes": 3454,
+      "sha256": "fa8e1a1b5a732692175b9d86556e2950b01f033e334f176e2f8c2e1bd4fcf72d"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/provenance-lock.schema.json",
+      "bytes": 3784,
+      "sha256": "15f359f4ca65d0ac98ef2a8d7063c086fffe59353c1ff6b3dccf857cda874896"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/redaction-policy.schema.json",
+      "bytes": 1563,
+      "sha256": "5d97ab1a1b9fef4738d0e80271144891f19fefaeeb3f9885b945c30cd86ec364"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/request.schema.json",
+      "bytes": 2598,
+      "sha256": "11c15eb7108e78181e89b0a8752baa68344e9c7f172d19c9c07486f4fa6028e0"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/snapshot-manifest.schema.json",
+      "bytes": 4196,
+      "sha256": "285e807d7ad02e842e540dae5354eef5d1ccba024e6a89691d1eb1cc0e8db096"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/subagent-result.schema.json",
+      "bytes": 2469,
+      "sha256": "2c4bd441a7756007964dcf67b2677e564003077984d2ab5442641e897c899b9f"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/subagent-task-graph.schema.json",
+      "bytes": 3411,
+      "sha256": "5deb3a17e2762b4afb79cb6ad7510d064af7566ca446366423797f4e0c94013a"
+    },
+    {
+      "path": "src/spicetify_agent/schema_data/verification-report.schema.json",
+      "bytes": 1834,
+      "sha256": "0bb628f6ca4790941221caf029570aa11b5ae2d7972c37a9d41303555c0a2d56"
+    },
+    {
       "path": "src/spicetify_agent/schemas.py",
-      "bytes": 984,
-      "sha256": "966fe819e8ccbddfffb9bb39293d03b4f0bf877df629dcbd41ff4908841fdb80"
+      "bytes": 1853,
+      "sha256": "9e86470adcba4ba85d7fb19dab1a039e4791d0f1211b79de50fd98a91282ce14"
     },
     {
       "path": "src/spicetify_agent/state.py",
@@ -1046,8 +1191,8 @@
     },
     {
       "path": "tests/test_packaging_metadata.py",
-      "bytes": 777,
-      "sha256": "4a6dd9075db83216d8aa8fd48442d936ad54b5b9781a6a561db6f4c19eb4d449"
+      "bytes": 1876,
+      "sha256": "5e5bfe13a72d00de9bef94736b04436f356f9e2246621044c91412950fc76200"
     },
     {
       "path": "tests/test_regression_prompts.py",

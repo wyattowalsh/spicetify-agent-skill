@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/command-invocation.schema.json",
+  "title": "Spicetify Command Invocation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "executable",
+    "args",
+    "allowlistVerb",
+    "shell",
+    "timeoutMs",
+    "risk"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^cmd_[A-Za-z0-9_-]+$"
+    },
+    "executable": {
+      "const": "spicetify"
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 8
+    },
+    "allowlistVerb": {
+      "type": "string",
+      "enum": [
+        "cliIdentity",
+        "initOrVerify",
+        "backup",
+        "apply",
+        "restore",
+        "updateHotReload",
+        "upgradeCli",
+        "configView",
+        "configGet",
+        "configSet",
+        "configListAppend",
+        "configListRemove",
+        "configDir",
+        "configPath",
+        "path",
+        "pathUserdata",
+        "pathSpotify",
+        "enableDevTools",
+        "watch",
+        "auto"
+      ]
+    },
+    "cwd": {
+      "type": "string"
+    },
+    "shell": {
+      "const": false
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 300000
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "read",
+        "lowMutation",
+        "mediumMutation",
+        "highMutation"
+      ]
+    },
+    "approvalGate": {
+      "type": "string",
+      "enum": [
+        "none",
+        "snapshot",
+        "confirm",
+        "separate-confirm",
+        "manual-only",
+        "blocked"
+      ]
+    },
+    "outputParser": {
+      "type": "string",
+      "enum": [
+        "text",
+        "cliIdentity",
+        "path",
+        "config",
+        "json",
+        "none"
+      ]
+    },
+    "redactOutput": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

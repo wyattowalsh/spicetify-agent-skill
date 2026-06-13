@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/request.schema.json",
+  "title": "/spicetify Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "mode",
+    "intent",
+    "dryRun",
+    "riskTolerance",
+    "inputs"
+  ],
+  "$defs": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "inspect",
+        "doctor",
+        "snapshot",
+        "restore",
+        "repair",
+        "apply",
+        "config",
+        "profile",
+        "manifest",
+        "theme",
+        "extension",
+        "custom-app",
+        "snippet",
+        "marketplace",
+        "audit",
+        "devtools",
+        "watch",
+        "migrate",
+        "update",
+        "rollback",
+        "uninstall",
+        "report"
+      ]
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "read",
+        "low",
+        "medium",
+        "high",
+        "blocked"
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "safeRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "(^/|^[A-Za-z]:|(^|/)\\.\\.(/|$)|\\x00)"
+      }
+    },
+    "approvalGate": {
+      "type": "string",
+      "enum": [
+        "none",
+        "snapshot",
+        "confirm",
+        "separate-confirm",
+        "manual-only",
+        "blocked"
+      ]
+    },
+    "findingSeverity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  },
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^req_[A-Za-z0-9_-]+$"
+    },
+    "mode": {
+      "$ref": "#/$defs/mode"
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dryRun": {
+      "type": "boolean",
+      "const": true,
+      "description": "Requests default to dry-run; execution uses an approved OperationPlan."
+    },
+    "riskTolerance": {
+      "type": "string",
+      "enum": [
+        "safe",
+        "powerUser",
+        "explicitOnly"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "platform": {
+          "enum": [
+            "win32",
+            "darwin",
+            "linux"
+          ]
+        },
+        "trustedLocalProject": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
