@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/operation-report.schema.json",
+  "title": "/spicetify Operation Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reportId",
+    "generatedAt",
+    "redactionLevel",
+    "findings",
+    "userActionsRequired"
+  ],
+  "properties": {
+    "reportId": {
+      "type": "string",
+      "pattern": "^report_[A-Za-z0-9_-]+$"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "redactionLevel": {
+      "enum": [
+        "none",
+        "paths",
+        "tokens",
+        "strict"
+      ]
+    },
+    "request": {
+      "$ref": "request.schema.json"
+    },
+    "plan": {
+      "$ref": "operation-plan.schema.json"
+    },
+    "run": {
+      "$ref": "operation-run.schema.json"
+    },
+    "verification": {
+      "$ref": "verification-report.schema.json"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "severity",
+          "code",
+          "message",
+          "evidence",
+          "recommendation"
+        ],
+        "properties": {
+          "severity": {
+            "enum": [
+              "info",
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "recommendation": {
+            "type": "string"
+          },
+          "blocksInstall": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "userActionsRequired": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nextRecommendedMode": {
+      "enum": [
+        "inspect",
+        "doctor",
+        "snapshot",
+        "restore",
+        "repair",
+        "apply",
+        "config",
+        "profile",
+        "theme",
+        "extension",
+        "custom-app",
+        "snippet",
+        "marketplace",
+        "audit",
+        "devtools",
+        "watch",
+        "migrate",
+        "update",
+        "rollback",
+        "uninstall",
+        "report"
+      ]
+    },
+    "provenanceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

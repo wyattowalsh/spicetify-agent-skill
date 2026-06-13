@@ -1,0 +1,32 @@
+---
+title: Docs Site Implementation Boundary
+description: What the docs app scaffold includes now and what remains approval-gated.
+section: docs-site
+source: curated
+sourcePath: docs/planning/add-spicetify-skill/docs-site-implementation-plan.md
+owner: docs
+status: proposed
+safetyLevel: read
+---
+
+# Docs Site Implementation Boundary
+
+This scaffold establishes the docs app root, content root, content validation,
+and safety manifest without installing packages or fetching registry code.
+
+## Present now
+
+- `apps/docs/package.json` with validation-only scripts.
+- Curated starter MDX pages with source-path frontmatter.
+- `docs-site-manifest.json` for route, UI, validation, and safety policy.
+- `content-map.json` for sidebar groups, mode coverage, schema references, and redaction rules.
+- A local content validator that checks required pages, frontmatter, placeholders, and secret-like examples.
+- Generated reference pages under `reference/` from schemas, OpenSpec specs, and mode docs.
+- `tools/generate_docs_references.py --check` for deterministic generated-reference drift checks.
+
+## Deferred until approval
+
+- Next, Fumadocs, MDX, shadcn/ui, and search dependencies.
+- External registry component copying.
+- Local browser smoke tests for rendered docs routes.
+- Deployment, analytics, hosted search, feedback storage, DNS, or cloud credentials.

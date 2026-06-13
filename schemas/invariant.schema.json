@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/invariant.schema.json",
+  "title": "/spicetify Invariant",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "statement",
+    "waivable",
+    "enforcementPoints",
+    "regressionEvidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^INV-[A-Z0-9-]+$"
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "waivable": {
+      "type": "boolean"
+    },
+    "enforcementPoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "regressionEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "relatedRequirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "relatedTasks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^TASK-[0-9]{3}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+      }
+    }
+  }
+}

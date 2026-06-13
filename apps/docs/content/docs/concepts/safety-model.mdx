@@ -1,0 +1,34 @@
+---
+title: Safety Model
+description: The invariant checks that keep /spicetify dry-run-first, snapshot-protected, and rollbackable.
+section: concepts
+source: curated
+sourcePath: docs/planning/add-spicetify-skill/policy-matrix.md
+owner: docs
+status: proposed
+safetyLevel: read
+---
+
+# Safety Model
+
+Every `/spicetify` workflow follows the same safety sequence:
+
+1. Classify intent into a supported mode.
+2. Probe local state read-only when evidence is needed.
+3. Produce a dry-run operation plan for any possible mutation.
+4. Make a policy decision with risk, required confirmation, and stop rules.
+5. Snapshot before mutation.
+6. Execute only allowlisted argv shapes with `shell:false`.
+7. Verify the resulting config, files, CLI output, and audit state.
+8. Keep or restore last-known-good based on verification.
+
+## Non-waivable boundaries
+
+`/spicetify` must not provide arbitrary shell access, run README install scripts,
+weaken snapshot requirements, skip redaction, or treat Marketplace metadata as
+trusted. Desired-state manifests are declarative data and cannot override these
+rules.
+
+Package-manager work, permission changes, shortcut edits, publishing, deployment,
+analytics, and external registry component imports are manual or approval-gated
+operations outside normal automatic execution.

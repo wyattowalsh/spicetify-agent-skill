@@ -1,0 +1,58 @@
+# Traceability matrix
+
+**Path:** `docs/planning/add-spicetify-skill/traceability.md`
+**Purpose:** Map goals to OpenSpec requirements, tasks, schemas, and validation.
+**Status:** Proposed
+**Load/use when:** Auditing coverage or selecting implementation tasks.
+
+| Product goal | OpenSpec requirement/domain | Primary tasks | Validation |
+|---|---|---|---|
+| Single skill `/spicetify` with progressive disclosure | `skill`: Skill Invocation, Progressive Disclosure, Mode Routing | TASK-020 | prompt routing fixtures; regression prompts |
+| No arbitrary shell; allowlisted Spicetify commands | `command`: Allowlisted Command Execution | TASK-011, TASK-040 | command registry tests; shell rejection tests |
+| Dry-run before mutation | `command`, `policy`, `ux` | TASK-010, TASK-040 | plan schema tests; UX example snapshots |
+| Snapshot and rollback before mutation | `state`: Snapshot Before Mutation, Last Known Good, Rollback | TASK-030, TASK-040 | hash/restore tests; rollback integration tests |
+| Exact profiles and safe config editing | `config-profile` | TASK-031, TASK-032 | config roundtrip; profile idempotency tests |
+| Theme/extension/custom-app/snippet workflows | `customization` | TASK-041, TASK-050, TASK-051 | fixture installs; audit gates; fake apply |
+| Audit untrusted code and metadata | `audit`, `provenance` | TASK-022, TASK-013, TASK-051 | malicious fixtures; provenance lock tests |
+| Repair after Spotify updates | `repair`, `platform` | TASK-014, TASK-042 | post-update fake fixture; fallback confirmation test |
+| Safe DevTools/watch/update modes | `devtools`, `policy` | TASK-052 | consent/log redaction; bounded watcher tests |
+| No live Spotify mutation in CI | `testing` | TASK-012, TASK-090 | fake binary; CI guard asserts no real paths |
+| Structured reports and redaction | `verification` | TASK-061 | schema validation; token redaction tests |
+| Novice and power-user UX | `ux` | TASK-060 | example reports; confirmation copy tests |
+
+## Coverage gaps to watch during implementation
+
+- Real CLI output strings need fixture-recorded samples before parsers become strict.
+- Exact Spicetify Marketplace local storage paths should be discovered from the target environment rather than hardcoded.
+- Visual verification should remain optional until a safe screenshot capture strategy exists.
+- Nix/Home Manager integration should start as inspect/export only.
+
+
+## Added traceability rows
+
+| Goal | Requirement domain | Tasks | Validation |
+|---|---|---|---|
+| Keep evidence and reports safe to share | `privacy` | TASK-016, TASK-061 | redaction, consent, final secret-scan fixtures |
+| Support repeatable power-user setup | `manifest`, `automation` | TASK-017, TASK-032 | export/import dry-run replay and unsafe override tests |
+| Scaffold local developer projects safely | `scaffold`, `customization` | TASK-018, TASK-050 | generated output audit and package-script approval tests |
+
+| Non-waivable execution boundaries stay centralized | `policy`, `state`, `testing` | TASK-019 | invariant schema tests; blocked waiver fixtures |
+| Failure modes recover safely | `recovery`, `verification`, `state` | TASK-019, TASK-042 | failure catalog fixtures; recovery report tests |
+
+## Docs-site traceability
+
+| Goal | Requirement domain | Tasks | Validation |
+|---|---|---|---|
+| Provide browsable docs without bloating skill context | `docs-site` | TASK-070, TASK-073 | docs build, link checks, OpenSpec validation |
+| Make bundle content progressively consumable | `docs-content` | TASK-071 | content validation, generated source-path checks, redaction checks |
+| Customize Fumadocs with shadcn/ui safely | `docs-ui` | TASK-072 | typecheck, accessibility checks, local component provenance review |
+
+## Docs-site traceability
+
+| Goal | Requirement | Scenario | Tasks | Validation |
+|---|---|---|---|---|
+| Companion docs site | `specs/docs-site/spec.md` — Companion Documentation Site | Reviewer locates docs-site plan | TASK-070 | Required docs-site files exist and build checks are planned |
+| Progressive docs content | `specs/docs-content/spec.md` — Progressive Docs Content | Novice reads quickstart | TASK-071 | Quickstart and content source checks |
+| Generated content provenance | `specs/docs-content/spec.md` — Generated Content Provenance | Generated schema page | TASK-073 | Generated pages include source paths and redaction checks |
+| shadcn/ui customization | `specs/docs-ui/spec.md` — shadcn-Themed Fumadocs UI | Docs theme consistency | TASK-072 | Type/build/accessibility checks |
+| Accessible docs UX | `specs/docs-ui/spec.md` — Accessible Documentation UX | Keyboard-only reader | TASK-072 | Keyboard, focus, headings, and contrast checks |

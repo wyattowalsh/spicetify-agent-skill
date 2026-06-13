@@ -1,0 +1,86 @@
+# Mode: repair
+
+**Path:** `docs/planning/add-spicetify-skill/modes/repair.md`
+**Purpose:** Detailed contract for `/spicetify repair` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `repair` behavior.
+
+## Purpose
+
+Run staged repair playbooks, especially after Spotify updates.
+
+## Inputs
+
+`scenario`, `symptoms`, `strategy: safe|full|explainOnly`.
+
+## Preconditions
+
+Doctor has run or repair starts with doctor; snapshot store available.
+
+## Commands/files touched
+
+Likely `spicetify backup`, `spicetify apply`; fallback `restore` only with separate confirmation.
+
+## Safety checks
+
+Snapshot required; stop for unsupported build, permission/package actions, config corruption, or Snap/declarative blockers.
+
+## Plan output
+
+`RepairPlan` with primary steps, fallbacks, stop rules, and rollback.
+
+## Execution flow
+
+Doctor → snapshot → backup → apply → verify; fallback is a separate plan.
+
+## Verification flow
+
+CLI status, config parse, assets present, optional visual/log checks.
+
+## Rollback flow
+
+Restore pre-repair snapshot; optionally run `spicetify restore` only if separately approved.
+
+## Idempotency notes
+
+The planner MUST diff current state before emitting mutations. Re-running an already satisfied desired state SHOULD become a no-op plus verification unless the user explicitly requests refresh/reapply.
+
+## Failure modes and recovery
+
+- Unsupported compatibility or package action -> stop with manual report.
+- Apply failure -> offer rollback or debug-preserve mode.
+
+
+## Data contracts
+
+Primary contracts: `operation-plan, snapshot-manifest, verification-report`. Any implementation-specific schema expansion MUST update `docs/planning/add-spicetify-skill/schemas/README.md`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify Spotify updated and Spicetify broke, fix it`
+
+## Example structured response
+
+```json
+{
+  "mode": "repair",
+  "risk": "medium",
+  "primary": [
+    "backup",
+    "apply"
+  ],
+  "fallbackRequiresConfirmation": true,
+  "status": "planned"
+}
+```
+
+## Confirmation reference
+
+Use `../confirmation-flow.md` whenever this mode crosses snapshot, mutation, destructive, third-party-code, DevTools, network, package-manager, permission, or launch-flag approval gates.

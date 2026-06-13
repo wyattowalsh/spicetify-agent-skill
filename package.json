@@ -1,0 +1,10 @@
+{
+  "name": "spicetify-agent-workspace",
+  "private": true,
+  "scripts": {
+    "docs:build": "pnpm --filter docs build",
+    "docs:dev": "pnpm --filter docs dev",
+    "docs:lint": "pnpm --filter docs lint",
+    "docs:typecheck": "pnpm --filter docs typecheck"
+  }
+}

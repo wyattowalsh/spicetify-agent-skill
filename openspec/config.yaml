@@ -1,0 +1,56 @@
+# OpenSpec project configuration for the /spicetify implementation.
+project:
+  name: "/spicetify"
+  description: "OpenSpec-governed local /spicetify skill and spicetify-agent runtime."
+
+workflow:
+  default_rigor: "full"
+  require_strict_validation: true
+  require_human_approval_before_apply: true
+  stage_model:
+    - "intent"
+    - "proposal"
+    - "delta-specs"
+    - "design"
+    - "tasks"
+    - "implement-apply"
+    - "verify-sync"
+    - "archive"
+
+specs:
+  domains:
+    - skill
+    - agents
+    - command
+    - policy
+    - state
+    - platform
+    - config-profile
+    - customization
+    - audit
+    - provenance
+    - repair
+    - recovery
+    - devtools
+    - verification
+    - automation
+    - scaffold
+    - manifest
+    - privacy
+    - testing
+    - ux
+    - docs-ui
+    - docs-content
+    - docs-site
+
+validation:
+  commands:
+    - "openspec validate add-spicetify-skill --strict"
+    - "openspec validate --all --strict"
+    - "python tools/validate_bundle.py --root ."
+
+notes:
+  - "Use behavior-level requirements in spec.md."
+  - "Put technical choices in design.md and execution steps in tasks.md."
+  - "Capture the target repo's actual OpenSpec command profile before using slash commands."
+  - "OpenSpec telemetry expectations should be reviewed for sensitive environments."

@@ -1,0 +1,44 @@
+---
+title: Mode Catalog
+description: The supported /spicetify modes and the safety posture each mode starts from.
+section: modes
+source: curated
+sourcePath: skills/spicetify/references/mode-router.md
+owner: docs
+status: proposed
+safetyLevel: read
+---
+
+# Mode Catalog
+
+`/spicetify` exposes one user-facing skill name and routes requests into semantic
+modes. Modes can be combined when the request naturally requires inspection,
+audit, planning, and rollback.
+
+| Mode | Primary use | Initial posture |
+|---|---|---|
+| `inspect` | Discover paths, config, assets, and local state. | Read-only |
+| `doctor` | Diagnose broken or unsupported setup. | Read-only |
+| `snapshot` | Save current state before planned mutation. | Low risk |
+| `restore` | Restore a named snapshot. | High risk |
+| `repair` | Plan post-Spotify-update recovery. | Medium to high |
+| `apply` | Execute an approved operation plan. | Confirmation required |
+| `config` | Plan safe config key or list changes. | Medium |
+| `profile` | Switch exact-state profiles. | Medium |
+| `manifest` | Validate or export desired-state manifests. | Read-only |
+| `theme` | Create, install, switch, or remove themes. | Medium |
+| `extension` | Scaffold, audit, and enable extensions. | High for third-party JS |
+| `custom-app` | Scaffold, audit, and enable custom apps. | High |
+| `snippet` | Add or manage CSS tweaks. | Medium |
+| `marketplace` | Inspect or plan Marketplace assets. | Audit required |
+| `audit` | Review third-party or generated assets. | Read-only |
+| `devtools` | Collect logs or enable debug flows. | Consent required |
+| `watch` | Support bounded local development loops. | Approval-gated |
+| `migrate` | Export or move setup state. | Medium |
+| `update` | Plan safe update or reload actions. | Medium |
+| `rollback` | Return to last-known-good state. | High risk |
+| `uninstall` | Remove assets or customizations. | High risk |
+| `report` | Produce redacted diagnostics. | Consent-sensitive |
+
+Generated mode references are available under `reference/modes` and include
+source paths plus parser validation status from the local generator.

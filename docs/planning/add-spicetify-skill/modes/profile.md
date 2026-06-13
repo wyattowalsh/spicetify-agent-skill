@@ -1,0 +1,83 @@
+# Mode: profile
+
+**Path:** `docs/planning/add-spicetify-skill/modes/profile.md`
+**Purpose:** Detailed contract for `/spicetify profile` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `profile` behavior.
+
+## Purpose
+
+Export and switch exact desired customization profiles.
+
+## Inputs
+
+`profileName`, profile manifest, `exportCurrent?`, `applyAfter?`.
+
+## Preconditions
+
+Profile manifest validates; referenced assets exist or have provenance/audit records.
+
+## Commands/files touched
+
+Config keys/lists, /spicetify profile files, optional generated snippets/themes, `spicetify apply`.
+
+## Safety checks
+
+Snapshot required; third-party JS audit before enable; repeated switch should be no-op.
+
+## Plan output
+
+`ProfileSwitchPlan` with exact diffs for theme, color scheme, extensions, custom apps, snippets, options.
+
+## Execution flow
+
+Resolve profile; diff current state; snapshot; apply exact add/remove/config operations; verify.
+
+## Verification flow
+
+Config equals resolved profile; assets exist/hash; audit locks valid.
+
+## Rollback flow
+
+Restore previous profile/config snapshot.
+
+## Idempotency notes
+
+The planner MUST diff current state before emitting mutations. Re-running an already satisfied desired state SHOULD become a no-op plus verification unless the user explicitly requests refresh/reapply.
+
+## Failure modes and recovery
+
+- Missing/audited asset mismatch -> stop before enable.
+- Already matching profile -> no-op verification.
+
+
+## Data contracts
+
+Primary contracts: `profile, desired-state-manifest, operation-plan`. Any implementation-specific schema expansion MUST update `docs/planning/add-spicetify-skill/schemas/README.md`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify switch between minimal, visualizer, and dev profiles`
+
+## Example structured response
+
+```json
+{
+  "mode": "profile",
+  "from": "visualizer",
+  "to": "dev",
+  "extensionsAdd": [
+    "spicetify-devtools-helper.js"
+  ],
+  "extensionsRemove": [
+    "visualizer.js"
+  ]
+}
+```

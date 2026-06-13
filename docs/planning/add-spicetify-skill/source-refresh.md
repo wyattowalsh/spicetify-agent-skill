@@ -1,0 +1,104 @@
+# Source refresh: Spicetify and OpenSpec facts
+
+**Path:** `docs/planning/add-spicetify-skill/source-refresh.md`
+**Purpose:** Current fact table, source conflicts, and implementation implications for `/spicetify`.
+**Status:** Proposed / source-checked
+**Load/use when:** Reviewing command semantics, platform behavior, Marketplace/Creator assumptions, or OpenSpec/Codex workflow claims.
+
+## Method
+
+Sources were checked from official Spicetify docs, Spicetify GitHub repositories, official OpenSpec docs, and the project planning references. This file intentionally avoids bundle release labels; implementations must discover local Spicetify/Spotify details at runtime.
+
+## Verified facts
+
+| Claim | Source | Checked | Confidence | Planning implication |
+|---|---|---|---|---|
+| Spicetify is a multiplatform CLI for customizing the official Spotify desktop client. | `https://spicetify.app/docs/getting-started` | current chat date | High | `/spicetify` must be local-state-aware and platform-aware. |
+| Core CLI commands include no-arg setup/verify, `backup`, `apply`, `restore`, `update`, `upgrade`, `config`, `config-dir`, `-c`, `enable-devtools`, `watch`, `path`, and `auto`; combined commands are documented. | `https://spicetify.app/docs/cli/commands` | current chat date | High | The command registry should allow exact argv shapes only and decompose combined commands into checkpointed steps. |
+| CLI docs define `update` as theme hot-reload, while the getting-started update section also presents `spicetify update` in the post-Spotify-update path. | `https://spicetify.app/docs/cli/commands` and `https://spicetify.app/docs/getting-started` | current chat date | High | `/spicetify update` must disambiguate user intent and never treat “update” as a single trusted mutation. |
+| `backup` creates vanilla Spotify backup state; `/spicetify` snapshots must separately capture user config and customization assets. | `https://spicetify.app/docs/cli/commands` | current chat date | High | Snapshot model must not rely on Spicetify backup for user-state rollback. |
+| `restore` removes Spicetify modifications but preserves config/customization files. | `https://spicetify.app/docs/cli/commands` | current chat date | High | Treat `spicetify restore` as high-risk Spotify patch-state mutation, not user-state rollback. |
+| Config lives in `config-xpui.ini`; defaults are `%appdata%\\spicetify\\config-xpui.ini` on Windows and `~/.config/spicetify/config-xpui.ini` on Linux/macOS; `spicetify -c` locates it. | `https://spicetify.app/docs/customization/config-file` | current chat date | High | Discovery should prefer CLI path probes over platform defaults. |
+| CLI config edits are recommended; direct file editing is possible; `[Patch]` is low-level and usually left alone. | `https://spicetify.app/docs/customization/config-file` | current chat date | High | Prefer `spicetify config`; use transactional INI edits only when CLI cannot express exact state. |
+| Theme folders require `color.ini` and `user.css`; `theme.js` and assets are optional; home-directory themes take priority over executable-directory themes on name collision. | `https://spicetify.app/docs/development/themes` | current chat date | High | Theme install must check collisions, required files, optional JS audit, and precedence. |
+| Extensions are single JavaScript files in the Extensions folder and are enabled with `spicetify config extensions <file.js>` then `spicetify apply`; extension examples wait for Spicetify APIs. | `https://spicetify.app/docs/development/extensions` | current chat date | High | Generated extension scaffolds need readiness guards, cleanup, and static audit before enablement. |
+| Custom apps require `index.js` and `manifest.json`; manifest keys include `name`, `icon`, `active-icon`, `subfiles`, and `subfiles_extension`; custom apps are React-based and return rendered UI from `render()`. | `https://spicetify.app/docs/development/custom-apps` | current chat date | High | Custom-app validators must separately audit app code and startup extension subfiles. |
+| Marketplace browses, installs, and manages extensions, themes, and snippets in Spotify; custom apps may require manual installation; Marketplace install scripts are shell pipelines. | `https://spicetify.app/docs/customization/marketplace` and `https://github.com/spicetify/marketplace` | current chat date | High | Marketplace mode may inspect/audit/assist, but installer scripts are manual/approval-gated and never auto-run. |
+| Official docs still describe Spicetify Creator workflows, but the GitHub README says the Creator project is deprecated and recommends general bundlers. | `https://spicetify.app/docs/development/spicetify-creator/the-basics` and `https://github.com/spicetify/spicetify-creator` | current chat date | High | Default scaffolds should use maintained bundler templates; Creator remains legacy/compatibility only. |
+| Linux Snap Spotify cannot be modified; AUR/APT/Flatpak can require path/permission handling; macOS Homebrew requires setting `spotify_path`; Nix/Home Manager can manage Spicetify declaratively. | `https://spicetify.app/docs/getting-started` | current chat date | High | Doctor/repair must detect package class and stop before package managers, permission changes, or declarative drift. |
+| Spicetify Platform APIs are internal and not guaranteed stable; docs warn they may change drastically. | `https://spicetify.app/docs/development/api-wrapper/methods/platform` | current chat date | High | Audit should warn on internal API use and generated code should use feature detection. |
+| Spotify launch flags include remote debugging, log paths, username/password-style flags, update endpoint overrides, and shortcut/desktop-file behavior. | `https://spicetify.app/docs/development/spotify-cli-flags` | current chat date | High | Launch flags are high-risk; remote debugging, secrets, log capture, and update disabling require explicit plans. |
+| OpenSpec is a lightweight spec-driven framework with Codex listed among supported tools; specs live in the codebase and change deltas capture requirement changes. | `https://openspec.dev` | current chat date | High | Keep OpenSpec artifacts as durable source of truth; keep command profile claims recheckable. |
+| Desired-state manifests are a `/spicetify` design decision, not an official Spicetify artifact. | This planning bundle | current review | Medium | Implementation must label manifests as skill-owned and not imply upstream support. |
+| Privacy/redaction and consent schemas are `/spicetify` safety contracts, not upstream Spicetify features. | This planning bundle | current review | Medium | Runtime reports must separate official Spicetify facts from /spicetify-specific safety behavior. |
+| Maintained local scaffolds are a conservative response to the Creator source conflict. | Official Creator docs plus Creator repository warning | current review | High | Default to local templates, with Creator as explicit compatibility mode only. |
+
+## Conflicts and conservative decisions
+
+| Conflict / ambiguity | Decision |
+|---|---|
+| Spicetify `update` docs are semantically ambiguous across pages. | `/spicetify update` exposes explicit sub-intents: `theme-hot-reload`, `spicetify-maintenance-plan`, and `post-spotify-update-repair`. It does not auto-run any ambiguous update path. |
+| Spicetify Creator docs vs repository deprecation. | Treat Creator as legacy compatibility. Use local maintained templates for new TS/React extension/custom-app scaffolds. |
+| Marketplace convenience vs executable third-party code. | Treat Marketplace/GitHub code as untrusted until staged, hashed, audited, and accepted. |
+| Official docs include install scripts and permission-change commands. | The skill engine can cite/propose them in manual reports but must not execute them without explicit human approval outside normal automation. |
+
+## Assumptions
+
+- ASSUMPTION-001: The skill engine runs with user-level permissions, not elevated privileges.
+- ASSUMPTION-002: Python is the implementation default for the installable runtime CLI/skill engine because the project must support `pip` and `uvx`; TypeScript remains scoped to docs UI and generated Spicetify development scaffolds.
+- ASSUMPTION-003: Real local compatibility must be discovered with read-only probes; docs cannot predict every Spotify packaging and update state.
+
+## Recheck triggers
+
+Recheck sources before implementing or modifying behavior around: Spicetify CLI command semantics, Spotify update repair, Marketplace install/publish behavior, Creator replacement status, Platform APIs, DevTools/launch flags, platform package rules, OpenSpec command profiles, and Codex/tooling capabilities.
+
+## Refinement implications
+
+- `/spicetify` should use a semantic `cliIdentity` discovery verb that compiles to `spicetify --version`; internal schemas do not need a user-facing release-style command name.
+- Confirmation is now modeled as a durable grant, not a chat phrase. This prevents stale approvals from applying after local state or third-party source drift.
+- Privacy rules are now centralized because snapshots, reports, DevTools logs, screenshots, and doctor output all touch related sensitive-data boundaries.
+- Story-level acceptance is now explicit so a coding agent cannot declare the MVP complete by passing only schema checks.
+
+- Failure recovery is now catalog-driven so new failure handling must add a recovery row, regression fixture, and report behavior rather than ad hoc repair logic.
+- Non-waivable invariants are centralized so future modes and manifests cannot silently weaken command, snapshot, privacy, or CI boundaries.
+
+## Fumadocs and shadcn/ui source refresh
+
+| Claim | Source | Checked | Confidence | Planning implication |
+|---|---|---|---|---|
+| Fumadocs is a React documentation framework with official setup paths for multiple React frameworks; the Next MDX integration recommends ESM-friendly config. | `https://www.fumadocs.dev/` and `https://www.fumadocs.dev/docs/what-is-fumadocs` | current chat date | High | Plan the docs site as a flexible React documentation surface and prefer local content ownership. |
+| Fumadocs MDX defines docs collections in `source.config.ts` and can compile MDX/Markdown into type-safe data. | `https://www.fumadocs.dev/docs/mdx/next` | current chat date | High | Use local content collections and generated-reference pages. |
+| Fumadocs Next manual setup uses `source.config.ts`, `next.config.mjs`, and the MDX plugin. | `https://www.fumadocs.dev/docs/mdx/next` | current chat date | High | Docs-site tasks should create these files only inside the approved docs app root. |
+| Fumadocs UI provides docs layouts and components, and its CLI can localize components when deeper control is needed. | `https://www.fumadocs.dev/docs/ui` | current chat date | High | Use Fumadocs layout first, localize only when customization exceeds options. |
+| Fumadocs UI has a shadcn stylesheet/preset that adopts shadcn theme colors. | `https://www.fumadocs.dev/docs/ui/theme` | current chat date | High | Use shadcn theme tokens as the docs site's design system source. |
+| Fumadocs search defaults to Orama and can work through an API endpoint or static cached JSON. | `https://www.fumadocs.dev/docs/search` and `https://www.fumadocs.dev/docs/search/orama` | current chat date | High | Default to local search and avoid hosted search credentials in MVP. |
+| Fumadocs supports AI-readable docs routes such as `llms.txt` and full docs text when processed markdown is enabled. | `https://www.fumadocs.dev/docs/integrations/llms` | current chat date | High | Add AI-readable route plans gated by redaction and no-private-evidence checks. |
+| shadcn/ui Next setup recommends current Next app defaults with Tailwind, App Router, and import aliases, then `shadcn init` and component add commands. | `https://ui.shadcn.com/docs/installation/next` | current chat date | High | Docs-site package-manager commands are proposed and approval-gated; components should be local checked-in code. |
+| shadcn/ui now supports source registries from public GitHub repositories. | `https://ui.shadcn.com/docs/registry/github` and `https://ui.shadcn.com/docs/directory` | current chat date | High | External registries must be treated as third-party source inputs requiring provenance review. |
+
+## Docs-site implications
+
+- The Fumadocs site should be a planned workspace app, not a hidden side effect of implementing `/spicetify`.
+- The site should use local content, local components, local search, and AI-readable exports before any hosted dependency.
+- Fumadocs/shadcn setup commands are package-manager operations and remain approval-gated.
+- External UI registries are supply-chain inputs and must follow provenance/audit rules.
+
+## Companion docs-site source refresh
+
+| Source | What it supports | Planning implication |
+|---|---|---|
+| Fumadocs home and docs | Fumadocs is a React documentation framework with a create-app path and flexible docs workflow. | Use Fumadocs as the docs framework for the companion site. |
+| Fumadocs MDX with Next.js docs | Next integration uses Fumadocs MDX, `source.config.ts`, `next.config.mjs`, `content/docs`, `lib/source.ts`, and generated `.source` output. | Plan docs-site setup around MDX collections, source loading, and Next App Router conventions. |
+| Fumadocs deployment docs | Deployment follows the underlying React framework; Next + Cloudflare and Docker have special caveats. | Keep deployment as a proposal and validate target host before implementation. |
+| shadcn/ui installation docs | shadcn/ui provides framework setup commands and component add flows; existing projects need matching configuration. | Treat shadcn commands as approval-gated setup proposals and preserve existing package manager conventions. |
+| shadcn/ui registry docs | Community registries are third-party maintained and should be reviewed before installation. | Treat registry access as untrusted code ingestion requiring audit/review. |
+| shadcn/ui `components.json` docs | `components.json` defines how the CLI generates components for a project. | Include docs-site `components.json` planning and validate aliases in monorepos. |
+
+## Codex subagent and kickoff source notes
+
+| Claim | Source | Confidence | Planning implication |
+|---|---|---|---|
+| Codex can spawn specialized subagents in parallel and consolidate their results when explicitly asked. | Official Codex subagents documentation, checked during planning. | High | The bundle includes `subagent-task-graph.md` and a kickoff prompt, but requires explicit swarm execution request. |
+| Subagents inherit the current sandbox and approval policy. | Official Codex subagents documentation, checked during planning. | High | Subagents cannot loosen permissions; approval needs become stop-and-report items. |
+| Codex reads `AGENTS.md` before work and nested guidance can override earlier files. | Official Codex AGENTS.md documentation, checked during planning. | High | Keep `AGENTS.md` durable and concise; put swarm details in planning docs referenced by the kickoff prompt. |
+| Official Codex guidance recommends planning first for complex tasks and keeping `AGENTS.md` practical. | Official Codex best-practices documentation, checked during planning. | High | The kickoff prompt instructs Codex to preflight and plan before implementation. |

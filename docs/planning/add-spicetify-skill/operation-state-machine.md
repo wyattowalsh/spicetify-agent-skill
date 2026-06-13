@@ -1,0 +1,84 @@
+# Operation state machine
+
+**Path:** `docs/planning/add-spicetify-skill/operation-state-machine.md`
+**Purpose:** Deterministic lifecycle for dry-run, execution, verification, rollback, and reporting.
+**Status:** Proposed
+**Load/use when:** Implementing `OperationRunner`, `SnapshotStore`, `Verifier`, or reports.
+
+## States
+
+```text
+received
+  -> classified
+  -> operation_lock_checked
+  -> probed
+  -> planned_dry_run
+  -> policy_checked
+  -> awaiting_confirmation?
+  -> operation_lock_acquired
+  -> snapshotting
+  -> executing
+  -> verifying
+  -> verified
+  -> last_known_good_updated
+  -> reported
+  -> operation_lock_released
+```
+
+Failure path:
+
+```text
+any pre-execution failure -> stopped -> reported
+execution/verification failure -> rollback_offered | rollback_started
+rollback_started -> rollback_verifying -> rolled_back | rollback_failed -> reported
+```
+
+## State table
+
+| State | Entry condition | Exit condition | Writes allowed |
+|---|---|---|---|
+| `received` | User request exists | mode selected | none |
+| `classified` | Mode selected | read-only probes chosen | none |
+| `operation_lock_checked` | Request may conflict with active operation | lock free or read-only compatible | none |
+| `probed` | environment facts collected | plan built | none |
+| `planned_dry_run` | typed plan exists | policy pass/fail | plan log only |
+| `policy_checked` | risk classified | confirmation or execution | plan log only |
+| `awaiting_confirmation` | confirmation required | matching token received | none |
+| `operation_lock_acquired` | approved mutation is about to run | snapshot starts | lock file only |
+| `snapshotting` | mutation approved | snapshot manifest verified | snapshot store only |
+| `executing` | snapshot succeeded | all steps complete/fail | approved target paths only |
+| `verifying` | execution complete | verification pass/fail | report/status only |
+| `verified` | checks pass | last-known-good update | state pointer only |
+| `rolled_back` | rollback verified | final report | state/report only |
+| `stopped` | unsafe/failure condition | final report | report only |
+
+## Single-writer rule
+
+- Only one mutating operation may hold the operation lock for a given Spicetify userdata root.
+- Read-only operations may run concurrently unless they request log/screenshot collection.
+- A stale lock may be cleared only after verifying the owning process is gone and writing a recovery report.
+- Plans must record the lock scope so parallel agents cannot mutate the same config/assets concurrently.
+
+## Invariants
+
+- A mutating operation cannot enter `executing` without either a snapshot ID or an explicit low-risk exemption recorded in the plan.
+- The plan hash approved by the user must equal the plan hash executed.
+- The command list executed must equal the approved command list.
+- Source file hashes for staged third-party assets must match audited hashes.
+- Last-known-good is updated only from `verified`.
+- Rollback creates a pre-rollback snapshot before restoring a target snapshot.
+- Reports are emitted for both success and failure.
+- Operation locks are released after report write or marked stale with a recovery note.
+
+## Verification result classes
+
+| Class | Meaning | Next state |
+|---|---|---|
+| `pass` | All required checks passed. | update last-known-good. |
+| `soft-fail` | Non-required optional check failed. | report warning; do not block unless policy says required. |
+| `hard-fail` | Required check failed. | offer rollback; do not update last-known-good. |
+| `unsafe` | Verification reveals a new high-risk state. | stop and recommend rollback/manual repair. |
+
+## Idempotency
+
+The same approved plan SHOULD be safe to re-evaluate but MUST NOT be blindly re-executed after drift. A re-run recomputes preconditions and either becomes a no-op verification or emits a new dry-run plan.

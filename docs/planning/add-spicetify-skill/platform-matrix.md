@@ -1,0 +1,60 @@
+# Platform matrix
+
+**Path:** `docs/planning/add-spicetify-skill/platform-matrix.md`
+**Purpose:** Platform/package-specific discovery, support, and repair rules.
+**Status:** Proposed
+**Load/use when:** Implementing `inspect`, `doctor`, `repair`, `snapshot`, `restore`, or platform fixtures.
+
+## Discovery order
+
+1. `spicetify --version`
+2. `spicetify -c`
+3. `spicetify path userdata`
+4. `spicetify path spotify`
+5. parse `config-xpui.ini`
+6. apply platform defaults only as fallback evidence, never as authoritative mutation targets
+
+## Cross-platform defaults
+
+| Asset | Windows default | Linux/macOS default | Notes |
+|---|---|---|---|
+| Config | `%appdata%\spicetify\config-xpui.ini` | `~/.config/spicetify/config-xpui.ini` | Prefer `spicetify -c`. |
+| Themes | `%appdata%\spicetify\Themes\` | `~/.config/spicetify/Themes/` | Home theme location wins over executable-dir theme on name collision. |
+| Extensions | `%appdata%\spicetify\Extensions\` | `~/.config/spicetify/Extensions/` | Extension filenames must be leaf `.js` files. |
+| Custom apps | `%appdata%\spicetify\CustomApps\` | `~/.config/spicetify/CustomApps/` | Folder names must be safe slugs. |
+
+## Package-specific detection and behavior
+
+| Platform/package | Doctor detection hints | Safe /spicetify behavior | Must not auto-run |
+|---|---|---|---|
+| Windows normal installer | prefs under `%APPDATA%\Spotify\prefs`; Spotify path from CLI/config | Verify prefs path and config; repair can run snapshot + backup/apply. | Registry edits, install scripts, shortcut rewrites without approval. |
+| Windows Microsoft Store Spotify | FAQ warns prefs issues; About page / path hints | Diagnose as unsupported/degraded; provide manual migration plan. | Uninstall Store Spotify or install normal Spotify. |
+| Windows Scoop Spotify | Spotify path may need explicit `spotify_path`. | Diagnose missing path; propose exact config change with full path. | Guess username/path or run Scoop commands. |
+| Linux AUR/APT Spotify | Spotify install under `/opt/spotify` or `/usr/share/spotify`; may need write permissions. | Diagnose permission/path issue; produce manual instructions. | `sudo chmod`, package install/removal. |
+| Linux spotify-launcher | User-local install path under `~/.local/share/spotify-launcher/...`. | Propose absolute `spotify_path` when detected. | Use `~` in config; docs warn full paths are needed. |
+| Linux Snap Spotify | Official docs say Snap apps cannot be modified. | Mark blocked for mutation; suggest switching package outside /spicetify automation. | `snap remove`, apt install, chmod. |
+| Linux Flatpak Spotify | Path may be under `/var/lib/flatpak` or `~/.local/share/flatpak`; prefs may be in `~/.var/app/...`. | Detect and propose full absolute path/prefs settings; require manual approval for permissions. | `sudo chmod`, Flatpak install/removal. |
+| macOS normal app | Spotify app resources under `/Applications/Spotify.app/Contents/Resources`. | Verify path and user permissions; repair can run safe backup/apply. | Modify app bundle permissions without approval. |
+| macOS Homebrew Spicetify | Docs instruct setting Spotify path after Homebrew install. | Diagnose missing `spotify_path`; propose config change. | `brew install/upgrade`, app path mutation. |
+| Nix / Home Manager / nix-darwin | Declarative Spicetify profile may own config/assets. | Prefer read-only inspect/export; warn manual local mutations may be overwritten. | Mutate declaratively managed files unless target path is approved. |
+
+## Platform test fixtures
+
+- `fixtures/platform/windows-store-prefs-missing/`
+- `fixtures/platform/windows-scoop-missing-spotify-path/`
+- `fixtures/platform/linux-snap-blocked/`
+- `fixtures/platform/linux-flatpak-prefs-path/`
+- `fixtures/platform/linux-apt-permission-needed/`
+- `fixtures/platform/macos-homebrew-path-needed/`
+- `fixtures/platform/nix-declarative-managed/`
+
+## Stop rules
+
+Doctor/repair MUST stop and produce a manual report when a fix requires:
+
+- package manager install/remove/upgrade
+- `sudo`, `chmod`, ownership changes, or broad filesystem permission changes
+- editing launch agents, shell startup files, desktop files, or shortcuts
+- uninstalling Spotify or Spicetify
+- disabling Spotify updates
+- reading Spotify prefs contents beyond existence/path metadata

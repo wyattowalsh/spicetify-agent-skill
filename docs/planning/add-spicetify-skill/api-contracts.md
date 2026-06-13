@@ -1,0 +1,100 @@
+# API contracts
+
+**Path:** `docs/planning/add-spicetify-skill/api-contracts.md`
+**Purpose:** Structured data contract notes for requests, plans, policy decisions, runs, reports, snapshots, profiles, audits, and provenance.
+**Status:** Proposed
+**Load/use when:** Implementing schema validation, CLI JSON output, or tests.
+
+## Contract principles
+
+- JSON output is not an afterthought; it is the primary interface between the skill, CLI, tests, and future agents.
+- Every mutating workflow starts with an `OperationPlan` and ends with an `OperationReport`.
+- Every schema is strict by default and explicitly models extension points.
+- Unknown enum values fail closed unless a compatibility rule explicitly maps them.
+- Custom schema identity strings are stable and release-free; schema evolution belongs in compatibility tests and migration tasks, not release labels.
+- User-facing prose summaries must be derived from structured results, not the other way around.
+
+## Core objects
+
+| Object | Schema | Purpose |
+|---|---|---|
+| `SpicetifyRequest` | `schemas/request.schema.json` | User/API request envelope with mode, dry-run preference, risk tolerance, and inputs. |
+| `OperationPlan` | `schemas/operation-plan.schema.json` | Dry-run plan with preconditions, mutations, commands, policy decision, verification, rollback, provenance refs, and plan hash. |
+| `CommandRegistryEntry` | `schemas/command-registry.schema.json` | Allowed Spicetify command shape and validator metadata. |
+| `CommandInvocation` | `schemas/command-invocation.schema.json` | Concrete execution argv with `shell:false` and output parser. |
+| `PolicyDecision` | `schemas/policy-decision.schema.json` | Per-plan allow/confirm/manual/block decision with evidence. |
+| `SnapshotManifest` | `schemas/snapshot-manifest.schema.json` | Immutable snapshot source/hash/exclusion record. |
+| `AuditReport` | `schemas/audit-report.schema.json` | Static audit evidence, findings, verdict, and install permission. |
+| `ProvenanceLock` | `schemas/provenance-lock.schema.json` | Asset source, hashes, audit state, and accepted risk. |
+| `VerificationReport` | `schemas/verification-report.schema.json` | Post-run evidence across CLI/config/filesystem/audit/devtools/screenshot checks. |
+| `OperationRun` | `schemas/operation-run.schema.json` | Execution step log for approved plans. |
+| `OperationReport` | `schemas/operation-report.schema.json` | User-facing report source; Markdown rendering is derived. |
+| `ProfileManifest` | `schemas/profile.schema.json` | Exact desired state profile. |
+| `FixtureManifest` | `schemas/fixture-manifest.schema.json` | Fake environment expectations for integration tests. |
+| `SpicetifyError` | `schemas/error.schema.json` | Normalized error taxonomy and safe next actions. |
+
+## Plan-hash rules
+
+A plan hash MUST cover:
+
+- mode and action;
+- preconditions;
+- command IDs and argv;
+- mutation IDs and target paths;
+- source hashes for staged files;
+- snapshot policy;
+- audit IDs and accepted risks;
+- rollback strategy;
+- verification steps.
+
+A confirmation token MUST be rejected if the recomputed plan hash differs from the approved hash.
+
+## Error handling contract
+
+Errors should be specific enough for recovery automation but safe for users:
+
+```json
+{
+  "code": "PLAN_DRIFT_DETECTED",
+  "severity": "high",
+  "message": "The config changed after the plan was approved.",
+  "safeNextActions": ["re-run dry-run", "inspect current diff"],
+  "requiresUserDecision": false,
+  "stop": true
+}
+```
+
+## Compatibility posture
+
+- Additive optional fields are allowed only when old consumers can safely ignore them.
+- New command shapes require policy, tests, and command-registry updates.
+- New mutation types require rollback semantics and verification checks.
+- New report evidence types require redaction rules.
+- Any change that affects execution authority requires an OpenSpec delta and regression prompt.
+
+
+## Additional contracts
+
+### DesiredStateManifest
+
+- Schema: `schemas/desired-state-manifest.schema.json`
+- Purpose: declarative import/export and replay of config, profiles, assets, provenance, safety, and verification.
+- Runtime rule: manifests are data; they never authorize shell, package-manager, permission, launch-flag, or third-party enablement by themselves.
+
+### AssetManifest
+
+- Schema: `schemas/asset-manifest.schema.json`
+- Purpose: classify generated, local-trusted, third-party, Marketplace, built-in, and unknown assets with ownership and hashes.
+- Runtime rule: unknown and third-party assets require audit before enablement.
+
+### RedactionPolicy
+
+- Schema: `schemas/redaction-policy.schema.json`
+- Purpose: define local-only, redacted-shareable, and strict-shareable report handling.
+- Runtime rule: reports cannot be marked shareable until redaction and final secret-pattern checks pass.
+
+### ConsentGrant
+
+- Schema: `schemas/consent-grant.schema.json`
+- Purpose: bind optional evidence collection to approved scope, duration, output limit, and redaction policy.
+- Runtime rule: screenshot/log/launch-flag evidence collection cannot begin without consent metadata.

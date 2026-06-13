@@ -1,0 +1,110 @@
+# UX examples
+
+**Path:** `docs/planning/add-spicetify-skill/ux-examples.md`
+**Purpose:** Concrete prompts and structured responses for novice and power-user workflows.
+**Status:** Draft
+**Load/use when:** Use when designing responses or regression prompts.
+
+
+## Example: Spotify updated and Spicetify broke
+
+Prompt:
+
+```text
+/spicetify Spotify updated and Spicetify broke, fix it.
+```
+
+Response shape:
+
+```json
+{
+  "mode": "repair",
+  "dryRun": true,
+  "summary": "I will inspect, doctor, snapshot, run backup/apply, verify, and stop before destructive fallback.",
+  "requiresConfirmation": true,
+  "plannedSteps": ["inspect", "doctor", "snapshot", "spicetify backup", "spicetify apply", "verify"],
+  "fallbacks": [{"name": "restore-backup-apply", "risk": "high", "requiresSeparateConfirmation": true}]
+}
+```
+
+## Example: Create a dark terminal-style theme
+
+```json
+{
+  "mode": "theme",
+  "action": "create",
+  "theme": "TerminalDark",
+  "files": ["Themes/TerminalDark/color.ini", "Themes/TerminalDark/user.css"],
+  "configChanges": {"current_theme": "TerminalDark", "color_scheme": "Dark"},
+  "requiresSnapshot": true,
+  "verification": ["themeFilesExist", "schemeExists", "applySuccess"]
+}
+```
+
+## Example: Install GitHub theme safely
+
+```json
+{
+  "mode": "theme",
+  "action": "install-github-safe",
+  "networkRequired": true,
+  "gates": ["approve source", "pin ref", "audit staged code", "approve apply"],
+  "blockedActions": ["run install script", "overwrite existing theme without backup"]
+}
+```
+
+## Example: Audit extension before enabling
+
+```json
+{
+  "mode": "audit",
+  "targetType": "extension",
+  "verdict": "warn",
+  "installAllowedByDefault": false,
+  "findings": [
+    {"severity": "high", "code": "EXTERNAL_NETWORK_REQUEST"},
+    {"severity": "medium", "code": "INTERNAL_SPICETIFY_PLATFORM_API"}
+  ]
+}
+```
+
+## Example: Switch profiles
+
+```json
+{
+  "mode": "profile",
+  "action": "switch",
+  "from": "minimal",
+  "to": "dev",
+  "diff": {
+    "extensionsAdd": ["spicetify-devtools-helper.js"],
+    "extensionsRemove": ["visualizer.js"],
+    "theme": {"from": "Minimal", "to": "TerminalDark"}
+  },
+  "requiresSnapshot": true
+}
+```
+
+## Example: Scaffold TypeScript React extension
+
+```json
+{
+  "mode": "extension",
+  "action": "scaffold",
+  "template": "typescript-react-bundler",
+  "creatorCompat": false,
+  "postScaffold": ["audit generated code", "build only approved local template", "install dist JS after confirmation"]
+}
+```
+
+## Example: Roll back to last working config
+
+```json
+{
+  "mode": "rollback",
+  "target": "last-known-good",
+  "preRollbackSnapshot": "auto",
+  "requiresConfirmation": true,
+  "verification": ["hashesMatchSnapshot", "configMatchesSnapshot", "doctorNoHighFindings"]
+}
+```

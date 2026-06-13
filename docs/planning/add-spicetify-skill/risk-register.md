@@ -1,0 +1,19 @@
+# Risk register
+
+**Path:** `docs/planning/add-spicetify-skill/risk-register.md`
+**Purpose:** Product, implementation, security, and compatibility risks.
+**Status:** Draft
+**Load/use when:** Review before implementation and handoff.
+
+
+| Risk | Likelihood | Impact | Mitigation | Owner |
+|---|---:|---:|---|---|
+| Spotify update breaks Spicetify after repair attempt | Medium | High | Snapshot, doctor first, unsupported-build stop, fallback confirmation | Runtime engine |
+| Third-party extension exfiltrates token | Medium | High | Static audit, provenance, block high-risk patterns, explicit override only | Audit engine |
+| User-provided shell command slips through | Low | Critical | No raw shell path; command registry tests; `shell:false` assertion | Command layer |
+| Config corruption | Medium | High | CLI-first edits, transactional INI edits, parse before/after, snapshot | Config module |
+| Symlink/path traversal from archive | Medium | High | staging root, path normalization, symlink policy | Filesystem layer |
+| DevTools logs leak secrets | Medium | High | opt-in capture, redaction, token scanner, report policy | Report layer |
+| Context bloat makes skill hard to use | Medium | Medium | compact `SKILL.md`, references by mode/workflow | Skill docs |
+| Creator deprecation confusion | Medium | Medium | default to bundler templates, legacy compat only | Scaffold module |
+| False-positive audits frustrate power users | Medium | Medium | evidence-based severity, explicit override path, policy profiles | Audit/UX |

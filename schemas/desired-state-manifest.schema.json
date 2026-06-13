@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/desired-state-manifest.schema.json",
+  "title": "/spicetify Desired State Manifest",
+  "type": "object",
+  "required": [
+    "schema",
+    "name",
+    "config",
+    "profiles",
+    "assets",
+    "safety",
+    "verification"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "spicetify.desired-state"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "profiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assetRef"
+      },
+      "default": []
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "lockfile": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requireSnapshot",
+        "allowThirdPartyEnableByDefault"
+      ],
+      "properties": {
+        "requireSnapshot": {
+          "type": "boolean",
+          "const": true
+        },
+        "allowThirdPartyEnableByDefault": {
+          "type": "boolean",
+          "const": false
+        },
+        "policyPreset": {
+          "type": "string"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required"
+      ],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    }
+  },
+  "$defs": {
+    "assetRef": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind",
+        "trust"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "theme",
+            "extension",
+            "custom-app",
+            "snippet",
+            "marketplace-item",
+            "profile",
+            "config"
+          ]
+        },
+        "trust": {
+          "type": "string",
+          "enum": [
+            "generated",
+            "local-trusted",
+            "third-party",
+            "marketplace",
+            "built-in",
+            "unknown"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "sourceId": {
+          "type": "string"
+        },
+        "expectedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

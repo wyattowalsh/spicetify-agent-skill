@@ -1,0 +1,83 @@
+# Mode: inspect
+
+**Path:** `docs/planning/add-spicetify-skill/modes/inspect.md`
+**Purpose:** Detailed contract for `/spicetify inspect` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `inspect` behavior.
+
+## Purpose
+
+Read-only environment discovery and state inventory.
+
+## Inputs
+
+`scope`, `json?`, `includeHashes?`, optional `redactionLevel`.
+
+## Preconditions
+
+Spicetify binary may be missing; missing binary is a diagnostic, not a hard crash.
+
+## Commands/files touched
+
+Commands: `spicetify --version`, `spicetify -c`, `spicetify config`, `spicetify path`, `spicetify path userdata`, `spicetify path spotify`. Files: read config/assets only.
+
+## Safety checks
+
+Read-only; no prefs contents; redact absolute private paths when requested.
+
+## Plan output
+
+`InspectionPlan` with probes, expected parsers, no mutations, and confidence for discovered paths.
+
+## Execution flow
+
+Run probes, parse config, enumerate themes/extensions/custom apps/snippets/profiles/Marketplace hints.
+
+## Verification flow
+
+Check discovered paths exist, config parses, enabled assets map to files, and platform/package hints are recorded.
+
+## Rollback flow
+
+None; no mutation.
+
+## Idempotency notes
+
+The planner MUST diff current state before emitting mutations. Re-running an already satisfied desired state SHOULD become a no-op plus verification unless the user explicitly requests refresh/reapply.
+
+## Failure modes and recovery
+
+- SPICE_BINARY_NOT_FOUND -> report install-path issue only; no mutation.
+- CONFIG_PATH_NOT_FOUND -> suggest doctor; do not guess writable paths.
+
+
+## Data contracts
+
+Primary contracts: `request, operation-report, verification-report`. Any implementation-specific schema expansion MUST update `docs/planning/add-spicetify-skill/schemas/README.md`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify inspect my setup`
+- `/spicetify list enabled extensions and missing files`
+
+## Example structured response
+
+```json
+{
+  "mode": "inspect",
+  "risk": "read",
+  "mutations": 0,
+  "status": "ok",
+  "findings": [
+    "config parsed",
+    "current_theme=TerminalDark"
+  ]
+}
+```

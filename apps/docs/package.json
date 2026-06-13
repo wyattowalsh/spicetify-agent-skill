@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "lint": "node ./scripts/lint-docs.mjs",
+    "typecheck": "tsc --noEmit",
+    "validate:content": "node ./scripts/validate-docs-content.mjs"
+  },
+  "dependencies": {
+    "@mdx-js/react": "^3.1.0",
+    "fumadocs-core": "^15.0.0",
+    "fumadocs-mdx": "^11.0.0",
+    "fumadocs-ui": "^15.0.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.7.0"
+  }
+}

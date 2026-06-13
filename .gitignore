@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+coverage/
+.tmp-clean-venv/
+*.egg-info/
+
+# Node/docs
+node_modules/
+apps/docs/.next/
+apps/docs/.source/
+apps/docs/out/
+apps/docs/playwright-report/
+apps/docs/test-results/
+*.tsbuildinfo
+
+# OS/editor
+.DS_Store
+._*
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+.history/

@@ -1,0 +1,61 @@
+# Review checklist
+
+**Path:** `docs/planning/add-spicetify-skill/review-checklist.md`
+**Purpose:** Final cross-artifact review checklist before implementation.
+**Status:** Proposed
+**Load/use when:** Before handing the bundle to a coding agent.
+
+## OpenSpec correctness
+
+- [ ] Change ID is `add-spicetify-skill` and all paths agree.
+- [ ] Specs use `## ADDED Requirements`, `### Requirement:`, and `#### Scenario:`.
+- [ ] Specs describe behavior, not implementation details.
+- [ ] Proposal capabilities match spec domains.
+- [ ] Tasks map to requirements and validations.
+
+## Safety correctness
+
+- [ ] No arbitrary shell passthrough appears in tasks or handoff.
+- [ ] Every mutation path has dry-run, snapshot, verification, and rollback.
+- [ ] High-risk operations require explicit confirmation.
+- [ ] Network/package/permission/publishing actions are prohibited or manual-only.
+- [ ] Third-party code has provenance, audit, and acceptance gates.
+- [ ] Logs/reports redact secrets and prefs contents.
+- [ ] Non-waivable invariants are represented in specs, policy tests, and executor assertions.
+- [ ] Failure recovery paths use the catalog and produce safe reports instead of ad hoc repair.
+
+## Implementation readiness
+
+- [ ] Target repo has been grounded read-only before coding.
+- [ ] Detected package manager is preserved.
+- [ ] Fake Spicetify fixtures exist before mutating-mode tests.
+- [ ] CI cannot call real Spicetify or real Spotify paths.
+- [ ] OpenSpec validation command profile is confirmed in target repo.
+- [ ] OpenSpec telemetry expectations/opt-out are documented for sensitive contexts.
+
+## UX readiness
+
+- [ ] Novice prompts produce safe explanations and confirmations.
+- [ ] Power-user prompts produce structured JSON plans and manifests.
+- [ ] Error messages include safe next actions.
+- [ ] Destructive confirmations name exactly what will happen.
+- [ ] Rollback path is visible before apply.
+
+## Docs-site review gates
+
+- [ ] `DESIGN.md` exists and points to docs-site source-of-truth files.
+- [ ] Fumadocs site plan covers app root, route map, content source, search, AI-readable routes, validation, and deployment deferrals.
+- [ ] shadcn/ui plan prefers local components and treats external registries as third-party sources.
+- [ ] Generated docs have source paths and redaction rules.
+- [ ] Docs-site tasks do not overlap unsafe runtime mutation tasks.
+- [ ] Package-manager, deployment, analytics, hosted search, feedback storage, and external registry actions are approval-gated.
+
+## Companion docs-site review
+
+- [ ] `DESIGN.md` exists and links to docs-site planning docs.
+- [ ] `specs/docs-site`, `specs/docs-content`, and `specs/docs-ui` have behavior-level requirements and scenarios.
+- [ ] `fumadocs-site-plan.md` covers app route map, content, search, AI-readable routes, validation, safety, and rollback.
+- [ ] `docs-content-architecture.md` defines generated reference provenance and editorial rules.
+- [ ] `docs-site-design-system.md` defines shadcn/ui risk/accessibility states.
+- [ ] Docs-site tasks have write scopes, dependencies, and validation.
+- [ ] No package-manager, registry, deployment, or analytics action is implied as automatic.

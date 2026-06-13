@@ -1,0 +1,86 @@
+# Mode: devtools
+
+**Path:** `docs/planning/add-spicetify-skill/modes/devtools.md`
+**Purpose:** Detailed contract for `/spicetify devtools` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `devtools` behavior.
+
+## Purpose
+
+Enable and use debugging safely with consent and redaction.
+
+## Inputs
+
+`enable?`, `collectConsole?`, `duration`, `redactionLevel`, optional launch flags.
+
+## Preconditions
+
+User explicitly confirms debug/log/screenshot/launch-flag action.
+
+## Commands/files touched
+
+`spicetify enable-devtools`; optional config launch flags/log report; no remote debugging unless approved.
+
+## Safety checks
+
+High-risk flags confirmation; bound log size/duration; redact tokens/paths.
+
+## Plan output
+
+`DevToolsPlan` with exact flags, collection scope, redaction, rollback.
+
+## Execution flow
+
+Enable DevTools or collect logs via approved bounded method.
+
+## Verification flow
+
+Command success, launch flag state, redacted log report.
+
+## Rollback flow
+
+Restore previous launch flags/config and delete sensitive temp logs when requested.
+
+## Idempotency notes
+
+The planner MUST diff current state before emitting mutations. Re-running an already satisfied desired state SHOULD become a no-op plus verification unless the user explicitly requests refresh/reapply.
+
+## Failure modes and recovery
+
+- Remote debugging requested -> require separate confirmation and local-origin policy.
+- Logs contain secrets -> redact before report; never snapshot raw logs by default.
+
+
+## Data contracts
+
+Primary contracts: `consent-grant, redaction-policy, operation-report`. Any implementation-specific schema expansion MUST update `docs/planning/add-spicetify-skill/schemas/README.md`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify enable DevTools for extension debugging`
+
+## Example structured response
+
+```json
+{
+  "mode": "devtools",
+  "risk": "high",
+  "requiresConfirmation": true,
+  "collectLogs": false
+}
+```
+
+## Privacy reference
+
+Use `../privacy-redaction.md` for redaction, evidence collection, retention, and report-sharing boundaries.
+
+## Confirmation reference
+
+Use `../confirmation-flow.md` whenever this mode crosses snapshot, mutation, destructive, third-party-code, DevTools, network, package-manager, permission, or launch-flag approval gates.

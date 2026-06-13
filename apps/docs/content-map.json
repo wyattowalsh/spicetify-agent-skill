@@ -1,0 +1,130 @@
+{
+  "$schema": "../../schemas/docs-site-content.schema.json",
+  "sections": [
+    {
+      "slug": "start",
+      "title": "Start",
+      "pages": [
+        "index",
+        "quickstart"
+      ]
+    },
+    {
+      "slug": "concepts",
+      "title": "Concepts",
+      "pages": [
+        "concepts/safety-model"
+      ]
+    },
+    {
+      "slug": "modes",
+      "title": "Modes",
+      "pages": [
+        "modes/index"
+      ]
+    },
+    {
+      "slug": "reference",
+      "title": "Reference",
+      "pages": [
+        "reference/schemas",
+        "reference/openspec",
+        "reference/modes"
+      ]
+    },
+    {
+      "slug": "workflows",
+      "title": "Workflows",
+      "pages": [
+        "workflows/post-spotify-update-repair",
+        "workflows/audit-extension"
+      ]
+    },
+    {
+      "slug": "security",
+      "title": "Security",
+      "pages": [
+        "security/blocked-actions"
+      ]
+    },
+    {
+      "slug": "reference",
+      "title": "Reference",
+      "pages": [
+        "reference/index",
+        "reference/schemas",
+        "reference/openspec",
+        "reference/modes"
+      ]
+    },
+    {
+      "slug": "docs-site",
+      "title": "Docs Site",
+      "pages": [
+        "docs-site/implementation-boundary"
+      ]
+    }
+  ],
+  "modePages": [
+    "inspect",
+    "doctor",
+    "snapshot",
+    "restore",
+    "repair",
+    "apply",
+    "config",
+    "profile",
+    "manifest",
+    "theme",
+    "extension",
+    "custom-app",
+    "snippet",
+    "marketplace",
+    "audit",
+    "devtools",
+    "watch",
+    "migrate",
+    "update",
+    "rollback",
+    "uninstall",
+    "report"
+  ],
+  "workflowPages": [
+    "post-spotify-update-repair",
+    "audit-extension"
+  ],
+  "schemaPages": [
+    "asset-manifest",
+    "audit-report",
+    "command-invocation",
+    "command-registry",
+    "confirmation",
+    "consent-grant",
+    "desired-state-manifest",
+    "docs-page",
+    "docs-site-config",
+    "docs-site-content",
+    "docs-site-manifest",
+    "error",
+    "failure-recovery",
+    "fixture-manifest",
+    "invariant",
+    "operation-plan",
+    "operation-report",
+    "operation-run",
+    "policy-decision",
+    "policy",
+    "profile",
+    "provenance-lock",
+    "redaction-policy",
+    "request",
+    "snapshot-manifest",
+    "subagent-result",
+    "subagent-task-graph",
+    "verification-report"
+  ],
+  "redaction": {
+    "syntheticExamplesOnly": true,
+    "noPrefsContent": true
+  }
+}
