@@ -6,6 +6,20 @@ The executable is intentionally named `spicetify-agent` so it does not shadow th
 
 ## Install and run
 
+Install the portable Agent Skill into supported harnesses from this checkout:
+
+```bash
+npx skills add /Users/ww/dev/projects/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+```
+
+Install from the public repository after release:
+
+```bash
+npx skills add github:wyattowalsh/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+```
+
+The installed skill is self-contained under `skills/spicetify/`. It does not bundle the official Spicetify CLI. Users must install upstream Spicetify separately, and agents must not run installer scripts or package-manager commands without explicit approval.
+
 From this checkout:
 
 ```bash

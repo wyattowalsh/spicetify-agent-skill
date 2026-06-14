@@ -30,6 +30,9 @@ SKIP_PARTS = {
 ROOT_REQUIRED = [
     "README.md",
     "manifest.md",
+    "agent-bundle.json",
+    ".codex-plugin/plugin.json",
+    ".claude-plugin/plugin.json",
     "AGENTS.md",
     "DESIGN.md",
     "openspec/config.yaml",
@@ -170,6 +173,14 @@ REQUIRED_WORKFLOWS = {
     "fumadocs-site",
     "docs-site",
     "subagent-swarm",
+}
+REQUIRED_SKILL_REFERENCES = {
+    "references/runtime.md",
+    "references/mode-router.md",
+    "references/safety-policy.md",
+    "references/troubleshooting.md",
+    "references/spicetify-facts.md",
+    "references/examples.md",
 }
 TASK_RE = re.compile(r"TASK-[0-9]{3}-[a-z0-9]+(?:-[a-z0-9]+)*")
 
@@ -320,8 +331,62 @@ def main() -> int:
         s = read(skill)
         if "/spicetify" not in s:
             errors.append("skill docs must mention /spicetify")
+        if "name: spicetify" not in s or "description:" not in s:
+            errors.append("skill frontmatter must include name and description")
         if len(s) > 9000:
             warnings.append("SKILL.md is large; keep skill top-level compact")
+        for ref in sorted(REQUIRED_SKILL_REFERENCES):
+            if ref not in s:
+                errors.append(f"SKILL.md missing installed-payload reference {ref}")
+            if not (skill.parent / ref).exists():
+                errors.append(f"missing installed-payload reference skills/spicetify/{ref}")
+        if any(escaped in s for escaped in ["../", "../../"]):
+            errors.append("SKILL.md references paths outside the installed skill payload")
+        if "spicetify-agent" not in s:
+            errors.append("skill docs must name spicetify-agent as the helper command")
+        if "official Spicetify CLI" not in s:
+            errors.append("skill docs must state that the official Spicetify CLI is external")
+
+    skill_dir = root / "skills/spicetify"
+    if skill_dir.exists():
+        for path in sorted(skill_dir.rglob("*")):
+            if not path.is_file():
+                continue
+            rel = path.relative_to(root)
+            text = read(path)
+            if "../" in text:
+                errors.append(f"{rel} contains a path escaping the installed skill payload")
+            if "/Users/" in text or "\\Users\\" in text:
+                errors.append(f"{rel} contains a private local user path")
+            if re.search(r"(?im)^\s*(curl|bash|sh|sudo|chmod|npm|pnpm|brew|apt|winget)\b", text):
+                errors.append(f"{rel} includes an executable installer/package-manager line")
+        bundled_upstream = [
+            path.relative_to(root).as_posix()
+            for path in skill_dir.rglob("*")
+            if path.is_file() and path.name == "spicetify"
+        ]
+        if bundled_upstream:
+            errors.append(
+                "skill payload must not bundle official spicetify CLI: "
+                + ", ".join(bundled_upstream)
+            )
+
+    bundle_manifest = root / "agent-bundle.json"
+    if bundle_manifest.exists():
+        bundle = json.loads(read(bundle_manifest))
+        if bundle.get("components", {}).get("skills") != "./skills/":
+            errors.append("agent-bundle.json must point components.skills to ./skills/")
+        install = bundle.get("adapters", {}).get("agent-skills-cli", {}).get("install", "")
+        if "--skill spicetify" not in install or "npx skills add" not in install:
+            errors.append("agent-bundle.json must document npx skills add --skill spicetify")
+    for rel in [".codex-plugin/plugin.json", ".claude-plugin/plugin.json"]:
+        plugin_path = root / rel
+        if plugin_path.exists():
+            plugin = json.loads(read(plugin_path))
+            if plugin.get("skills") != "./skills/":
+                errors.append(f"{rel} must point skills to ./skills/")
+            if "mcpServers" in plugin:
+                errors.append(f"{rel} must not add MCP authority for the single-skill package")
     plans_path = planning / "PLANS.md"
     if plans_path.exists() and "TBD" in read(plans_path):
         errors.append("PLANS.md contains TBD placeholders; keep resumable state explicit")

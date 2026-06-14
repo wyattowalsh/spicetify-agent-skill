@@ -1,0 +1,33 @@
+{
+  "name": "spicetify-agent-skill",
+  "description": "Portable /spicetify skill for safe local Spicetify planning, audit, repair, apply, rollback, and reporting workflows.",
+  "homepage": "https://github.com/wyattowalsh/spicetify-agent-skill",
+  "repository": "https://github.com/wyattowalsh/spicetify-agent-skill",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "codex",
+    "spicetify",
+    "spotify",
+    "dry-run"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Spicetify Agent Skill",
+    "shortDescription": "Safe /spicetify workflows for local Spicetify customization.",
+    "longDescription": "A portable Agent Skill for dry-run-first Spicetify inspection, repair, customization, audit, rollback, and reporting. It does not bundle or replace the official Spicetify CLI.",
+    "developerName": "spicetify-agent-skill maintainers",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Skills"
+    ],
+    "websiteURL": "https://github.com/wyattowalsh/spicetify-agent-skill",
+    "privacyPolicyURL": "https://github.com/wyattowalsh/spicetify-agent-skill/blob/main/LICENSE",
+    "termsOfServiceURL": "https://github.com/wyattowalsh/spicetify-agent-skill/blob/main/LICENSE",
+    "defaultPrompt": [
+      "/spicetify inspect my local setup safely.",
+      "/spicetify plan a repair after Spotify updated."
+    ],
+    "brandColor": "#1DB954"
+  }
+}

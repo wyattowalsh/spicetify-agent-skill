@@ -82,7 +82,11 @@ def test_runner_blocks_real_spicetify_without_opt_in() -> None:
 def test_runner_uses_fake_binary_and_records_argv(tmp_path: Path) -> None:
     fake_bin = write_fake_spicetify_script(tmp_path / "fake_spicetify.py")
     log_path = tmp_path / "argv.jsonl"
-    env = {**os.environ, "FAKE_SPICETIFY_LOG": str(log_path)}
+    env = {
+        **os.environ,
+        "FAKE_SPICETIFY_LOG": str(log_path),
+        "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+    }
     old_env = os.environ.copy()
     try:
         os.environ.clear()
@@ -97,6 +101,47 @@ def test_runner_uses_fake_binary_and_records_argv(tmp_path: Path) -> None:
     assert read_jsonl(log_path)[0]["argv"] == ["--version"]
 
 
+def test_runner_uses_approved_cwd_and_sanitized_redacted_output(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "fake_spicetify_leak.py"
+    fake_bin.write_text(
+        """\
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import os
+
+print("cwd=" + os.getcwd())
+print("forwarded=" + os.environ.get("SPOTIFY_TOKEN", "missing"))
+print("Authorization: Bearer should-not-leak")
+print("token=should-not-leak")
+""",
+        encoding="utf-8",
+    )
+    fake_bin.chmod(fake_bin.stat().st_mode | 0o100)
+    env = {
+        **os.environ,
+        "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+        "SPOTIFY_TOKEN": "should-not-leak",
+    }
+    old_env = os.environ.copy()
+    try:
+        os.environ.clear()
+        os.environ.update(env)
+        result = SpicetifyRunner(fake_binary=str(fake_bin), cwd=tmp_path).run(
+            build_command("version")
+        )
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
+
+    assert result.returncode == 0
+    assert f"cwd={tmp_path}" in result.stdout
+    assert "forwarded=missing" in result.stdout
+    assert "should-not-leak" not in result.stdout
+    assert "Authorization: Bearer [REDACTED]" in result.stdout
+    assert "token=[REDACTED]" in result.stdout
+
+
 def test_runner_revalidates_allowlisted_argv_before_execution(tmp_path: Path) -> None:
     fake_bin = write_fake_spicetify_script(tmp_path / "fake_spicetify.py")
     tampered = build_command("apply")
@@ -109,6 +154,13 @@ def test_runner_revalidates_allowlisted_argv_before_execution(tmp_path: Path) ->
 def test_runner_rejects_arbitrary_fake_binary_path() -> None:
     with pytest.raises(PolicyBlocked):
         SpicetifyRunner(fake_binary=sys.executable).run(build_command("version"))
+
+
+def test_runner_rejects_fake_binary_without_fixture_opt_in(tmp_path: Path) -> None:
+    fake_bin = write_fake_spicetify_script(tmp_path / "fake_spicetify.py")
+
+    with pytest.raises(PolicyBlocked, match="only allowed for test fixtures"):
+        SpicetifyRunner(fake_binary=str(fake_bin)).run(build_command("version"))
 
 
 def test_cli_help_and_plan_work_with_pythonpath() -> None:
@@ -256,7 +308,12 @@ def test_execute_plan_snapshots_and_runs_fake_commands(tmp_path: Path) -> None:
     plan = plan_mode("repair", prompt="/spicetify repair")
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src", "FAKE_SPICETIFY_LOG": str(log_path)}
+    env = {
+        **os.environ,
+        "PYTHONPATH": "src",
+        "FAKE_SPICETIFY_LOG": str(log_path),
+        "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+    }
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [

@@ -94,6 +94,10 @@ only until executable steps exist.
   outside the repo checkout. Root schemas remain authoritative for repo work,
   and synchronized package data under `src/spicetify_agent/schema_data/` now
   supports installed `pip`/`uvx` runs.
+- Follow-up review found the public `--fake-bin` option was too easy to confuse
+  with a general executable override. Fake Spicetify execution now requires
+  `SPICETIFY_AGENT_ALLOW_FAKE_BIN=1` in addition to the explicit fixture path
+  shape, keeping fake binaries test-only by default.
 
 ## Decision log
 
@@ -145,6 +149,7 @@ only until executable steps exist.
 |---|---|---|
 | Arbitrary shell path accidentally introduced | Critical | Central runner tests assert `shell:false`, no `exec`, no string command concatenation. |
 | Serialized operation plan is tampered after confirmation | Critical | `execute-plan` revalidates registry commands, recomputes canonical policy and plan hash, and requires confirmation against executable contents. |
+| Fake binary option becomes arbitrary executable escape hatch | High | Fake execution requires `SPICETIFY_AGENT_ALLOW_FAKE_BIN=1` and an explicit `fake_spicetify*` fixture path; real Spicetify remains blocked without local opt-in. |
 | Incomplete mutating workflow reports false success | Critical | `execute-plan` rejects mutating plans without executable steps, except explicit snapshot-only runs. |
 | Real Spotify mutated in tests | Critical | Fake binary and temp roots required; live paths forbidden by CI guard. |
 | Third-party JS enabled after weak audit | High | Audit verdict + provenance lock + explicit acceptance bound to hashes. |
@@ -249,5 +254,36 @@ Use this section when Codex subagents or worktrees are used.
 | docs-steward review | docs/API/skill/file-structure review | review only | attempted, interrupted after timeout | direct docs validators passed | `/docs-steward` was available as a skill source in `/Users/ww/dev/projects/agents`, but the review subagent did not return an envelope in time. |
 | final closure audit | final planning/docs/artifact audit | intended read-only; touched `PLANS.md`, `context-map.md`, and `validation.md` | needs-review; edits reviewed and accepted by orchestrator | bundle validator, OpenSpec structure validator, docs content validator, artifact scan, and approved npx OpenSpec checks passed | Subagent violated its read-only assignment, but edits stayed within user-approved planning write scope and corrected stale validation/tooling status. |
 | final honest-review | commit-blocking safety/docs review | read-only | blockers fixed by orchestrator | focused tests passed, full suite passed, docs typecheck/build passed | Fixed config path traversal acceptance, TypeScript build-info manifest drift, stale generated manifest validation, and cache cleanup before commit. |
+| T1 skill packaging | self-contained `npx skills add --skill spicetify` payload | `skills/spicetify/**`, `README.md`, `agent-bundle.json`, plugin metadata | completed by orchestrator after subagent timeout | focused packaging/regression/runtime tests passed before manifest regeneration; full validation pending | Removed repo-escaping skill references, added runtime/troubleshooting references, documented external official Spicetify CLI, and added single-skill distribution metadata. |
+| T2 runtime safety | subprocess boundary hardening | `src/spicetify_agent/runner.py`, CLI/tests | completed by orchestrator after subagent timeout | focused runtime tests passed before manifest regeneration; full validation pending | Preserved fake-binary opt-in and added runner cwd, sanitized env, timeout, and redacted captured output. |
+| T3 cleanup | gitignore and ignored artifacts | `.gitignore`, ignored caches/build outputs | completed by subagent with orchestrator review | ignored artifact scan showed targeted cache/build dirs removed | Added narrow env/log/coverage ignores and cleaned `dist`, tool caches, docs `.next`, and Python `__pycache__` while preserving dependency dirs. |
+| T4 validation/evals | installability validator and regression prompts | `tools/validate_bundle.py`, `evals/regression-prompts.json`, tests, generated manifest | completed | `python3 tools/validate_bundle.py --root . --write-manifest` and final `python3 tools/validate_bundle.py --root .` passed with 253 files, 23 specs, 28 schemas, 40 evals | Added skill self-containment validation, bundle/plugin metadata checks, and installed-skill regression prompts. |
+| T5 final review panel | docs/spec trace, runtime honest review, simplify review | read-only | timed out; completed by orchestrator local review | direct diff review plus full validation passed; no critical/high blockers found | Review subagents were interrupted after timeout with no envelopes. Orchestrator performed local review of skill payload, distribution metadata, runner boundary, validator, and tests. |
 
 Subagent results MUST be consolidated by the orchestrator before broad design/API changes are accepted. Record conflicts, write-scope overlap, validation failures, and stop conditions here.
+
+## 2026-06-13 installable skill finish
+
+- Completed self-contained `skills/spicetify/` payload for single-skill `npx skills add ... --skill spicetify` install.
+- Added `agent-bundle.json`, `.codex-plugin/plugin.json`, and `.claude-plugin/plugin.json` with metadata-only skill distribution surfaces.
+- Preserved `spicetify-agent` as the helper command and kept the official `spicetify` CLI external.
+- Hardened runner execution with fake-fixture opt-in, approved cwd, sanitized env, timeout, and redacted captured output.
+- Added installability validation and regression prompts for missing CLIs, README prompt injection, third-party exfiltration, and dry-run repair.
+- Cleaned ignored build/cache artifacts after validation while leaving dependency directories intact.
+
+Validation evidence from this finish:
+
+| Command | Status | Notes |
+|---|---|---|
+| `PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest` | passed | 76 tests passed. |
+| `uv run --frozen ruff format --check . && uv run --frozen ruff check . && uv run --frozen mypy src` | passed | 37 files formatted, lint clean, mypy clean over 18 source files. |
+| `python3 tools/validate_bundle.py --root .` | passed | 253 files, 23 specs, 28 schemas, 40 evals, no warnings. |
+| `python3 tools/validate_openspec_structure.py --root .` | passed | 23 configured domains, 23 spec domains, 38 task IDs. |
+| `python3 -m json.tool evals/regression-prompts.json >/dev/null` | passed | JSON parsed. |
+| `schemas/*.json` parse loop | passed | Printed `schemas ok`. |
+| `uv build --no-index && uvx --from . spicetify-agent --help` | passed | Built sdist/wheel and ran local package command. |
+| `pnpm --filter docs lint && pnpm --filter docs typecheck && pnpm --filter docs validate:content && pnpm --filter docs build` | passed | Docs lint, typecheck, content validation, and Next.js build passed. |
+| `openspec validate add-spicetify-skill --strict && openspec validate --all --strict` | not available | Direct `openspec` binary was not installed. |
+| `npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict && npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict` | passed | Change valid; 1 passed, 0 failed. |
+| `npx skills add . --skill spicetify --list` | passed | Found exactly 1 skill: `spicetify`. |
+| temp-HOME `npx skills add . --skill spicetify -y -g -a codex` | passed | Installed 1 copied skill into the temp HOME and cleaned the temp dirs. |

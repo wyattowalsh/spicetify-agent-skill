@@ -15,7 +15,7 @@ from .errors import PolicyBlocked, SpicetifyAgentError
 from .modes import ALL_MODES, MUTATING_MODES, plan_mode
 from .policy import PolicyDecision, evaluate_plan, require_confirmation
 from .reports import json_report, markdown_report
-from .runner import SpicetifyRunner
+from .runner import FAKE_BINARY_ENV, SpicetifyRunner
 from .schemas import parse_all_schemas
 from .state import snapshot_tree
 from .util import stable_hash
@@ -50,7 +50,10 @@ def build_parser() -> argparse.ArgumentParser:
     apply.add_argument(
         "--allow-real", action="store_true", help="Allow real local Spicetify execution."
     )
-    apply.add_argument("--fake-bin", help="Path to fake Spicetify binary for tests.")
+    apply.add_argument(
+        "--fake-bin",
+        help="Path to fake Spicetify binary for tests; requires test-fixture opt-in env.",
+    )
     apply.add_argument("--userdata-root", type=Path, help="Spicetify userdata root to snapshot.")
     apply.add_argument("--state-root", type=Path, help="spicetify-agent state/snapshot root.")
 
@@ -147,7 +150,7 @@ def _execute_plan(args: argparse.Namespace) -> dict[str, object]:
         "status": "verified" if verification["ok"] else "failed",
         "mode": plan.get("mode"),
         "planHash": plan.get("planHash"),
-        "fake": bool(args.fake_bin or os.environ.get("SPICETIFY_AGENT_FAKE_BIN")),
+        "fake": bool(args.fake_bin or os.environ.get(FAKE_BINARY_ENV)),
         "snapshot": snapshot_manifest,
         "results": results,
         "verification": verification,

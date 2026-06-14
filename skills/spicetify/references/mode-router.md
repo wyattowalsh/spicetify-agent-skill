@@ -1,31 +1,29 @@
-# Mode router reference
+# Mode Router
 
-**Path:** `skills/spicetify/references/mode-router.md`
-**Purpose:** Compact routing table for the /spicetify skill.
-**Status:** Draft
-**Load/use when:** Use inside the skill when mapping prompts to modes.
-
+Use this table to map user intent to `/spicetify` modes.
 
 | User intent | Mode |
 |---|---|
-| What is installed? What paths/config/assets exist? | `inspect` |
-| What is broken? Why is Marketplace gone? | `doctor` |
-| Save current state | `snapshot` |
-| Restore named state | `restore` |
-| Spotify update broke Spicetify | `repair` |
-| Execute approved plan | `apply` |
-| Change config key/list | `config` |
-| Switch minimal/dev/visualizer setup | `profile` |
-| Create/install/switch theme | `theme` |
-| Scaffold/audit/enable extension | `extension` |
-| Scaffold/audit/enable custom app | `custom-app` |
-| Add/manage CSS tweak | `snippet` |
-| Inspect/audit Marketplace assets | `marketplace` |
-| Review third-party code | `audit` |
-| Enable/collect debug logs | `devtools` |
-| Hot reload local dev changes | `watch` |
-| Export/migrate setup | `migrate` |
-| Hot reload / CLI upgrade plan / post-update | `update` |
+| What is installed? What paths, config, assets, and snapshots exist? | `inspect` |
+| What is broken? Why did Marketplace, CSS, extensions, or themes stop working? | `doctor` |
+| Save current state before changes | `snapshot` |
+| Restore a named snapshot or backup | `restore` |
+| Spotify updated and Spicetify broke | `repair` |
+| Execute a previously approved dry-run plan | `apply` |
+| Change a config key or list | `config` |
+| Switch minimal, visual, or development setup | `profile` |
+| Create, install, switch, or remove a theme | `theme` |
+| Scaffold, audit, enable, or disable an extension | `extension` |
+| Scaffold, audit, enable, or disable a custom app | `custom-app` |
+| Add or manage a CSS snippet | `snippet` |
+| Inspect or audit Marketplace assets | `marketplace` |
+| Review third-party JavaScript, CSS, manifest, or README content | `audit` |
+| Collect debug logs, DevTools evidence, or screenshots | `devtools` |
+| Hot reload local development changes | `watch` |
+| Export or migrate a setup | `migrate` |
+| Plan CLI upgrades or post-update repair | `update` |
 | Return to last-known-good | `rollback` |
-| Remove assets/customizations | `uninstall` |
-| Share diagnostics | `report` |
+| Remove assets or customizations | `uninstall` |
+| Share diagnostics or operation evidence | `report` |
+
+Mode combinations are allowed, but mutation still requires one plan hash, one snapshot policy, and one explicit confirmation flow.

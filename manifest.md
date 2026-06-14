@@ -14,6 +14,7 @@
 | Change intent/design/tasks | `proposal.md`, `design.md`, `tasks.md` | Scope, architecture, implementation graph. |
 | Human planning | `docs/planning/add-spicetify-skill/*.md` | Research, audit, tradeoffs, validation, examples, handoff. |
 | Skill package | `skills/spicetify/` | Compact skill router and references. |
+| Skill distribution | `agent-bundle.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json` | Single-skill source metadata for `npx skills add ... --skill spicetify` and metadata-only plugin discovery. |
 | Contracts | `schemas/*.schema.json` | Request/plan/run/report/audit/snapshot/profile/policy/manifest/privacy/consent/recovery/invariant schemas. |
 | Regression | `evals/regression-prompts.json` | Behavior prompts for future plan and implementation audits. |
 
@@ -54,7 +55,7 @@
 | Spicetify fact review | `source-refresh.md`, `platform-matrix.md`, `research.md` |
 | Implementation | `AGENTS.md`, `proposal.md`, `design.md`, `tasks.md`, `traceability.md`, `codex-handoff.md` |
 | Docs site | `DESIGN.md`, `fumadocs-site-plan.md`, `docs-site.md`, `docs-content-architecture.md`, `docs-site-design-system.md`, `docs-site-implementation-plan.md`, `workflows/fumadocs-site.md`, `specs/docs-site`, `specs/docs-content`, `specs/docs-ui` |
-| Skill packaging | `skills/spicetify/SKILL.md`, `skills/spicetify/references/*.md` |
+| Skill packaging | `skills/spicetify/SKILL.md`, `skills/spicetify/references/*.md`, `agent-bundle.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json` |
 | Test design | `validation.md`, `acceptance-matrix.md`, `specs/testing/spec.md`, `evals/regression-prompts.json` |
 
 ## Status

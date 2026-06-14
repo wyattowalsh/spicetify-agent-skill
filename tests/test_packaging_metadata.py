@@ -36,6 +36,31 @@ def test_packaged_schema_data_matches_root_schemas() -> None:
         ).read_text(encoding="utf-8")
 
 
+def test_installable_skill_payload_is_self_contained() -> None:
+    skill_dir = Path("skills/spicetify")
+    skill = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+    required_refs = {
+        "references/runtime.md",
+        "references/mode-router.md",
+        "references/safety-policy.md",
+        "references/troubleshooting.md",
+        "references/spicetify-facts.md",
+        "references/examples.md",
+    }
+
+    assert "name: spicetify" in skill
+    assert "description:" in skill
+    assert "spicetify-agent" in skill
+    assert "official Spicetify CLI" in skill
+    for ref in required_refs:
+        assert ref in skill
+        assert (skill_dir / ref).exists()
+    for path in skill_dir.rglob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        assert "../" not in text
+        assert "/Users/" not in text
+
+
 def test_validate_schemas_works_outside_repo_root(tmp_path: Path) -> None:
     env = {
         **os.environ,
