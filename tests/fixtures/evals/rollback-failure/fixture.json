@@ -1,0 +1,44 @@
+{
+  "fixtureId": "rollback-failure",
+  "platform": "linux",
+  "scenario": "A mutating apply fails verification and the fake rollback command also fails, requiring a clear recovery report.",
+  "expectedFindings": [
+    "snapshot required before apply",
+    "verification failure preserves last-known-good",
+    "rollback failure reported"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "backup"
+      ],
+      "exitCode": 0,
+      "stdout": "fake backup complete\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "apply"
+      ],
+      "exitCode": 13,
+      "stderr": "fake apply failed after partial write\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "restore"
+      ],
+      "exitCode": 29,
+      "stderr": "fake restore failed: snapshot hash mismatch\n",
+      "mutates": true
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "file",
+      "path": "state/snapshots/pre-apply/manifest.json",
+      "content": "{\"status\":\"synthetic\",\"hash\":\"pre-apply-hash\"}"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

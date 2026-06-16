@@ -44,6 +44,12 @@
 **Outputs:** docs, examples, reports, regression prompts.
 **Exit criteria:** OpenSpec, unit, integration, schema, and eval checks pass.
 
+### M7 — Rigorous eval stack and evolve mode
+
+**Goal:** Turn evals into an improvement loop for `/spicetify`.
+**Outputs:** eval-case/suite/result/trace contracts, fake-only local runner, deterministic graders, mode-complete eval suites, and `/spicetify evolve` reports.
+**Exit criteria:** every mode has structured happy-path, blocked-path, trigger, recovery/report, and hard-safety evals; `evolve` produces ranked eval-first improvement plans without self-applying or weakening safety.
+
 ## Sequencing rationale
 
 Start with contracts and fake environments because real Spotify mutation is high risk. Add mutating modes only after snapshots, config parsing, command allowlists, and verification infrastructure exist.

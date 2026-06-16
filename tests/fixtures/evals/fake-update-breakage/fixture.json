@@ -1,0 +1,41 @@
+{
+  "fixtureId": "fake-update-breakage",
+  "platform": "darwin",
+  "scenario": "Spotify updated and the fake Spicetify patch state needs a checkpointed backup plus apply repair.",
+  "expectedFindings": [
+    "Spotify update broke applied patch state",
+    "backup before apply",
+    "dry-run-first repair"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "backup"
+      ],
+      "exitCode": 0,
+      "stdout": "fake backup complete\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "apply"
+      ],
+      "exitCode": 0,
+      "stdout": "fake apply complete\n",
+      "mutates": true
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "file",
+      "path": "home/.config/spicetify/config-xpui.ini",
+      "content": "[Setting]\ncurrent_theme = Default\ninject_css = 1\nreplace_colors = 1\n"
+    },
+    {
+      "kind": "file",
+      "path": "home/.config/spicetify/state/update-breakage.txt",
+      "content": "spotify-updated=true\npatch-state=stale\n"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

@@ -41,6 +41,7 @@ ROOT_REQUIRED = [
     f"openspec/changes/{CHANGE}/tasks.md",
     "skills/spicetify/SKILL.md",
     "evals/regression-prompts.json",
+    "evals/spicetify-eval-suite.json",
 ]
 PLANNING_REQUIRED = [
     "README.md",
@@ -133,6 +134,11 @@ REQUIRED_SCHEMAS = {
     "docs-page.schema.json",
     "subagent-task-graph.schema.json",
     "subagent-result.schema.json",
+    "eval-case.schema.json",
+    "eval-suite.schema.json",
+    "eval-result.schema.json",
+    "eval-trace.schema.json",
+    "evolution-report.schema.json",
 }
 REQUIRED_MODES = {
     "inspect",
@@ -158,6 +164,7 @@ REQUIRED_MODES = {
     "uninstall",
     "report",
 }
+REQUIRED_EVAL_MODES = REQUIRED_MODES | {"evolve"}
 REQUIRED_WORKFLOWS = {
     "command-abstraction",
     "dry-run-planner",
@@ -181,6 +188,7 @@ REQUIRED_SKILL_REFERENCES = {
     "references/troubleshooting.md",
     "references/spicetify-facts.md",
     "references/examples.md",
+    "references/evals.md",
 }
 TASK_RE = re.compile(r"TASK-[0-9]{3}-[a-z0-9]+(?:-[a-z0-9]+)*")
 
@@ -214,7 +222,7 @@ def generated_manifest(root: pathlib.Path, files: list[pathlib.Path]) -> dict[st
         entries.append({"path": rel, "bytes": path.stat().st_size, "sha256": sha256(path)})
     return {
         "root": ".",
-        "file_count": len(files),
+        "file_count": len(entries),
         "flat": False,
         "self_hash_note": "manifest.generated.json omits its own hash to avoid self-reference",
         "files": entries,
@@ -295,6 +303,80 @@ def main() -> int:
                 "manifest.generated.json is stale; run "
                 "`python3 tools/validate_bundle.py --root . --write-manifest`"
             )
+
+    eval_suite_path = root / "evals/spicetify-eval-suite.json"
+    if eval_suite_path.exists():
+        eval_suite = json.loads(read(eval_suite_path))
+        cases = eval_suite.get("cases")
+        mode_coverage = eval_suite.get("modeCoverage")
+        if not isinstance(cases, list):
+            errors.append("evals/spicetify-eval-suite.json cases must be an array")
+            cases = []
+        if not isinstance(mode_coverage, list):
+            errors.append("evals/spicetify-eval-suite.json modeCoverage must be an array")
+            mode_coverage = []
+        covered_modes = {str(mode) for mode in mode_coverage}
+        case_modes = {
+            str(case.get("mode"))
+            for case in cases
+            if isinstance(case, dict) and isinstance(case.get("mode"), str)
+        }
+        missing_eval_modes = sorted(REQUIRED_EVAL_MODES - (covered_modes & case_modes))
+        if missing_eval_modes:
+            errors.append("eval suite missing modes: " + ", ".join(missing_eval_modes))
+        if "evolve" not in case_modes:
+            errors.append("eval suite must include an evolve mode case")
+        ids = [
+            str(case.get("id"))
+            for case in cases
+            if isinstance(case, dict) and isinstance(case.get("id"), str)
+        ]
+        duplicate_ids = sorted({case_id for case_id in ids if ids.count(case_id) > 1})
+        if duplicate_ids:
+            errors.append("eval suite duplicate case ids: " + ", ".join(duplicate_ids))
+        fixture_dir = root / "tests/fixtures/evals"
+        fixture_ids = (
+            {p.parent.name for p in fixture_dir.glob("*/fixture.json")}
+            if fixture_dir.exists()
+            else set()
+        )
+        referenced_fixtures = {
+            str(case.get("fixture"))
+            for case in cases
+            if isinstance(case, dict) and isinstance(case.get("fixture"), str)
+        }
+        missing_fixtures = sorted(referenced_fixtures - fixture_ids)
+        unused_fixtures = sorted(fixture_ids - referenced_fixtures)
+        if missing_fixtures:
+            errors.append("eval suite references missing fixtures: " + ", ".join(missing_fixtures))
+        if unused_fixtures:
+            errors.append("eval fixtures unused by suite: " + ", ".join(unused_fixtures))
+        for case in cases:
+            if not isinstance(case, dict):
+                continue
+            case_id = str(case.get("id", "<unknown>"))
+            activation = case.get("activation")
+            if not isinstance(activation, dict) or activation.get("kind") not in {
+                "direct-mode",
+                "route-mode",
+                "negative-trigger",
+            }:
+                errors.append(f"eval case {case_id} missing activation.kind")
+            trace_oracle = case.get("traceOracle")
+            if not isinstance(trace_oracle, dict) or trace_oracle.get("match") not in {
+                "exact",
+                "contains-in-order",
+                "unordered-subset",
+                "forbidden",
+            }:
+                errors.append(f"eval case {case_id} missing structured traceOracle")
+            expected = case.get("expected") if isinstance(case.get("expected"), dict) else {}
+            if (
+                isinstance(expected, dict)
+                and "fake-execute" in expected.get("trace", [])
+                and expected.get("executeFake") is not True
+            ):
+                errors.append(f"eval case {case_id} has fake-execute without executeFake")
 
     modes_dir = planning / "modes"
     modes = {p.stem for p in modes_dir.glob("*.md")} if modes_dir.exists() else set()

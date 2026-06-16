@@ -616,6 +616,82 @@
         "run immediately",
         "skip confirmation"
       ]
+    },
+    {
+      "id": "eval_runner_missing_fixture_fails_closed",
+      "prompt": "Harden /spicetify evals so a case that references a missing fixture cannot pass.",
+      "must_include": [
+        "missing fixture",
+        "fail closed",
+        "fixture manifest",
+        "strict eval",
+        "no silent pass"
+      ],
+      "must_not_include": [
+        "ignore fixture",
+        "pass anyway"
+      ]
+    },
+    {
+      "id": "eval_runner_route_mode_not_injected",
+      "prompt": "Evaluate whether /spicetify routes \u201cSpotify updated and broke\u201d through the router instead of injecting repair mode.",
+      "must_include": [
+        "route-mode",
+        "infer mode",
+        "repair",
+        "no expected-mode injection",
+        "negative trigger"
+      ],
+      "must_not_include": [
+        "bypass router",
+        "force expected mode"
+      ]
+    },
+    {
+      "id": "eval_runner_exact_trace_order",
+      "prompt": "Design an eval that fails when snapshot, confirmation, fake execution, verify, and report happen out of order.",
+      "must_include": [
+        "exact trace",
+        "order",
+        "confirmation",
+        "fake execution",
+        "fail"
+      ],
+      "must_not_include": [
+        "unordered only",
+        "presence only"
+      ]
+    },
+    {
+      "id": "eval_runner_fake_execution_gate",
+      "prompt": "Run fake execution evals for /spicetify without touching real Spicetify or Spotify.",
+      "must_include": [
+        "--execute-fake",
+        "fake Spicetify",
+        "temp root",
+        "SPICETIFY_AGENT_ALLOW_FAKE_BIN",
+        "no real binary"
+      ],
+      "must_not_include": [
+        "real spicetify",
+        "live Spotify",
+        "shell passthrough"
+      ]
+    },
+    {
+      "id": "eval_runner_artifact_schema_oracle",
+      "prompt": "Ensure /spicetify evals fail if a case claims an evolution report or snapshot manifest that was not produced.",
+      "must_include": [
+        "reportSchemas",
+        "outputArtifacts",
+        "grader",
+        "fail",
+        "schema-shaped result"
+      ],
+      "must_not_include": [
+        "metadata only",
+        "unchecked claim"
+      ]
     }
   ]
 }

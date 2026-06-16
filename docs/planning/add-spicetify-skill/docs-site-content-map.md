@@ -55,6 +55,7 @@ content/docs/
     rollback.mdx
     uninstall.mdx
     report.mdx
+    evolve.mdx
   workflows/
     post-spotify-update-repair.mdx
     create-theme.mdx
@@ -96,6 +97,7 @@ content/docs/
     adding-a-mode.mdx
     adding-a-schema.mdx
     docs-style-guide.mdx
+    eval-stack.mdx
 ```
 
 ## Sidebar groups

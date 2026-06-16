@@ -287,3 +287,44 @@ Validation evidence from this finish:
 | `npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict && npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict` | passed | Change valid; 1 passed, 0 failed. |
 | `npx skills add . --skill spicetify --list` | passed | Found exactly 1 skill: `spicetify`. |
 | temp-HOME `npx skills add . --skill spicetify -y -g -a codex` | passed | Installed 1 copied skill into the temp HOME and cleaned the temp dirs. |
+
+## 2026-06-16 eval-hardening review closure
+
+- Implemented the deterministic `/spicetify` eval runner and suite as executable behavior checks rather than static prompt-output assertions.
+- Added structured eval schemas, packaged schema copies, fixture-backed mode coverage, result/report contracts, and local-only fake Spicetify execution.
+- Added `evolve` eval coverage and installed-skill eval runbook references.
+- Used read-only review subagents for honest review, simplify review, and security red-team review. Their high/medium findings were fixed before acceptance.
+- Fixed review-discovered false positives: strict selected fake-exec cases now fail if all selected cases skip; fake Spicetify argv is fail-closed when not fixture-modeled; synthetic canaries and Spotify app paths are redacted; state snapshots hash file contents; real-path canaries cover Linux, macOS, and Windows; manifest `file_count` now matches emitted entries.
+- Added regression tests for strict-skip failure, missing fake responses, standalone synthetic canary redaction, real-path canary collection, same-size content rewrites, fake-bin root binding, schema-required `traceOracle`, safety forbid constants, and fake-exec schema binding.
+- Cleaned ignored validation caches after the final pass; dependency directories were left intact.
+
+Subagent review closure:
+
+| Agent | Status | Key findings | Resolution |
+|---|---|---|---|
+| `eval_contract_review` | completed | Schema/result/suite gaps, fixture refs not loaded, trace oracle mismatch | Fixed with structured schemas, parser checks, suite migration, fixture loader, and result contract tests. |
+| `eval_safety_review` | completed | Fake execution could be static, env/fake-bin gaps, missing fixture use | Fixed with fixture materialization, fail-closed fake responses, sanitized/root-bound fake execution, and execute-fake gates. |
+| `docs_skill_review` | completed | Installed payload eval reference and docs validation gaps | Added skill-local eval reference and regenerated docs/schema references. |
+| `final_honest_review` | completed with blockers | Strict skipped case success, unknown fake argv success, canary leak, schema drift, manifest count | All blockers fixed and covered by regression tests. |
+| `final_simplify_review` | completed with blockers | Size-only snapshots, over-escaped real-path regex, schema/runner drift | Fixed with SHA-256 snapshots, regex/canary coverage, and schema-required `traceOracle`. |
+| `final_security_red_team` | completed; final follow-up passed | Strict skipped case success, synthetic canary leak, fake argv fallback, broad fake-bin gate | Fixed with strict all-skipped failure, canary/app-path redaction, fake fail-closed fallback, and mandatory fake-bin root binding. |
+
+Final validation evidence from this pass:
+
+| Command | Status | Notes |
+|---|---|---|
+| `PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest` | passed | 101 tests passed. |
+| `uv run --frozen ruff format --check . && uv run --frozen ruff check . && uv run --frozen mypy src` | passed | 41 files formatted, lint clean, mypy clean over 18 source files. |
+| `python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict` | passed | 46/51 passed, 5 fake-exec-only cases skipped, 0 failed. |
+| `python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake --json` | passed | JSON parsed; 51/51 passed. |
+| `python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --mode evolve --strict --json` | passed | JSON parsed; evolve cases passed. |
+| `python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --category security --repeat 3 --strict --json` | passed | JSON parsed; security category repeat run passed. |
+| `python3 tools/validate_bundle.py --root . --write-manifest && python3 tools/validate_bundle.py --root .` | passed | Manifest regenerated; validator reported 283 files, 23 specs, 33 schemas, 45 evals. |
+| `python3 tools/validate_openspec_structure.py --root .` | passed | 23 configured domains, 23 spec domains, 38 task IDs. |
+| `python3 -m json.tool evals/regression-prompts.json >/dev/null` | passed | JSON parsed. |
+| `schemas/*.json` parse loop | passed | Printed `schemas ok`. |
+| `npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict && npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict` | passed | Change valid; all strict validation passed. |
+| `uvx --from . spicetify-agent --help` | passed | Local package command exposed `evolve` and all modes. |
+| `npx skills add . --skill spicetify --list` | passed | Found exactly one public skill: `spicetify`. |
+| temp-HOME `npx skills add . --skill spicetify -y -g -a codex` | passed | Installed one copied skill into the temporary HOME. |
+| `pnpm --filter docs lint && pnpm --filter docs typecheck && pnpm --filter docs validate:content && pnpm --filter docs build` | passed | Docs lint, typecheck, content validation, and Next.js build passed. |

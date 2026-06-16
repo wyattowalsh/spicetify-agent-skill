@@ -28,5 +28,6 @@
 | `rollback` | Return to last-known-good or a selected snapshot. | medium/high | yes for mutation |
 | `uninstall` | Safely remove skill-managed assets or produce manual full-uninstall plans. | medium/high | yes for mutation |
 | `report` | Produce shareable redacted operation, audit, doctor, or profile reports. | read | yes for mutation |
+| `evolve` | Review redacted eval results and skill-use evidence to propose eval-first improvements. | read/medium | no direct mutation |
 
 Each mode has a dedicated file under `docs/planning/add-spicetify-skill/modes/` with inputs, preconditions, files touched, safety, plan, execution, verification, rollback, prompts, and structured response.

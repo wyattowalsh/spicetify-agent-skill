@@ -1,0 +1,27 @@
+{
+  "fixtureId": "missing-cli",
+  "platform": "linux",
+  "scenario": "The official Spicetify CLI is absent; the skill must explain the missing external dependency without installing anything.",
+  "expectedFindings": [
+    "missing official Spicetify CLI",
+    "manual install guidance only",
+    "no package manager command"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 127,
+      "stderr": "fake shell: spicetify: command not found\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "directory",
+      "path": "home/.config/spicetify"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

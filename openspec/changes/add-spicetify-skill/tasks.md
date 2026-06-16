@@ -324,12 +324,12 @@ workflow implementations.
   - Done when: the prompt can be pasted into Codex without requiring chat history
 
 - [ ] TASK-082-add-subagent-validation-and-evals [P]
-  - Goal: Extend validation and regression coverage for swarm behavior.
+  - Goal: Extend validation and deterministic eval coverage for swarm behavior, `/spicetify` mode routing, fake fixtures, and `evolve`.
   - Depends on: TASK-080-add-subagent-task-graph, TASK-081-add-codex-kickoff-prompt
-  - Read: `validation.md`, `evals/regression-prompts.json`, `tools/validate_bundle.py`
-  - Write scope: `tools/validate_bundle.py`, `evals/regression-prompts.json`, `docs/planning/add-spicetify-skill/validation.md`
-  - Validation: bundle validator checks swarm files/schemas/spec; eval prompts parse and include overlap refusal and result-envelope checks
-  - Done when: missing swarm artifacts fail validation and valid artifacts pass
+  - Read: `validation.md`, `eval-stack.md`, `evals/regression-prompts.json`, `evals/spicetify-eval-suite.json`, `schemas/eval-*.schema.json`, `tools/validate_bundle.py`
+  - Write scope: `tools/validate_bundle.py`, `tools/run_skill_evals.py`, `evals/`, `tests/fixtures/evals/`, `tests/test_eval_contracts.py`, `tests/evals/`, eval schemas, and eval docs
+  - Validation: bundle validator checks swarm files/schemas/spec; eval prompts parse; eval suite rejects missing fixtures, invalid traces, bogus artifacts, and unsafe activation; fake execution uses only approved fake fixtures
+  - Done when: missing swarm/eval artifacts fail validation and valid fake-only artifacts pass strict local evals
 
 ## 9. Validation and implementation readiness
 

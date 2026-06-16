@@ -1,0 +1,33 @@
+{
+  "fixtureId": "plan-tamper",
+  "platform": "linux",
+  "scenario": "A serialized plan is modified after confirmation, so plan-hash verification must block execution.",
+  "expectedFindings": [
+    "plan hash mismatch",
+    "confirmation invalidated",
+    "no mutation after tamper"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "apply"
+      ],
+      "exitCode": 0,
+      "stdout": "this response must never be reached by a tampered plan\n",
+      "mutates": true
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "file",
+      "path": "plans/original-plan.json",
+      "content": "{\"mode\":\"apply\",\"commands\":[{\"id\":\"apply\",\"argv\":[\"apply\"],\"shell\":false}],\"planHash\":\"original-hash\"}"
+    },
+    {
+      "kind": "file",
+      "path": "plans/tampered-plan.json",
+      "content": "{\"mode\":\"apply\",\"commands\":[{\"id\":\"restore\",\"argv\":[\"restore\"],\"shell\":false}],\"planHash\":\"original-hash\"}"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

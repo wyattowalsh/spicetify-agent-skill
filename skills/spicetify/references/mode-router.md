@@ -25,5 +25,6 @@ Use this table to map user intent to `/spicetify` modes.
 | Return to last-known-good | `rollback` |
 | Remove assets or customizations | `uninstall` |
 | Share diagnostics or operation evidence | `report` |
+| Review eval results or skill-use evidence to improve `/spicetify` safely | `evolve` |
 
 Mode combinations are allowed, but mutation still requires one plan hash, one snapshot policy, and one explicit confirmation flow.

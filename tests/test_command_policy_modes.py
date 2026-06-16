@@ -86,6 +86,7 @@ def test_runner_uses_fake_binary_and_records_argv(tmp_path: Path) -> None:
         **os.environ,
         "FAKE_SPICETIFY_LOG": str(log_path),
         "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+        "SPICETIFY_AGENT_FAKE_BIN_ROOT": str(tmp_path),
     }
     old_env = os.environ.copy()
     try:
@@ -121,6 +122,7 @@ print("token=should-not-leak")
     env = {
         **os.environ,
         "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+        "SPICETIFY_AGENT_FAKE_BIN_ROOT": str(tmp_path),
         "SPOTIFY_TOKEN": "should-not-leak",
     }
     old_env = os.environ.copy()
@@ -161,6 +163,36 @@ def test_runner_rejects_fake_binary_without_fixture_opt_in(tmp_path: Path) -> No
 
     with pytest.raises(PolicyBlocked, match="only allowed for test fixtures"):
         SpicetifyRunner(fake_binary=str(fake_bin)).run(build_command("version"))
+
+
+def test_runner_rejects_fake_binary_without_declared_fixture_root(tmp_path: Path) -> None:
+    fake_bin = write_fake_spicetify_script(tmp_path / "fake_spicetify.py")
+    old_env = os.environ.copy()
+    try:
+        os.environ["SPICETIFY_AGENT_ALLOW_FAKE_BIN"] = "1"
+        os.environ.pop("SPICETIFY_AGENT_FAKE_BIN_ROOT", None)
+        with pytest.raises(PolicyBlocked, match="explicit test fixture"):
+            SpicetifyRunner(fake_binary=str(fake_bin)).run(build_command("version"))
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
+
+
+def test_runner_rejects_fake_binary_outside_declared_fixture_root(tmp_path: Path) -> None:
+    allowed_root = tmp_path / "allowed"
+    outside_root = tmp_path / "outside"
+    allowed_root.mkdir()
+    outside_root.mkdir()
+    fake_bin = write_fake_spicetify_script(outside_root / "fake_spicetify.py")
+    old_env = os.environ.copy()
+    try:
+        os.environ["SPICETIFY_AGENT_ALLOW_FAKE_BIN"] = "1"
+        os.environ["SPICETIFY_AGENT_FAKE_BIN_ROOT"] = str(allowed_root)
+        with pytest.raises(PolicyBlocked, match="explicit test fixture"):
+            SpicetifyRunner(fake_binary=str(fake_bin)).run(build_command("version"))
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
 
 
 def test_cli_help_and_plan_work_with_pythonpath() -> None:
@@ -313,6 +345,7 @@ def test_execute_plan_snapshots_and_runs_fake_commands(tmp_path: Path) -> None:
         "PYTHONPATH": "src",
         "FAKE_SPICETIFY_LOG": str(log_path),
         "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
+        "SPICETIFY_AGENT_FAKE_BIN_ROOT": str(tmp_path),
     }
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.

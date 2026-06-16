@@ -22,6 +22,8 @@
 | Create shareable diagnostic report | `doctor`, `devtools`, `report` | `privacy`, `devtools`, `verification`, `ux` | `redaction-policy`, `consent-grant`, `operation-report` | token/path redaction, screenshot/log consent, final secret scan | strict-shareable report or blocked output with reason |
 | Scaffold local developer project | `extension`, `custom-app`, `watch`, `audit` | `scaffold`, `customization`, `audit`, `testing` | `asset-manifest`, `audit-report`, `confirmation` | generated template, package script approval, built-output audit | scaffold generated; enablement gated by audit and snapshot |
 | Recover safely from known failures | `doctor`, `repair`, `apply`, `rollback`, `report` | `recovery`, `state`, `policy`, `verification` | `failure-recovery`, `operation-report`, `verification-report` | failure catalog fixtures; unsupported/manual/rollback-failure cases | recovery report names checkpoint, snapshot, safe next action, and actions not taken |
+| Evaluate skill behavior rigorously | all modes | `testing`, `skill`, `policy`, `verification`, `privacy` | `eval-case`, `eval-suite`, `eval-result`, `eval-trace` | mode routing, hard safety, structured policy, fake state, trace, and redaction oracles | local eval run passes with fake fixtures and deterministic result artifact |
+| Evolve the skill from evidence | `evolve`, `report` | `testing`, `ux`, `privacy`, `policy` | `evolution-report`, `eval-result`, `eval-trace`, `operation-report` | failure clustering, invalid-eval classification, eval-first proposals, no safety weakening | ranked improvement report with validation plan and no self-applied changes |
 
 ## Completion rule
 
@@ -52,7 +54,7 @@ When a requirement changes, update in this order:
 | Story | Requirement | Acceptance evidence |
 |---|---|---|
 | User can learn safe usage before running `/spicetify` | `docs-site` Companion Documentation Site | Fumadocs landing and start pages exist. |
-| User can inspect every mode | `docs-content` Progressive Docs Content | All 21 mode pages follow the required template or are explicitly deferred. |
+| User can inspect every mode | `docs-content` Progressive Docs Content | All 23 mode pages follow the required template or are explicitly deferred. |
 | Reviewer can see risk states accessibly | `docs-ui` shadcn-Themed Fumadocs UI | Risk badges include visible label and text label. |
 | Public examples are safe to share | `docs-content` Generated Content Provenance | Redaction scan passes on docs examples and report previews. |
 | Docs changes are validated | `docs-site` Docs-Site Validation Gates | Type/lint/build/link/accessibility checks pass or failures are documented. |

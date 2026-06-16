@@ -1,0 +1,82 @@
+{
+  "fixtureId": "healthy",
+  "platform": "darwin",
+  "scenario": "A healthy fake Spicetify installation for read-only inspect and doctor evals.",
+  "expectedFindings": [
+    "fake Spicetify CLI detected",
+    "read-only probes succeed",
+    "no live Spotify mutation"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "spicetify fake-test 2.38.0\n",
+      "mutates": false
+    },
+    {
+      "argv": [
+        "-c"
+      ],
+      "exitCode": 0,
+      "stdout": "home/.config/spicetify/config-xpui.ini\n",
+      "mutates": false
+    },
+    {
+      "argv": [
+        "path"
+      ],
+      "exitCode": 0,
+      "stdout": "Config: home/.config/spicetify\nApps: home/.config/spicetify/CustomApps\n",
+      "mutates": false
+    },
+    {
+      "argv": [
+        "apply"
+      ],
+      "exitCode": 0,
+      "stdout": "fake apply complete\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "config",
+        "color_scheme",
+        "dark"
+      ],
+      "exitCode": 0,
+      "stdout": "fake config updated\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "enable-devtools"
+      ],
+      "exitCode": 0,
+      "stdout": "fake devtools enabled\n",
+      "mutates": true
+    },
+    {
+      "argv": [
+        "watch"
+      ],
+      "exitCode": 0,
+      "stdout": "fake watch checked once\n",
+      "mutates": true
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "file",
+      "path": "home/.config/spicetify/config-xpui.ini",
+      "content": "[Setting]\ncurrent_theme = Default\ninject_css = 1\nreplace_colors = 1\n"
+    },
+    {
+      "kind": "directory",
+      "path": "home/.config/spicetify/Themes/Default"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

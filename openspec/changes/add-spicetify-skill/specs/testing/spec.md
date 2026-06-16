@@ -38,3 +38,12 @@ The test plan MUST map each primary user story to modes, specs, schemas, fake fi
 - GIVEN a reviewer wants to know whether the MVP is ready
 - WHEN they inspect the acceptance matrix and validation outputs
 - THEN every included user story has a passing happy path, blocked path, verification path, and rollback/report path
+
+### Requirement: Deterministic Skill Eval Contracts
+The system SHALL provide local deterministic evals that validate skill activation, mode routing, fixture-backed state, trace order, report schemas, artifacts, redaction, and fake-only execution without hosted providers or real Spicetify access.
+
+#### Scenario: Eval suite proves behavior with fake fixtures
+- GIVEN the local skill eval suite runs in strict mode
+- WHEN a case references a missing fixture, emits an invalid trace, leaks a synthetic secret, or claims an unproduced report artifact
+- THEN the eval run fails before acceptance
+- AND fake execution cases run only through the approved fake Spicetify gate

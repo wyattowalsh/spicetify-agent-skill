@@ -1,0 +1,29 @@
+{
+  "fixtureId": "unsupported-platform",
+  "platform": "linux",
+  "scenario": "A synthetic unsupported host profile must produce manual guidance rather than installer, permission, or package-manager actions.",
+  "expectedFindings": [
+    "unsupported platform",
+    "manual-only guidance",
+    "no permission change"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "spicetify fake-test 2.38.0\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "platform-profile",
+      "path": "platform/freebsd-profile.json",
+      "simulatedPlatform": "freebsd",
+      "content": "{\"os\":\"freebsd\",\"packageManager\":\"pkg\",\"supported\":false}"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

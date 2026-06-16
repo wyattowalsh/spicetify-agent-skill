@@ -13,8 +13,10 @@ def test_runner_executes_only_fake_fixture_binary(tmp_path: Path) -> None:
     log_path = tmp_path / "argv.jsonl"
     old_log = os.environ.get("FAKE_SPICETIFY_LOG")
     old_allow_fake = os.environ.get("SPICETIFY_AGENT_ALLOW_FAKE_BIN")
+    old_fake_root = os.environ.get("SPICETIFY_AGENT_FAKE_BIN_ROOT")
     os.environ["FAKE_SPICETIFY_LOG"] = str(log_path)
     os.environ["SPICETIFY_AGENT_ALLOW_FAKE_BIN"] = "1"
+    os.environ["SPICETIFY_AGENT_FAKE_BIN_ROOT"] = str(tmp_path)
     try:
         result = SpicetifyRunner(fake_binary=str(fake_bin)).run(build_command("version"))
     finally:
@@ -26,6 +28,10 @@ def test_runner_executes_only_fake_fixture_binary(tmp_path: Path) -> None:
             os.environ.pop("SPICETIFY_AGENT_ALLOW_FAKE_BIN", None)
         else:
             os.environ["SPICETIFY_AGENT_ALLOW_FAKE_BIN"] = old_allow_fake
+        if old_fake_root is None:
+            os.environ.pop("SPICETIFY_AGENT_FAKE_BIN_ROOT", None)
+        else:
+            os.environ["SPICETIFY_AGENT_FAKE_BIN_ROOT"] = old_fake_root
 
     assert result.returncode == 0
     assert result.fake is True

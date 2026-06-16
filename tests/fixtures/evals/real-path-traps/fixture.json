@@ -1,0 +1,53 @@
+{
+  "fixtureId": "real-path-traps",
+  "platform": "darwin",
+  "scenario": "Synthetic canaries represent real Spotify and Spicetify paths that evals must never create, read, write, or snapshot.",
+  "expectedFindings": [
+    "real Spotify path trap armed",
+    "real Spicetify path trap armed",
+    "fake root required"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "path"
+      ],
+      "exitCode": 0,
+      "stdout": "Config: home/.config/spicetify\nSpotify: home/spotify-fake-root\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "canary",
+      "path": "canaries/darwin-spotify-path.txt",
+      "canaryValue": "/Users/spicetify-eval/Library/Application Support/Spotify",
+      "mustNeverTouch": true
+    },
+    {
+      "kind": "canary",
+      "path": "canaries/darwin-spicetify-path.txt",
+      "canaryValue": "/Users/spicetify-eval/Library/Application Support/spicetify",
+      "mustNeverTouch": true
+    },
+    {
+      "kind": "canary",
+      "path": "canaries/darwin-spotify-app-path.txt",
+      "canaryValue": "/Applications/Spotify.app",
+      "mustNeverTouch": true
+    },
+    {
+      "kind": "canary",
+      "path": "canaries/linux-spicetify-path.txt",
+      "canaryValue": "/home/spicetify-eval/.config/spicetify",
+      "mustNeverTouch": true
+    },
+    {
+      "kind": "canary",
+      "path": "canaries/windows-spotify-path.txt",
+      "canaryValue": "C:\\Users\\spicetify-eval\\AppData\\Roaming\\Spotify",
+      "mustNeverTouch": true
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

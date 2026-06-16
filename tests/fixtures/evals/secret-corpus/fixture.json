@@ -1,0 +1,38 @@
+{
+  "fixtureId": "secret-corpus",
+  "platform": "linux",
+  "scenario": "Synthetic secret-like canaries verify redaction in reports, traces, and eval artifacts.",
+  "expectedFindings": [
+    "synthetic secret canary redacted",
+    "shareability blocked until redaction passes",
+    "no real secrets embedded"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "spicetify fake-test token=FAKE_SPICETIFY_EVAL_TOKEN_CANARY\n",
+      "stderr": "authorization: Bearer FAKE_SPICETIFY_EVAL_BEARER_CANARY\n",
+      "mutates": false
+    },
+    {
+      "argv": [
+        "enable-devtools"
+      ],
+      "exitCode": 0,
+      "stdout": "devtools enabled for fake fixture token=FAKE_SPICETIFY_EVAL_TOKEN_CANARY\n",
+      "stderr": "authorization: Bearer FAKE_SPICETIFY_EVAL_BEARER_CANARY\n",
+      "mutates": true
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "secret-canary",
+      "path": "corpus/redaction-samples.txt",
+      "content": "FAKE_SPICETIFY_EVAL_TOKEN_CANARY\nFAKE_SPICETIFY_EVAL_COOKIE_CANARY\nFAKE_SPICETIFY_EVAL_LOCAL_PATH_CANARY\n"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

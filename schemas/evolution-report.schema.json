@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/evolution-report.schema.json",
+  "title": "/spicetify Evolution Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reportId",
+    "createdAt",
+    "inputs",
+    "summary",
+    "proposals",
+    "safety"
+  ],
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ]
+    }
+  },
+  "properties": {
+    "reportId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "createdAt": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "path",
+          "redacted"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "eval-result",
+              "eval-trace",
+              "operation-report",
+              "review-report",
+              "redacted-transcript"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "redacted": {
+            "const": true
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalFindings",
+        "blockingFindings",
+        "recommendedNextAction"
+      ],
+      "properties": {
+        "totalFindings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blockingFindings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "recommendedNextAction": {
+          "type": "string"
+        }
+      }
+    },
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issueId",
+          "severity",
+          "evidence",
+          "rootCause",
+          "proposedEvalChanges",
+          "proposedImplementationChanges",
+          "validationPlan",
+          "risk",
+          "expectedImpact"
+        ],
+        "properties": {
+          "issueId": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "severity": {
+            "$ref": "#/$defs/severity"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rootCause": {
+            "type": "string"
+          },
+          "proposedEvalChanges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "proposedImplementationChanges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "validationPlan": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "risk": {
+            "type": "string",
+            "enum": [
+              "read",
+              "low",
+              "medium",
+              "high",
+              "blocked"
+            ]
+          },
+          "expectedImpact": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "weakensSafetyGates",
+        "requiresHostedProvider",
+        "requiresPackageInstall",
+        "requiresRealSpicetify",
+        "selfAppliesChanges"
+      ],
+      "properties": {
+        "weakensSafetyGates": {
+          "const": false
+        },
+        "requiresHostedProvider": {
+          "const": false
+        },
+        "requiresPackageInstall": {
+          "const": false
+        },
+        "requiresRealSpicetify": {
+          "const": false
+        },
+        "selfAppliesChanges": {
+          "const": false
+        }
+      }
+    }
+  }
+}

@@ -38,6 +38,7 @@
 | `provenance-lockfile.md` | Third-party source lock model | proposed |
 | `api-contracts.md` | Local CLI/API contracts | proposed |
 | `validation.md` | Validation matrix | proposed |
+| `eval-stack.md` | Local eval stack, mode eval strategy, and evolve improvement loop | proposed |
 | `review-checklist.md` | Final review gates | proposed |
 | `codex-handoff.md` | Compact implementation handoff | proposed |
 | `goal.md` | Bounded Codex Goal prompt | proposed |
@@ -57,14 +58,14 @@
 
 | Path | Purpose |
 |---|---|
-| `modes/` | 21 per-mode contracts with inputs, safety, plan, execution, verification, rollback, examples. |
+| `modes/` | 23 per-mode contracts with inputs, safety, plan, execution, verification, rollback, examples. |
 | `workflows/` | Cross-cutting workflows: command, dry-run, state, config/profile, theme, extension/custom-app, audit, repair, safety, verification, manifest automation. |
 | `workflows/fumadocs-site.md` | Full docs-site implementation workflow. |
 | `workflows/docs-site.md` | Companion docs-site safety and rollback workflow. |
 | `schemas/README.md` | Human guide to root JSON schemas. |
 | `skills/spicetify/` | Compact `/spicetify` skill router and references. |
 | `schemas/` | Machine-readable JSON schemas. |
-| `evals/` | Regression prompts. |
+| `evals/` | Regression prompts and planned structured eval suites. |
 | `tools/` | Deterministic bundle validator. |
 
 ## Read by role
@@ -74,7 +75,7 @@
 | Product reviewer | root `README.md`, `audit-review.md`, `proposal.md`, `mvp-cutline.md`, `ux-examples.md` |
 | Security reviewer | `threat-model.md`, `policy-matrix.md`, `audit-review.md`, `specs/policy`, `specs/audit`, `specs/devtools` |
 | Implementation agent | `AGENTS.md`, `proposal.md`, `tasks.md`, `design.md`, `context-map.md`, `PLANS.md`, `codex-handoff.md` |
-| Test author | `validation.md`, `specs/testing`, `evals/regression-prompts.json`, `schemas/fixture-manifest.schema.json` |
+| Test author | `validation.md`, `eval-stack.md`, `specs/testing`, `evals/regression-prompts.json`, `schemas/fixture-manifest.schema.json` |
 | Docs implementer | `DESIGN.md`, `fumadocs-site-plan.md`, `docs-content-architecture.md`, `docs-site-design-system.md`, `docs-site-implementation-plan.md`, `workflows/fumadocs-site.md` |
 | Skill packager | `skills/spicetify/SKILL.md`, `skills/spicetify/references/`, `mode-catalog.md` |
 

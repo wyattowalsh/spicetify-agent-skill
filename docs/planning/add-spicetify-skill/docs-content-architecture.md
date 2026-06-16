@@ -31,6 +31,7 @@ apps/docs/content/docs/
     inspect.mdx
     doctor.mdx
     ...
+    evolve.mdx
   workflows/
     spotify-update-repair.mdx
     terminal-theme.mdx
@@ -85,6 +86,7 @@ safetyLevel: read | low | medium | high
 | `openspec/changes/add-spicetify-skill/specs/**/spec.md` | requirement reference pages | Keep Requirement/Scenario headings intact. |
 | `docs/planning/add-spicetify-skill/traceability.md` | traceability table | Link goals to modes, tasks, validation. |
 | `evals/regression-prompts.json` | regression prompt catalog | Mark prompts as test fixtures, not user guidance. |
+| `docs/planning/add-spicetify-skill/eval-stack.md` | eval stack and evolve reference | Mark structured evals as local/fake-only unless optional adapters are approved. |
 
 ## Navigation model
 
@@ -131,6 +133,7 @@ The site should expose AI-readable routes, but only after applying the same reda
 - schema summaries,
 - command registry boundaries,
 - repair flow summaries,
+- eval stack and evolve summaries,
 - Codex handoff read order.
 
 It should omit local paths, user reports, screenshots, DevTools logs, and any private run records.

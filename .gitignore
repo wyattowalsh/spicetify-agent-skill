@@ -19,6 +19,8 @@ coverage/
 .env.*
 !.env.example
 *.log
+eval-results/
+eval-traces/
 
 # Node/docs
 node_modules/

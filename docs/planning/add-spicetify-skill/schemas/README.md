@@ -35,6 +35,12 @@ profile
 
 fixture-manifest
   -> fake Spicetify integration tests
+
+eval-suite
+  -> eval-case
+  -> eval-result
+       -> eval-trace refs
+       -> evolution-report refs
 ```
 
 ## Required schema files
@@ -56,6 +62,11 @@ fixture-manifest
 | `operation-report.schema.json` | User-facing JSON/Markdown operation report source. |
 | `error.schema.json` | Normalized error taxonomy. |
 | `fixture-manifest.schema.json` | Fake Spicetify environment and expected findings. |
+| `eval-case.schema.json` | Deterministic skill eval case with activation, fixture, oracle, trace, report, and artifact expectations. |
+| `eval-suite.schema.json` | Versioned local eval suite with offline runner requirements and mode coverage. |
+| `eval-result.schema.json` | Schema-shaped runner output with summary, case results, grader results, and artifacts. |
+| `eval-trace.schema.json` | Redacted local trace contract for routing, policy, commands, fake observations, and report output. |
+| `evolution-report.schema.json` | Ranked eval-driven improvement proposal contract for `evolve`. |
 
 ## Implementation requirements
 

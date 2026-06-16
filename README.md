@@ -74,6 +74,8 @@ uv build --no-index
 uvx --from . spicetify-agent --help
 PYTHONPATH=src python3 -m pytest tests
 PYTHONPATH=src python3 -m spicetify_agent.cli validate-schemas
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake
 python3 tools/validate_bundle.py --root .
 python3 tools/validate_openspec_structure.py --root .
 python3 -m json.tool evals/regression-prompts.json >/dev/null

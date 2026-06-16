@@ -1,0 +1,36 @@
+{
+  "fixtureId": "broken-config",
+  "platform": "linux",
+  "scenario": "The fake config file exists but contains malformed and unsafe values for doctor, config, and repair evals.",
+  "expectedFindings": [
+    "config parse error",
+    "invalid config value refused",
+    "repair remains dry-run-first"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "-c"
+      ],
+      "exitCode": 0,
+      "stdout": "home/.config/spicetify/config-xpui.ini\n",
+      "mutates": false
+    },
+    {
+      "argv": [
+        "path"
+      ],
+      "exitCode": 1,
+      "stderr": "fake spicetify: config parse error at line 4\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "file",
+      "path": "home/.config/spicetify/config-xpui.ini",
+      "content": "[Setting]\ncurrent_theme = Default\ninject_css = definitely-not-a-bool\nprefs_path = ../../outside\n"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}

@@ -11,7 +11,16 @@ from .platform import detect_platform
 from .policy import classify_prompt, evaluate_plan
 from .util import stable_hash
 
-READ_MODES = {"inspect", "doctor", "audit", "report", "marketplace", "migrate", "manifest"}
+READ_MODES = {
+    "inspect",
+    "doctor",
+    "audit",
+    "report",
+    "marketplace",
+    "migrate",
+    "manifest",
+    "evolve",
+}
 MUTATING_MODES = {
     "apply",
     "config",
@@ -34,11 +43,19 @@ ALL_MODES = tuple(sorted(READ_MODES | MUTATING_MODES | {"plan"}))
 
 def infer_mode(text: str) -> str:
     lowered = text.lower()
+    if "custom app" in lowered or "custom-app" in lowered:
+        return "custom-app"
+    if "broke" in lowered or "broken" in lowered:
+        return "repair"
+    if "uninstall" in lowered or "remove" in lowered:
+        return "uninstall"
+    if "watch" in lowered:
+        return "watch"
     for mode in ALL_MODES:
         if mode in lowered:
             return mode
-    if "broke" in lowered or "broken" in lowered:
-        return "repair"
+    if "improve" in lowered or "optimize" in lowered or "eval" in lowered:
+        return "evolve"
     if "safe" in lowered or "audit" in lowered:
         return "audit"
     return "inspect"
@@ -80,7 +97,24 @@ def plan_mode(mode: str, *, prompt: str = "", target: str | None = None) -> dict
         "rollback": _rollback_for_mode(mode),
         "platform": detect_platform(),
     }
+    if mode == "evolve":
+        plan["evolution"] = {
+            "inputs": [
+                "eval-results/*.json",
+                "eval-traces/*.jsonl",
+                "operation reports",
+                "review reports",
+                "user-supplied redacted transcripts",
+            ],
+            "output": "evolution-report",
+            "rules": [
+                "add or update a failing eval before behavior changes",
+                "do not reduce protections to improve pass rate",
+                "do not self-approve, commit, publish, install packages, or run hosted evals",
+            ],
+        }
     if needs_update_choice:
+        plan["snapshot"] = {"required": False, "excludes": ["prefs", "cookies", "logs"]}
         plan["reason"] = (
             "Update requests must choose theme hot reload, post-Spotify repair, "
             "or manual Spicetify CLI maintenance."

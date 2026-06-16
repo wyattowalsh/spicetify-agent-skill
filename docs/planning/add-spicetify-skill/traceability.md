@@ -19,6 +19,8 @@
 | No live Spotify mutation in CI | `testing` | TASK-012, TASK-090 | fake binary; CI guard asserts no real paths |
 | Structured reports and redaction | `verification` | TASK-061 | schema validation; token redaction tests |
 | Novice and power-user UX | `ux` | TASK-060 | example reports; confirmation copy tests |
+| Rigorous local eval stack | `testing`, `skill`, `policy`, `verification` | TASK-082, future eval-stack task | eval-case/suite/result/trace schema tests; local fake-only eval runner; deterministic grader checks |
+| Eval-driven skill improvement | `testing`, `ux`, `privacy`, `policy` | future evolve-mode task | `evolve` mode evals; evolution-report validation; no self-apply or safety weakening checks |
 
 ## Coverage gaps to watch during implementation
 
@@ -38,6 +40,7 @@
 
 | Non-waivable execution boundaries stay centralized | `policy`, `state`, `testing` | TASK-019 | invariant schema tests; blocked waiver fixtures |
 | Failure modes recover safely | `recovery`, `verification`, `state` | TASK-019, TASK-042 | failure catalog fixtures; recovery report tests |
+| Skill behavior improves from evidence | `testing`, `skill`, `ux` | TASK-082, future evolve-mode task | eval failure clustering; eval-first proposal checks; baseline/candidate comparison |
 
 ## Docs-site traceability
 

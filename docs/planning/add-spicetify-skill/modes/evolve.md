@@ -1,0 +1,107 @@
+# Mode: evolve
+
+**Path:** `docs/planning/add-spicetify-skill/modes/evolve.md`
+**Purpose:** Detailed contract for `/spicetify evolve` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing eval-driven skill improvement behavior.
+
+## Purpose
+
+Review local redacted eval results, operation reports, review findings, and user-provided redacted transcripts to identify the highest-value improvements to `/spicetify`.
+
+`evolve` is a planning and review mode. It proposes eval additions and skill/runtime/docs improvements; it does not self-apply changes.
+
+## Inputs
+
+`evalResultPaths?`, `tracePaths?`, `operationReportPaths?`, `reviewReportPaths?`, `redactedTranscriptPaths?`, `focusMode?`, `maxProposals?`, `allowHostedJudges? = false`.
+
+## Preconditions
+
+Inputs are local, redacted, explicitly selected, and inside approved roots. Eval result and trace formats validate before scoring. Hosted/model-judge evaluation is disabled unless separately approved with data scope and credentials.
+
+## Commands/files touched
+
+Read-only by default. May read local eval results, local redacted traces, local operation reports, local review reports, and user-supplied redacted transcripts. May write an `evolution-report` only after the user approves an output path.
+
+It must not read private chat history, real Spotify prefs contents, unredacted logs, cookies, auth data, or arbitrary filesystem locations.
+
+## Safety checks
+
+- No automatic evidence upload.
+- No package installation, hosted eval run, model-judge call, commit, publish, or self-approval.
+- No weakening of dry-run, snapshot, confirmation, audit, provenance, privacy, no-shell, or CI fake-only gates.
+- Any proposed behavior change must be preceded by a failing or missing eval that describes the desired behavior.
+- Invalid evals are classified as eval-design defects rather than optimized around.
+
+## Plan output
+
+`EvolvePlan` listing selected inputs, redaction posture, local eval suites to run, clustering strategy, proposed report path, blocked evidence, and validation commands.
+
+## Execution flow
+
+Validate inputs -> redact/scan evidence -> score eval results -> cluster failures -> classify root cause -> identify eval gaps -> rank improvement proposals -> produce an evolution report.
+
+## Verification flow
+
+Confirm every cited input was approved and redacted; every proposal links to an eval case or eval gap; safety gates are unchanged; no blocked evidence appears in output; report validates against the planned evolution-report contract.
+
+## Rollback flow
+
+Delete or ignore the generated evolution report. Do not change skill/runtime/docs files during `evolve`; implementation requires a separate approved plan.
+
+## Idempotency notes
+
+Re-running `evolve` on the same normalized inputs should produce the same ranked issues except for explicitly volatile metadata such as timestamps or tool versions. The planner should support baseline/candidate comparisons once structured eval results exist.
+
+## Failure modes and recovery
+
+- Missing eval results -> propose a dry-run eval plan and stop.
+- Unredacted evidence -> block report generation and request redaction.
+- Hosted evaluator requested without approval -> produce local-only plan.
+- Improvement would weaken safety -> reject the proposal and record a safety regression finding.
+- Eval contradicts policy -> mark the eval invalid and propose an eval-contract fix.
+
+## Data contracts
+
+Primary planned contracts: `eval-case, eval-suite, eval-result, eval-trace, evolution-report`. Any implementation-specific schema expansion MUST update `docs/planning/add-spicetify-skill/schemas/README.md`, `api-contracts.md`, validation docs, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before any follow-up implementation plan, even if `evolve` itself is read-only.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state, automation, or eval inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify evolve from the latest local eval failures`
+- `/spicetify evolve only the audit and extension modes`
+- `/spicetify review this redacted transcript and propose evals before changing behavior`
+
+## Example structured response
+
+```json
+{
+  "mode": "evolve",
+  "status": "planned",
+  "inputs": [
+    "eval-results/latest.json"
+  ],
+  "proposals": [
+    {
+      "rank": 1,
+      "rootCause": "policy-gap",
+      "requiredEvalFirst": true,
+      "targetMode": "extension"
+    }
+  ],
+  "blockedActions": [
+    "hosted-eval-upload",
+    "self-apply"
+  ]
+}
+```
+
+## Evals reference
+
+Use `../eval-stack.md` for the canonical local eval stack, oracle hierarchy, and mode-specific eval strategy.

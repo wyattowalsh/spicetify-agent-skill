@@ -52,6 +52,29 @@ In this repo on 2026-06-13, the global `openspec` command was not available on P
 | UX | novice and power-user prompts produce expected dry-run and confirmation text. |
 | Invariants | non-waivable invariant tests, waiver rejection, single-writer lock, fake-CI guard. |
 | Recovery | failure catalog fixtures, safe stop reports, rollback failure handling, manual-only platform actions. |
+| Eval stack | eval-case/suite/result/trace contracts, fake-only runner, hard safety oracles, structured graders, and result determinism. |
+| Evolve mode | redacted input selection, failure clustering, eval-first proposals, no safety weakening, no self-apply, and local-only evidence handling. |
+
+## Skill eval stack validation
+
+The local eval stack extends regression prompts into executable, schema-backed eval suites. The default strict run validates dry-run behavior and skips fake-execution-only cases; the `--execute-fake` run executes those cases through fake Spicetify only.
+
+```bash
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --json
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --mode evolve --strict --json
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --category security --repeat 3 --strict --json
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake --json
+```
+
+Required eval gates:
+
+- every mode has explicit-trigger, implicit-trigger, false-positive, happy-path, blocked-path, verification, and report/recovery cases;
+- hard safety oracles run before text or model-judge scoring;
+- fake Spicetify binaries and temp roots are the only executable fixtures;
+- every mutating scenario proves dry-run, policy, snapshot, confirmation, verification, report, and rollback metadata;
+- fixture references and fake-execution cases fail closed when missing, unused, or not explicitly requested;
+- `evolve` reads only approved redacted local artifacts and cannot self-apply, upload evidence, or weaken safety gates;
+- optional hosted/model-judge adapters stay non-blocking until calibrated and explicitly promoted.
 
 ## No-live-Spotify CI guard
 

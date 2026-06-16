@@ -20,7 +20,7 @@ Create `/spicetify`, a compact AI skill plus installable local Python engine tha
 
 In scope:
 
-- all 22 semantic modes listed in `mode-catalog.md`
+- all 23 semantic modes listed in `mode-catalog.md`
 - OpenSpec requirements and Codex handoff
 - command registry, policy, snapshots, rollback, audit, verification
 - fake Spicetify environments and schema-validated structured output

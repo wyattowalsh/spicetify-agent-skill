@@ -1,6 +1,6 @@
 ---
 name: spicetify
-description: Use `/spicetify` for safe local Spicetify customization, repair, audit, snapshot, apply, rollback, and reporting workflows. Always dry-run before mutation, use the `spicetify-agent` helper instead of arbitrary shell, and never install, trust, or run third-party code without audit and confirmation.
+description: Use `/spicetify` for safe local Spicetify customization, repair, audit, snapshot, apply, rollback, reporting, and eval-driven evolve workflows. Always dry-run before mutation, use the `spicetify-agent` helper instead of arbitrary shell, and never install, trust, or run third-party code without audit and confirmation.
 ---
 
 # /spicetify
@@ -23,7 +23,9 @@ The user-facing skill name is `/spicetify`. The helper CLI is `spicetify-agent`.
 
 ## Modes
 
-`inspect`, `doctor`, `snapshot`, `restore`, `repair`, `apply`, `config`, `profile`, `manifest`, `theme`, `extension`, `custom-app`, `snippet`, `marketplace`, `audit`, `devtools`, `watch`, `migrate`, `update`, `rollback`, `uninstall`, `report`.
+`inspect`, `doctor`, `snapshot`, `restore`, `repair`, `apply`, `config`, `profile`, `manifest`, `theme`, `extension`, `custom-app`, `snippet`, `marketplace`, `audit`, `devtools`, `watch`, `migrate`, `update`, `rollback`, `uninstall`, `report`, `evolve`.
+
+Use `evolve` only as an eval-driven improvement review mode. It may inspect local redacted eval results, operation reports, and user-provided redacted transcripts, then propose new evals and skill/runtime/doc improvements. It must not self-apply changes, weaken safety gates, scrape private chat history, upload evidence, run hosted evals, or treat pass-rate improvement as permission to reduce protections.
 
 ## Refuse Or Gate
 
@@ -40,3 +42,4 @@ The user-facing skill name is `/spicetify`. The helper CLI is `spicetify-agent`.
 - `references/troubleshooting.md`
 - `references/spicetify-facts.md`
 - `references/examples.md`
+- `references/evals.md`

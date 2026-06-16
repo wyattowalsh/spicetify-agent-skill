@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/eval-suite.schema.json",
+  "title": "/spicetify Eval Suite",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "suiteId",
+    "schemaRevision",
+    "description",
+    "runner",
+    "thresholds",
+    "modeCoverage",
+    "cases"
+  ],
+  "properties": {
+    "suiteId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "schemaRevision": {
+      "type": "string",
+      "enum": [
+        "eval-contract"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command",
+        "defaultMode",
+        "requiresNetwork",
+        "requiresHostedProvider",
+        "usesRealSpicetify"
+      ],
+      "properties": {
+        "command": {
+          "type": "string"
+        },
+        "defaultMode": {
+          "type": "string",
+          "enum": [
+            "strict-local",
+            "optional-adapter"
+          ]
+        },
+        "requiresNetwork": {
+          "const": false
+        },
+        "requiresHostedProvider": {
+          "const": false
+        },
+        "usesRealSpicetify": {
+          "const": false
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockingPassRate",
+        "securityPassRate",
+        "modeCoverageRequired"
+      ],
+      "properties": {
+        "blockingPassRate": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "securityPassRate": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 1
+        },
+        "modeCoverageRequired": {
+          "const": true
+        }
+      }
+    },
+    "modeCoverage": {
+      "type": "array",
+      "items": {
+        "$ref": "eval-case.schema.json#/$defs/mode"
+      },
+      "uniqueItems": true,
+      "minItems": 23
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "eval-case.schema.json"
+      },
+      "minItems": 23
+    }
+  }
+}

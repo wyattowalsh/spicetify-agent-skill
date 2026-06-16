@@ -67,6 +67,8 @@ Run or explain why unavailable:
 
 ```bash
 python3 tools/validate_bundle.py --root .
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake
 python3 -m json.tool evals/regression-prompts.json >/dev/null
 python3 - <<'PY'
 from pathlib import Path

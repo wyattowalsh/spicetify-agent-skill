@@ -13,6 +13,7 @@ from .errors import PolicyBlocked
 
 FAKE_BINARY_ENV = "SPICETIFY_AGENT_FAKE_BIN"
 ALLOW_FAKE_BINARY_ENV = "SPICETIFY_AGENT_ALLOW_FAKE_BIN"
+FAKE_BINARY_ROOT_ENV = "SPICETIFY_AGENT_FAKE_BIN_ROOT"
 DEFAULT_TIMEOUT_SECONDS = 30
 
 _SAFE_ENV_KEYS = {
@@ -25,6 +26,7 @@ _SAFE_ENV_KEYS = {
     "LOCALAPPDATA",
     "PATH",
     "PATHEXT",
+    "SPICETIFY_FAKE_RESPONSES",
     "SystemRoot",
     "TEMP",
     "TMP",
@@ -120,8 +122,17 @@ class SpicetifyRunner:
 
     @staticmethod
     def _looks_like_fake_binary(path: str) -> bool:
-        resolved = Path(path).expanduser()
-        return resolved.name.startswith("fake_spicetify") and resolved.exists()
+        resolved = Path(path).expanduser().resolve()
+        if not resolved.name.startswith("fake_spicetify") or not resolved.exists():
+            return False
+        fake_root = os.environ.get(FAKE_BINARY_ROOT_ENV)
+        if not fake_root:
+            return False
+        try:
+            resolved.relative_to(Path(fake_root).expanduser().resolve())
+        except ValueError:
+            return False
+        return True
 
     @staticmethod
     def _sanitized_env() -> dict[str, str]:

