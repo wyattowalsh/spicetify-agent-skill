@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import pytest
-
-from spicetify_agent.commands import build_command, validate_command_invocation
-from spicetify_agent.errors import CommandRejected
+from _commands import build_command, validate_command_invocation
+from _errors import CommandRejected
 
 
 def test_registry_revalidates_serialized_commands() -> None:

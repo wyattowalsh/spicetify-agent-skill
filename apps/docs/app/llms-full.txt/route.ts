@@ -1,6 +1,9 @@
 import { docsSource } from "../../lib/source";
+import { getContentMap, listDocsPages } from "../../lib/content";
 
 export function GET() {
+  const contentMap = getContentMap();
+  const pages = listDocsPages();
   const body = [
     "# /spicetify full docs index",
     "",
@@ -9,7 +12,17 @@ export function GET() {
     `Content root: ${docsSource.root}`,
     `Generated references: ${docsSource.generatedReferences.join(", ")}`,
     "",
-    "Modes: inspect, doctor, audit, snapshot, restore, repair, apply, config, profile, theme, extension, custom-app, snippet, marketplace, devtools, watch, migrate, update, rollback, uninstall, report.",
+    `Modes: ${contentMap.modePages.join(", ")}`,
+    "",
+    ...pages.flatMap((page) => [
+      `## ${page.title}`,
+      "",
+      `Source: ${page.sourcePath}`,
+      `Route: ${page.href}`,
+      "",
+      page.body,
+      "",
+    ]),
   ].join("\n");
 
   return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8" } });

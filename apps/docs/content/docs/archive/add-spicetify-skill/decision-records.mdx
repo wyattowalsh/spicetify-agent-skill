@@ -1,0 +1,46 @@
+---
+title: Decision records
+description: Migrated /spicetify planning content for Decision records.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/decision-records.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Decision records
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/decision-records.mdx`
+**Purpose:** Architecture and product decisions for /spicetify.
+**Status:** Draft
+**Load/use when:** Read when reconsidering core choices.
+
+
+## ADR-001: Use `/spicetify` as the only user-facing skill name
+
+**Status:** Proposed
+**Decision:** The skill is invoked and described as `/spicetify`.
+**Rationale:** Short, discoverable, aligned with user request, avoids product-name drift.
+**Consequences:** Internal packages can use conventional names, but docs and UX keep `/spicetify`.
+
+## ADR-002: Use local CLI engine plus Skill docs
+
+**Status:** Proposed
+**Decision:** Implement a local Python engine with a compact Skill router and isolated docs-site TypeScript.
+**Alternatives:** prompt-only skill, thin shell wrapper.
+**Rationale:** Snapshot, verification, rollback, and fake-env tests require real local logic; raw shell is unsafe.
+**Review trigger:** If Codex Skills gain built-in transactional local command APIs with policy enforcement.
+
+## ADR-003: Use fake Spicetify in CI
+
+**Status:** Proposed
+**Decision:** No real Spotify/Spicetify mutation in tests.
+**Rationale:** Prevents destructive or flaky local-state tests.
+**Review trigger:** Never for CI; manual integration tests may use real Spicetify by explicit approval.
+
+## ADR-004: Treat Spicetify Creator as compatibility path only
+
+**Status:** Proposed
+**Decision:** Default scaffolds use maintained bundler templates; Creator remains import/compat guidance.
+**Rationale:** Official docs describe Creator, but its GitHub README reports deprecation.
+**Review trigger:** Creator project is revived or docs are reconciled.

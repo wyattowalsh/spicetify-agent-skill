@@ -22,16 +22,16 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "src"
+SCRIPT_ROOT = ROOT / "skills" / "spicetify" / "scripts"
 FIXTURE_ROOT = ROOT / "tests" / "fixtures" / "evals"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+if str(SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_ROOT))
 
-from spicetify_agent.modes import ALL_MODES, plan_mode  # noqa: E402
-from spicetify_agent.privacy import redact  # noqa: E402
+from _modes import ALL_MODES, plan_mode  # noqa: E402
+from _privacy import redact  # noqa: E402
 
 SHELL_MARKERS = ("|", "&&", ";", "`", "$(", ">", "<")
 PACKAGE_MANAGER_MARKERS = (
@@ -78,6 +78,16 @@ EXECUTABLE_TEXT_REGEXES: tuple[tuple[str, re.Pattern[str]], ...] = (
     ("shell execution", re.compile(r"(?<![\w-])(?:bash|sh|powershell|iwr|iex)(?![\w-])", re.I)),
     ("privileged filesystem command", re.compile(r"(?<![\w-])(?:sudo|chmod|chown)(?![\w-])", re.I)),
 )
+
+
+def as_dict(value: Any) -> dict[str, Any]:
+    return cast(dict[str, Any], value) if isinstance(value, dict) else {}
+
+
+def as_list(value: Any) -> list[Any]:
+    return cast(list[Any], value) if isinstance(value, list) else []
+
+
 TRACE_MATCHES = {"exact", "contains-in-order", "unordered-subset", "forbidden"}
 ACTIVATION_KINDS = {"direct-mode", "route-mode", "negative-trigger"}
 SYNTHETIC_SECRET_PREFIX = "FAKE_SPICETIFY_EVAL_"  # noqa: S105 - synthetic leak canary
@@ -176,9 +186,10 @@ def parse_suite(path: Path) -> dict[str, Any]:
     for index, case in enumerate(cases):
         if not isinstance(case, dict):
             raise ValueError(f"case {index} must be an object")
-        validate_case_shape(case, index, ids, fixtures)
-        ids.add(str(case["id"]))
-        used_fixtures.add(str(case["fixture"]))
+        case_dict = cast(dict[str, Any], case)
+        validate_case_shape(case_dict, index, ids, fixtures)
+        ids.add(str(case_dict["id"]))
+        used_fixtures.add(str(case_dict["fixture"]))
 
     missing = sorted(used_fixtures - fixtures)
     if missing:
@@ -197,7 +208,7 @@ def enforce_suite_profile(
     used_fixtures: set[str],
 ) -> None:
     suite_kind = suite.get("suiteKind")
-    thresholds = suite.get("thresholds") if isinstance(suite.get("thresholds"), dict) else {}
+    thresholds = as_dict(suite.get("thresholds"))
     if suite_kind == "focused":
         if thresholds.get("modeCoverageRequired") is not False:
             raise ValueError("focused suite must set modeCoverageRequired=false")
@@ -399,10 +410,10 @@ def run_case(case: dict[str, Any], *, fixture_root: Path, execute_fake: bool) ->
     if plan.get("status") == "blocked":
         trace.append("refuse")
     else:
-        snapshot = plan.get("snapshot") if isinstance(plan.get("snapshot"), dict) else {}
+        snapshot = as_dict(plan.get("snapshot"))
         if snapshot.get("required"):
             trace.append("snapshot-gate")
-        policy = plan.get("policy") if isinstance(plan.get("policy"), dict) else {}
+        policy = as_dict(plan.get("policy"))
         if policy.get("requiresConfirmation"):
             trace.append("confirmation-gate")
 
@@ -421,7 +432,7 @@ def run_case(case: dict[str, Any], *, fixture_root: Path, execute_fake: bool) ->
             result.artifacts["fakeExecution"] = fake_status
             if fake_status.get("status") != "verified":
                 result.fail(f"fake execution was not verified: {fake_status.get('status')}")
-    rollback = plan.get("rollback") if isinstance(plan.get("rollback"), dict) else {}
+    rollback = as_dict(plan.get("rollback"))
     if rollback.get("available"):
         trace.append("rollback-metadata")
     if plan.get("mode") == "evolve":
@@ -580,12 +591,14 @@ def assert_expected_plan(
 
 
 def assert_forbidden(result: CaseResult, plan: dict[str, Any], forbid: dict[str, Any]) -> None:
-    commands = plan.get("commands") if isinstance(plan.get("commands"), list) else []
+    commands = [
+        cast(dict[str, Any], command)
+        for command in as_list(plan.get("commands"))
+        if isinstance(command, dict)
+    ]
     ids = command_ids(plan)
     argv_text = " ".join(
-        " ".join(str(arg) for arg in command.get("argv", []))
-        for command in commands
-        if isinstance(command, dict)
+        " ".join(str(arg) for arg in command.get("argv", [])) for command in commands
     )
     raw_payload_text = json.dumps(plan, sort_keys=True)
     redacted_text = json.dumps(redacted_payload(plan), sort_keys=True)
@@ -600,9 +613,7 @@ def assert_forbidden(result: CaseResult, plan: dict[str, Any], forbid: dict[str,
     shell_forbidden = bool(forbid.get("shell") or forbid.get("arbitraryShell"))
     if shell_forbidden and any(marker in argv_text for marker in SHELL_MARKERS):
         result.fail("shell metacharacter appeared in command argv")
-    if shell_forbidden and any(
-        isinstance(c, dict) and c.get("shell") is not False for c in commands
-    ):
+    if shell_forbidden and any(c.get("shell") is not False for c in commands):
         result.fail("command did not explicitly set shell=false")
     if shell_forbidden and _contains_executable_text(
         structured_text,
@@ -641,8 +652,8 @@ def assert_forbidden(result: CaseResult, plan: dict[str, Any], forbid: dict[str,
     ):
         result.fail("hosted eval provider marker appeared in structured output")
     if forbid.get("unapprovedMutation") and bool(plan.get("mutates")):
-        policy = plan.get("policy") if isinstance(plan.get("policy"), dict) else {}
-        snapshot = plan.get("snapshot") if isinstance(plan.get("snapshot"), dict) else {}
+        policy = as_dict(plan.get("policy"))
+        snapshot = as_dict(plan.get("snapshot"))
         if policy.get("requiresConfirmation") is not True:
             result.fail("mutating plan did not require confirmation")
         if snapshot.get("required") is not True:
@@ -752,7 +763,7 @@ def assert_redaction(result: CaseResult, fixture: dict[str, Any], redaction_orac
 def planned_report_schemas(plan: dict[str, Any]) -> list[str]:
     mode = str(plan.get("mode", ""))
     status = str(plan.get("status", ""))
-    route = plan.get("route") if isinstance(plan.get("route"), dict) else {}
+    route = as_dict(plan.get("route"))
     primary_intent = str(route.get("primaryIntent", ""))
     reports = {"operation-plan"}
     if primary_intent == "research" or "research" in plan:
@@ -781,11 +792,11 @@ def planned_artifacts(plan: dict[str, Any]) -> list[str]:
     mode = str(plan.get("mode", ""))
     status = str(plan.get("status", ""))
     artifacts = {"redacted-report"}
-    route = plan.get("route") if isinstance(plan.get("route"), dict) else {}
+    route = as_dict(plan.get("route"))
     primary_intent = str(route.get("primaryIntent", ""))
     if status != "blocked":
         artifacts.add("dry-run-plan")
-    rollback = plan.get("rollback") if isinstance(plan.get("rollback"), dict) else {}
+    rollback = as_dict(plan.get("rollback"))
     if rollback.get("available"):
         artifacts.add("rollback-metadata")
     if mode == "snapshot":
@@ -966,7 +977,7 @@ def execute_plan_fake(
     log_file = temp / "argv.jsonl"
     env = {
         "PATH": os.environ.get("PATH", ""),
-        "PYTHONPATH": str(SRC),
+        "PYTHONPATH": str(SCRIPT_ROOT),
         "HOME": str(temp / "home"),
         "XDG_CONFIG_HOME": str(temp / "xdg-config"),
         "XDG_DATA_HOME": str(temp / "xdg-data"),
@@ -979,7 +990,7 @@ def execute_plan_fake(
     cmd = [
         sys.executable,
         "-m",
-        "spicetify_agent.cli",
+        "spicetify_agent",
         "--json",
         "execute-plan",
         str(plan_file),

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from spicetify_agent.modes import plan_mode
+from _modes import plan_mode
 
 EXECUTABLE_PROMPT_IDS = {"prompt_first_block_package_manager_watch"}
 

@@ -1,0 +1,85 @@
+---
+title: Workflow: Fumadocs site
+description: Migrated /spicetify planning content for Workflow: Fumadocs site.
+section: workflows
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/workflows/fumadocs-site.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Workflow: Fumadocs site
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/workflows/fumadocs-site.mdx`
+**Purpose:** Cross-cutting workflow for building the accompanying Fumadocs + shadcn/ui documentation site.
+**Status:** Proposed
+**Load/use when:** Implementing docs-site tasks or auditing docs-site safety.
+
+## Purpose
+
+Create a navigable, searchable, AI-readable documentation site for `/spicetify` while preserving the planning bundle as source of truth.
+
+## Inputs
+
+- OpenSpec proposal, design, tasks, and delta specs.
+- Planning docs under `apps/docs/content/docs/archive/add-spicetify-skill/`.
+- JSON schemas under `schemas/`.
+- Mode docs and workflow docs.
+- User-approved target repo package manager and app path.
+
+## Preconditions
+
+- Target repo has been inspected.
+- Package manager and workspace layout are evidence-backed.
+- Package installation is approved before any command is run.
+- Fumadocs and shadcn setup docs have been rechecked.
+
+## Plan output
+
+A `DocsSitePlan` should include:
+
+- app root,
+- content root,
+- route map,
+- package-manager commands as proposed commands,
+- local component list,
+- generated-content sources and outputs,
+- validation commands,
+- deployment deferrals,
+- rollback/delete plan for generated docs-site files.
+
+## Execution flow
+
+1. Create app shell and content source.
+2. Add Fumadocs layout and source loader.
+3. Add shadcn local components and theme tokens.
+4. Add curated docs.
+5. Add generated reference pipeline.
+6. Add search and AI-readable routes.
+7. Add validation and redaction checks.
+8. Document deployment readiness without deploying.
+
+## Verification flow
+
+- JSON schemas parse.
+- Content frontmatter validates.
+- Internal links resolve.
+- Generated pages include source paths.
+- Build/typecheck/lint pass.
+- Search route returns results in local build.
+- LLM routes omit sensitive evidence.
+- Accessibility checks cover focus, headings, contrast, and keyboard navigation.
+
+## Rollback flow
+
+- Remove docs-site files only under the approved app root.
+- Restore previous workspace config from snapshot or VCS diff.
+- Do not delete curated content outside the approved docs root.
+- Do not roll back unrelated package-manager lockfile changes without explicit review.
+
+## Safety checks
+
+- No real user logs, screenshots, Spotify prefs, tokens, or private paths in docs.
+- No external shadcn registries without approval and provenance review.
+- No deployment, analytics, hosted search, DNS, or cloud changes without explicit approval.
+- No docs instruction may tell users or agents to bypass `/spicetify` policy gates.

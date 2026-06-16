@@ -42,43 +42,53 @@ ROOT_REQUIRED = [
     "evals/regression-prompts.json",
     "evals/spicetify-eval-suite.json",
 ]
-PLANNING_REQUIRED = [
-    "README.md",
-    "manifest.md",
-    "context-map.md",
-    "audit-review.md",
-    "source-refresh.md",
-    "platform-matrix.md",
-    "threat-model.md",
-    "policy-matrix.md",
-    "operation-state-machine.md",
-    "provenance-lockfile.md",
-    "traceability.md",
-    "acceptance-matrix.md",
-    "confirmation-flow.md",
-    "desired-state-manifest.md",
-    "privacy-redaction.md",
-    "scaffold-templates.md",
-    "automation-boundaries.md",
-    "invariants.md",
-    "failure-recovery-catalog.md",
-    "cli-ux-contract.md",
-    "mvp-cutline.md",
-    "api-contracts.md",
-    "validation.md",
-    "docs-site.md",
-    "docs-site-content-map.md",
-    "docs-site-design-system.md",
-    "fumadocs-site-plan.md",
-    "docs-content-architecture.md",
-    "docs-site-implementation-plan.md",
-    "subagent-task-graph.md",
-    "codex-kickoff-prompt.md",
-    "codex-handoff.md",
-    "goal.md",
-    "PLANS.md",
-    "codex-tooling.md",
+APP_DOCS_REQUIRED = [
+    "index.mdx",
+    "quickstart.mdx",
+    "concepts/safety-model.mdx",
+    "modes/index.mdx",
+    "reference/schemas.mdx",
+    "reference/openspec.mdx",
+    "reference/modes.mdx",
+    "workflows/post-spotify-update-repair.mdx",
+    "workflows/audit-extension.mdx",
+    "security/blocked-actions.mdx",
+    "reference/index.mdx",
+    "docs-site/implementation-boundary.mdx",
+    "archive/add-spicetify-skill/index.mdx",
+    "archive/add-spicetify-skill/plans.mdx",
+    "archive/add-spicetify-skill/context-map.mdx",
+    "archive/add-spicetify-skill/policy-matrix.mdx",
+    "archive/add-spicetify-skill/validation.mdx",
+    "archive/add-spicetify-skill/subagent-task-graph.mdx",
+    "archive/add-spicetify-skill/codex-kickoff-prompt.mdx",
 ]
+REQUIRED_SCRIPT_MODULES = {
+    "spicetify_agent.py",
+    "_asset_inspectors.py",
+    "_asset_path_guard.py",
+    "_asset_plans.py",
+    "_asset_research.py",
+    "_asset_sources.py",
+    "_asset_templates.py",
+    "_audit.py",
+    "_commands.py",
+    "_errors.py",
+    "_intent_router.py",
+    "_modes.py",
+    "_platform.py",
+    "_policy.py",
+    "_privacy.py",
+    "_provenance.py",
+    "_reports.py",
+    "_runner.py",
+    "_safe_paths.py",
+    "_schema_data.py",
+    "_schemas.py",
+    "_state.py",
+    "_util.py",
+    "_verify.py",
+}
 REQUIRED_SPEC_DOMAINS = {
     "skill",
     "agents",
@@ -259,10 +269,25 @@ def main() -> int:
         if not (root / rel).exists():
             errors.append(f"missing {rel}")
 
-    planning = root / "docs/planning" / CHANGE
-    for rel in PLANNING_REQUIRED:
-        if not (planning / rel).exists():
-            errors.append(f"missing docs/planning/{CHANGE}/{rel}")
+    if (root / "docs").exists():
+        errors.append("root docs/ must be migrated into apps/docs and removed")
+
+    docs_content_root = root / "apps" / "docs" / "content" / "docs"
+    planning = docs_content_root / "archive" / CHANGE
+    for rel in APP_DOCS_REQUIRED:
+        if not (docs_content_root / rel).exists():
+            errors.append(f"missing apps/docs/content/docs/{rel}")
+
+    scripts_dir = root / "skills" / "spicetify" / "scripts"
+    found_script_modules = (
+        {p.name for p in scripts_dir.glob("*.py")} if scripts_dir.exists() else set()
+    )
+    missing_script_modules = sorted(REQUIRED_SCRIPT_MODULES - found_script_modules)
+    extra_script_modules = sorted(found_script_modules - REQUIRED_SCRIPT_MODULES)
+    if missing_script_modules:
+        errors.append("missing skill script modules: " + ", ".join(missing_script_modules))
+    if extra_script_modules:
+        warnings.append("extra skill script modules: " + ", ".join(extra_script_modules))
 
     specs_dir = root / "openspec/changes" / CHANGE / "specs"
     specs = sorted(specs_dir.glob("*/spec.md")) if specs_dir.exists() else []
@@ -384,11 +409,11 @@ def main() -> int:
                 errors.append(f"eval case {case_id} has fake-execute without executeFake")
 
     modes_dir = planning / "modes"
-    modes = {p.stem for p in modes_dir.glob("*.md")} if modes_dir.exists() else set()
+    modes = {p.stem for p in modes_dir.glob("*.mdx")} if modes_dir.exists() else set()
     if sorted(REQUIRED_MODES - modes):
         errors.append("missing mode docs: " + ", ".join(sorted(REQUIRED_MODES - modes)))
     for mode in sorted(REQUIRED_MODES & modes):
-        text = read(modes_dir / f"{mode}.md")
+        text = read(modes_dir / f"{mode}.mdx")
         for marker in [
             "## Purpose",
             "## Inputs",
@@ -401,7 +426,7 @@ def main() -> int:
                 warnings.append(f"mode {mode} missing marker {marker}")
 
     workflows_dir = planning / "workflows"
-    workflows = {p.stem for p in workflows_dir.glob("*.md")} if workflows_dir.exists() else set()
+    workflows = {p.stem for p in workflows_dir.glob("*.mdx")} if workflows_dir.exists() else set()
     if sorted(REQUIRED_WORKFLOWS - workflows):
         errors.append("missing workflows: " + ", ".join(sorted(REQUIRED_WORKFLOWS - workflows)))
 
@@ -440,13 +465,25 @@ def main() -> int:
             if not path.is_file():
                 continue
             rel = path.relative_to(root)
+            if (
+                is_generated_path(path)
+                or path.suffix in {".pyc", ".pyo"}
+                or ".egg-info" in path.parts
+            ):
+                continue
             text = read(path)
-            if "../" in text:
-                errors.append(f"{rel} contains a path escaping the installed skill payload")
-            if "/Users/" in text or "\\Users\\" in text:
-                errors.append(f"{rel} contains a private local user path")
-            if re.search(r"(?im)^\s*(curl|bash|sh|sudo|chmod|npm|pnpm|brew|apt|winget)\b", text):
-                errors.append(f"{rel} includes an executable installer/package-manager line")
+            if path.suffix in {".md", ".json", ".yaml", ".yml", ".css", ".ini"}:
+                if "../" in text:
+                    errors.append(f"{rel} contains a path escaping the installed skill payload")
+                if "/Users/" in text or "\\Users\\" in text:
+                    errors.append(f"{rel} contains a private local user path")
+                if re.search(
+                    r"(?im)^\s*(curl|bash|sh|sudo|chmod|npm|pnpm|brew|apt|winget)\b",
+                    text,
+                ):
+                    errors.append(f"{rel} includes an executable installer/package-manager line")
+            if path.suffix == ".py" and re.search(r"\bshell\s*=\s*True\b", text):
+                errors.append(f"{rel} enables shell=True")
         bundled_upstream = [
             path.relative_to(root).as_posix()
             for path in skill_dir.rglob("*")
@@ -474,7 +511,7 @@ def main() -> int:
                 errors.append(f"{rel} must point skills to ./skills/")
             if "mcpServers" in plugin:
                 errors.append(f"{rel} must not add MCP authority for the single-skill package")
-    plans_path = planning / "PLANS.md"
+    plans_path = planning / "plans.mdx"
     if plans_path.exists() and "TBD" in read(plans_path):
         errors.append("PLANS.md contains TBD placeholders; keep resumable state explicit")
 
@@ -483,7 +520,7 @@ def main() -> int:
         d = read(design_root)
         if "Fumadocs" not in d or "shadcn" not in d or "/spicetify" not in d:
             errors.append("DESIGN.md must mention Fumadocs, shadcn, and /spicetify")
-    docs_plan = planning / "fumadocs-site-plan.md"
+    docs_plan = planning / "fumadocs-site-plan.mdx"
     if docs_plan.exists():
         dp = read(docs_plan)
         for marker in [
@@ -496,20 +533,20 @@ def main() -> int:
         ]:
             if marker not in dp:
                 errors.append(f"fumadocs-site-plan.md missing {marker}")
-    docs_design = planning / "docs-site-design-system.md"
+    docs_design = planning / "docs-site-design-system.mdx"
     if docs_design.exists():
         dd = read(docs_design)
         for marker in ["shadcn/ui", "RiskBadge", "Accessibility", "Copy rules"]:
             if marker not in dd:
                 errors.append(f"docs-site-design-system.md missing {marker}")
-    docs_content = planning / "docs-content-architecture.md"
+    docs_content = planning / "docs-content-architecture.mdx"
     if docs_content.exists():
         dc = read(docs_content)
         for marker in ["Generated content", "sourcePath", "No release labels", "LLM"]:
             if marker not in dc:
                 errors.append(f"docs-content-architecture.md missing {marker}")
 
-    subagent_graph = planning / "subagent-task-graph.md"
+    subagent_graph = planning / "subagent-task-graph.mdx"
     if subagent_graph.exists():
         sg = read(subagent_graph)
         for marker in [
@@ -521,7 +558,7 @@ def main() -> int:
         ]:
             if marker not in sg:
                 errors.append(f"subagent-task-graph.md missing {marker}")
-    kickoff = planning / "codex-kickoff-prompt.md"
+    kickoff = planning / "codex-kickoff-prompt.mdx"
     if kickoff.exists():
         kp = read(kickoff)
         for marker in [

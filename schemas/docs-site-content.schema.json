@@ -41,19 +41,22 @@
       "items": {
         "type": "string"
       },
-      "minItems": 22
+      "minItems": 23,
+      "uniqueItems": true
     },
     "workflowPages": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "uniqueItems": true
     },
     "schemaPages": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "uniqueItems": true
     },
     "redaction": {
       "type": "object",

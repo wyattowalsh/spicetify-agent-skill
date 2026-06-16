@@ -1,0 +1,102 @@
+---
+title: Repository structure
+description: Migrated /spicetify planning content for Repository structure.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/repo-structure.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Repository structure
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/repo-structure.mdx`
+**Purpose:** Implementation repository layout for /spicetify.
+**Status:** Implemented baseline
+**Load/use when:** Use when orienting agents to the current implementation repo.
+
+
+```text
+spicetify-agent-skill/
+  README.md
+  AGENTS.md
+  DESIGN.md
+  pyproject.toml
+  uv.lock
+  package.json              # workspace metadata for the isolated docs app
+  pnpm-lock.yaml
+  pnpm-workspace.yaml
+  openspec/
+    config.yaml
+    changes/add-spicetify-skill/
+      proposal.md
+      design.md
+      tasks.md
+      specs/
+  skills/
+    spicetify/
+      SKILL.md
+      references/
+  schemas/
+    *.schema.json
+  evals/
+    regression-prompts.json
+  src/
+    spicetify_agent/
+      cli.py
+      commands.py
+      runner.py
+      policy.py
+      state.py
+      safe_paths.py
+      audit.py
+      provenance.py
+      privacy.py
+      reports.py
+      schemas.py
+      modes.py
+      verify.py
+  tests/
+    unit/
+    integration/
+    helpers/
+      fake_spicetify.py
+  tools/
+    validate_bundle.py
+    validate_openspec_structure.py
+    generate_docs_references.py
+  apps/
+    docs/
+      app/
+      content/docs/
+      components/spicetify/
+      lib/
+      scripts/
+```
+
+## Notes
+
+- The Python runtime is packaged as `spicetify-agent`; the console command is
+  `spicetify-agent` so it never shadows the real `spicetify` CLI.
+- The docs app uses Node tooling only under `apps/docs` and must not become a
+  runtime authority boundary for local Spicetify operations.
+- Do not add hooks/MCP/plugins until they remove a repeated manual loop and are approved.
+- Keep `skills/spicetify/SKILL.md` concise; references hold the depth.
+
+## Accompanying docs app structure
+
+Implemented docs workspace:
+
+```text
+apps/docs/
+  app/
+  content/docs/
+  components/spicetify/
+  lib/
+  scripts/
+  next.config.mjs
+  package.json
+  tsconfig.json
+```
+
+The docs app is intentionally separate from runtime modules. It may read OpenSpec/planning/schema files to generate reference docs, but it must not import runtime code that executes Spicetify or mutates local state.

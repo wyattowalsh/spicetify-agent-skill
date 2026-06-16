@@ -23,9 +23,9 @@ The installed skill is self-contained under `skills/spicetify/`. It does not bun
 From this checkout:
 
 ```bash
-PYTHONPATH=src python3 -m spicetify_agent.cli --help
-PYTHONPATH=src python3 -m spicetify_agent.cli plan "/spicetify Spotify updated and Spicetify broke"
-PYTHONPATH=src python3 -m spicetify_agent.cli research "find a playlist sorting extension"
+PYTHONPATH=skills/spicetify/scripts python3 -m spicetify_agent --help
+PYTHONPATH=skills/spicetify/scripts python3 -m spicetify_agent plan "/spicetify Spotify updated and Spicetify broke"
+PYTHONPATH=skills/spicetify/scripts python3 -m spicetify_agent research "find a playlist sorting extension"
 ```
 
 Local package commands:
@@ -52,11 +52,11 @@ spicetify-agent --help
 
 ## Main surfaces
 
-- `src/spicetify_agent/` — Python runtime and CLI.
+- `skills/spicetify/scripts/` — installed-skill Python runtime and CLI.
 - `skills/spicetify/` — compact `/spicetify` Skill router and references.
 - `schemas/` — JSON contracts for plans, runs, reports, policy, provenance, privacy, snapshots, docs, and fixtures.
 - `openspec/changes/add-spicetify-skill/` — behavior requirements and task graph.
-- `docs/planning/add-spicetify-skill/` — implementation context, risk matrices, workflows, modes, and validation plans.
+- `apps/docs/content/docs/` — durable documentation, generated references, workflows, modes, and validation guidance.
 - `apps/docs/` — isolated Fumadocs + shadcn/ui-compatible documentation app.
 - `tests/` — fake-environment, policy, command, mode, audit, privacy, snapshot, CLI, and bundle validation tests.
 
@@ -93,11 +93,11 @@ uv run --frozen pytest tests/unit
 uv run --frozen pytest tests/integration
 uv run --frozen ruff check .
 uv run --frozen ruff format --check .
-uv run --frozen ty check src
+uv run --frozen ty check skills/spicetify/scripts
 uv build --offline
 uvx --from . spicetify-agent --help
-PYTHONPATH=src python3 -m pytest tests
-PYTHONPATH=src python3 -m spicetify_agent.cli validate-schemas
+PYTHONPATH=skills/spicetify/scripts python3 -m pytest tests
+PYTHONPATH=skills/spicetify/scripts python3 -m spicetify_agent validate-schemas
 python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict
 python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake
 python3 tools/validate_bundle.py --root .

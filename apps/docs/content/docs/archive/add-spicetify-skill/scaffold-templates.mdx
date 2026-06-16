@@ -1,0 +1,99 @@
+---
+title: Scaffold templates
+description: Migrated /spicetify planning content for Scaffold templates.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/scaffold-templates.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Scaffold templates
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/scaffold-templates.mdx`
+**Purpose:** Defines generated theme, extension, custom-app, and snippet templates.
+**Status:** Proposed
+**Load/use when:** Implementing `theme`, `extension`, `custom-app`, `snippet`, `watch`, or developer workflows.
+
+## Recommendation
+
+Use maintained `/spicetify` templates for new local development. Treat Spicetify Creator as explicit compatibility mode because official docs still document Creator workflows while the source repository marks it deprecated and recommends general bundlers.
+
+## Extension template
+
+```text
+extension/<slug>/
+  package.json              # generated; package scripts are still approval-gated before first run
+  tsconfig.json
+  src/index.ts
+  src/ui.tsx                # optional React entry
+  src/spicetify-ready.ts
+  dist/<slug>.js
+  spicetify.asset.json
+```
+
+Required template behavior:
+
+- wait for required `Spicetify` APIs before use;
+- feature-detect unstable APIs;
+- register cleanup/dispose hooks for buttons, observers, intervals, and listeners;
+- use a unique storage prefix;
+- avoid external network by default;
+- emit a single JS file for installation;
+- audit the built output before enablement.
+
+## Custom app template
+
+```text
+custom-app/<slug>/
+  package.json
+  tsconfig.json
+  src/index.tsx
+  src/App.tsx
+  src/style.css
+  public/icon.svg
+  dist/index.js
+  dist/manifest.json
+  spicetify.asset.json
+```
+
+Required template behavior:
+
+- generate `manifest.json` with required keys;
+- validate `icon` and `active-icon` fields as escaped SVG strings;
+- keep `subfiles_extension` explicit and audited as extension code;
+- separate app UI code from optional startup extension code;
+- support local build/watch only for generated or explicitly trusted projects.
+
+## Theme template
+
+```text
+Themes/<ThemeName>/
+  color.ini
+  user.css
+  README.md
+  spicetify.asset.json
+```
+
+Required template behavior:
+
+- include at least one color scheme;
+- avoid remote CSS imports and remote URLs by default;
+- avoid fragile selectors where stable variables or local classes are enough;
+- require `theme.js` audit if generated or imported.
+
+## Build execution policy
+
+- Generated template scripts may be proposed after the user approves dependency installation/build execution.
+- Imported or third-party project scripts require source/package audit first.
+- Package manager choice follows the target repo or project evidence; new generated projects may default to the detected/preferred package manager but must not force migration.
+- Build output is not trusted solely because source was generated; it is parsed/audited before install.
+
+## Creator compatibility
+
+When the user explicitly requests Creator:
+
+1. Present the source conflict.
+2. Offer maintained-template alternative.
+3. If accepted, generate a Creator-compatible plan without executing package scripts.
+4. Mark the project as compatibility-mode in the operation report.

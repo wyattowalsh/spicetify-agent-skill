@@ -1,0 +1,7 @@
+{
+  "name": "spicetify-agent-template",
+  "description": "Inert custom app manifest template for dry-run planning.",
+  "preview": "preview.png",
+  "main": "index.js",
+  "readme": "README.md"
+}

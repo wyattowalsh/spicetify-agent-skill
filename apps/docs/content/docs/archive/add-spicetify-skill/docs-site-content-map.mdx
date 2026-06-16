@@ -1,0 +1,162 @@
+---
+title: Docs site content map
+description: Migrated /spicetify planning content for Docs site content map.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/docs-site-content-map.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Docs site content map
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-content-map.mdx`
+**Purpose:** Information architecture and page plan for the companion Fumadocs site.
+**Status:** Proposed
+**Load/use when:** Building content, navigation, sidebar groups, examples, or docs-site acceptance checks.
+
+## Content principles
+
+- Put safe quick-start content first, then deeper policy and internals.
+- Every page should answer: what this does, what it touches, how dry-run works, how verification works, and how rollback works.
+- Do not duplicate long specs verbatim; summarize and link to source paths.
+- Use synthetic examples only.
+- Link each page to the relevant OpenSpec domain and mode/workflow docs.
+
+## Required page tree
+
+```text
+content/docs/
+  index.mdx
+  start/
+    what-is-spicetify-skill.mdx
+    install-boundaries.mdx
+    first-dry-run.mdx
+    safe-apply.mdx
+    rollback-basics.mdx
+  concepts/
+    dry-run-plans.mdx
+    snapshots-and-last-known-good.mdx
+    command-allowlist.mdx
+    policy-and-confirmation.mdx
+    provenance-locks.mdx
+    redaction-and-consent.mdx
+    fake-environments.mdx
+  modes/
+    index.mdx
+    inspect.mdx
+    doctor.mdx
+    snapshot.mdx
+    restore.mdx
+    repair.mdx
+    apply.mdx
+    config.mdx
+    profile.mdx
+    theme.mdx
+    extension.mdx
+    custom-app.mdx
+    snippet.mdx
+    marketplace.mdx
+    audit.mdx
+    devtools.mdx
+    watch.mdx
+    migrate.mdx
+    update.mdx
+    rollback.mdx
+    uninstall.mdx
+    report.mdx
+    evolve.mdx
+  workflows/
+    post-spotify-update-repair.mdx
+    create-theme.mdx
+    install-github-theme-safely.mdx
+    audit-extension.mdx
+    switch-profiles.mdx
+    scaffold-extension.mdx
+    rollback-last-working.mdx
+  safety/
+    threat-model.mdx
+    blocked-actions.mdx
+    high-risk-confirmations.mdx
+    platform-matrix.mdx
+    devtools-and-logs.mdx
+    third-party-code.mdx
+  manifests/
+    profile-manifest.mdx
+    desired-state-manifest.mdx
+    asset-manifest.mdx
+    provenance-lockfile.mdx
+  schemas/
+    index.mdx
+    operation-plan.mdx
+    operation-report.mdx
+    audit-report.mdx
+    snapshot-manifest.mdx
+    policy-decision.mdx
+    docs-site-config.mdx
+  troubleshooting/
+    spotify-updated.mdx
+    unsupported-spotify-build.mdx
+    missing-theme-file.mdx
+    extension-error.mdx
+    custom-app-manifest-error.mdx
+    permissions-and-packages.mdx
+  contributing/
+    architecture.mdx
+    testing-fake-spicetify.mdx
+    adding-a-mode.mdx
+    adding-a-schema.mdx
+    docs-style-guide.mdx
+    eval-stack.mdx
+```
+
+## Sidebar groups
+
+| Group | Pages | Notes |
+|---|---|---|
+| Start | overview, first dry-run, safe apply, rollback basics | Novice-friendly. |
+| Concepts | dry-run, snapshots, policy, provenance, redaction | Short explainers with diagrams. |
+| Modes | all mode pages | Use `ModeCard` index and consistent per-mode template. |
+| Workflows | concrete prompt-to-plan examples | Include structured response examples. |
+| Safety | threat model, blocked actions, platform caveats | Include `RiskBadge` and recovery callouts. |
+| Manifests | profile, desired-state, asset, provenance | Include schema snippets and no-script warning. |
+| Schemas | machine contracts | Render summaries from `schemas/*.schema.json`. |
+| Troubleshooting | failure-mode pages | Link to recovery catalog entries. |
+| Contributing | architecture, testing, docs style | For coding agents and humans. |
+
+## Per-mode page template
+
+Each mode page MUST include:
+
+1. Purpose
+2. When to use it
+3. Inputs
+4. Preconditions
+5. Commands/files touched
+6. Safety checks
+7. Dry-run plan shape
+8. Execution flow
+9. Verification flow
+10. Rollback/recovery flow
+11. Example prompts
+12. Example structured response
+13. Related schemas
+14. Related failure modes
+
+## Example pages required at launch
+
+- `workflows/post-spotify-update-repair.mdx`
+- `workflows/create-theme.mdx`
+- `workflows/install-github-theme-safely.mdx`
+- `workflows/audit-extension.mdx`
+- `workflows/switch-profiles.mdx`
+- `workflows/scaffold-extension.mdx`
+- `workflows/rollback-last-working.mdx`
+
+## Content acceptance
+
+- All required pages exist or have explicit deferred status.
+- Each mode page uses the same required sections.
+- Each safety page links to policy and recovery docs.
+- Schema pages are generated or manually synchronized with root schemas.
+- No sample contains real local paths, tokens, cookies, prefs contents, or real user logs.

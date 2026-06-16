@@ -6,13 +6,20 @@ import sys
 import tomllib
 from pathlib import Path
 
+from _schema_data import SCHEMAS
 
-def test_pyproject_uses_uv_build_and_non_shadowing_console_command() -> None:
+SCRIPT_PATH = str(Path("skills/spicetify/scripts").resolve())
+
+
+def test_pyproject_uses_setuptools_flat_modules_and_non_shadowing_console_command() -> None:
     data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
 
-    assert data["build-system"]["build-backend"] == "uv_build"
-    assert data["project"]["scripts"] == {"spicetify-agent": "spicetify_agent.cli:main"}
+    assert data["build-system"]["build-backend"] == "setuptools.build_meta"
+    assert data["project"]["scripts"] == {"spicetify-agent": "spicetify_agent:main"}
     assert "spicetify" not in data["project"]["scripts"]
+    assert data["tool"]["setuptools"]["package-dir"] == {"": "skills/spicetify/scripts"}
+    assert "spicetify_agent" in data["tool"]["setuptools"]["py-modules"]
+    assert "_modes" in data["tool"]["setuptools"]["py-modules"]
 
 
 def test_runtime_package_has_no_registry_dependencies() -> None:
@@ -25,15 +32,11 @@ def test_runtime_package_has_no_registry_dependencies() -> None:
 
 def test_packaged_schema_data_matches_root_schemas() -> None:
     root_schema_names = sorted(path.name for path in Path("schemas").glob("*.json"))
-    package_schema_names = sorted(
-        path.name for path in Path("src/spicetify_agent/schema_data").glob("*.json")
-    )
+    package_schema_names = sorted(SCHEMAS)
 
     assert package_schema_names == root_schema_names
     for name in root_schema_names:
-        assert Path("src/spicetify_agent/schema_data", name).read_text(encoding="utf-8") == Path(
-            "schemas", name
-        ).read_text(encoding="utf-8")
+        assert SCHEMAS[name] == Path("schemas", name).read_text(encoding="utf-8")
 
 
 def test_installable_skill_payload_is_self_contained() -> None:
@@ -65,10 +68,10 @@ def test_validate_schemas_works_outside_repo_root(tmp_path: Path) -> None:
     env = {
         **os.environ,
         "PYTHONDONTWRITEBYTECODE": "1",
-        "PYTHONPATH": str(Path("src").resolve()),
+        "PYTHONPATH": SCRIPT_PATH,
     }
     result = subprocess.run(
-        [sys.executable, "-m", "spicetify_agent.cli", "validate-schemas"],
+        [sys.executable, "-m", "spicetify_agent", "validate-schemas"],
         cwd=tmp_path,
         env=env,
         text=True,

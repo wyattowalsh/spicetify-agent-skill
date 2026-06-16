@@ -1,10 +1,21 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const repoRoot = fileURLToPath(new URL("../../..", import.meta.url));
 const contentRoot = join(root, "content", "docs");
+const modeRoot = join(
+  repoRoot,
+  "apps",
+  "docs",
+  "content",
+  "docs",
+  "archive",
+  "add-spicetify-skill",
+  "modes"
+);
+const schemaRoot = join(repoRoot, "schemas");
 
 const requiredPages = [
   "index.mdx",
@@ -42,6 +53,32 @@ function walk(dir) {
 
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function slugFromSchema(fileName) {
+  return fileName.replace(/\.schema\.json$/, "").replace(/\.json$/, "");
+}
+
+function assertUnique(items, label) {
+  const seen = new Set();
+  for (const item of items) {
+    if (seen.has(item)) {
+      throw new Error(`${label} contains duplicate entry ${item}`);
+    }
+    seen.add(item);
+  }
+}
+
+function assertSameSet(actual, expected, label) {
+  const actualSorted = [...actual].sort();
+  const expectedSorted = [...expected].sort();
+  if (actualSorted.join("\n") !== expectedSorted.join("\n")) {
+    const missing = expectedSorted.filter((entry) => !actualSorted.includes(entry));
+    const extra = actualSorted.filter((entry) => !expectedSorted.includes(entry));
+    throw new Error(
+      `${label} drift: missing [${missing.join(", ")}], extra [${extra.join(", ")}]`
+    );
+  }
 }
 
 function parseFrontmatter(text, file) {
@@ -82,14 +119,37 @@ if (manifest.site !== "/spicetify-docs" || manifest.appRoot !== "apps/docs") {
 if (manifest.safety?.noSecrets !== true || manifest.safety?.noDeploymentWithoutApproval !== true) {
   throw new Error("docs-site-manifest.json is missing required safety gates");
 }
+for (const route of ["/", "/docs", "/docs/[[...slug]]", "/llms.txt", "/llms-full.txt"]) {
+  if (!manifest.routes?.includes(route)) {
+    throw new Error(`docs-site-manifest.json missing route ${route}`);
+  }
+}
 
 const contentMap = readJson(join(root, "content-map.json"));
-if (!Array.isArray(contentMap.modePages) || contentMap.modePages.length < 22) {
-  throw new Error("content-map.json must list all 22 /spicetify mode pages");
+if (!Array.isArray(contentMap.modePages) || contentMap.modePages.length < 23) {
+  throw new Error("content-map.json must list all 23 /spicetify mode pages");
 }
 if (contentMap.redaction?.syntheticExamplesOnly !== true || contentMap.redaction?.noPrefsContent !== true) {
   throw new Error("content-map.json must require synthetic examples and omit prefs content");
 }
+assertUnique(contentMap.sections.map((section) => section.slug), "content-map sections");
+assertUnique(contentMap.modePages, "content-map modePages");
+assertUnique(contentMap.schemaPages, "content-map schemaPages");
+for (const section of contentMap.sections) {
+  for (const page of section.pages) {
+    if (!existsSync(join(contentRoot, `${page}.mdx`))) {
+      throw new Error(`content-map section ${section.slug} references missing page ${page}`);
+    }
+  }
+}
+const expectedModes = readdirSync(modeRoot)
+  .filter((fileName) => fileName.endsWith(".mdx"))
+  .map((fileName) => fileName.replace(/\.mdx$/, ""));
+const expectedSchemas = readdirSync(schemaRoot)
+  .filter((fileName) => fileName.endsWith(".json"))
+  .map(slugFromSchema);
+assertSameSet(contentMap.modePages, expectedModes, "content-map modePages");
+assertSameSet(contentMap.schemaPages, expectedSchemas, "content-map schemaPages");
 
 const files = walk(contentRoot).filter((file) => extname(file) === ".mdx");
 for (const file of files) {

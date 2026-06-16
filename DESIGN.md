@@ -66,9 +66,9 @@ OpenSpec artifacts
 ## Read next
 
 1. `openspec/changes/add-spicetify-skill/design.md`
-2. `docs/planning/add-spicetify-skill/fumadocs-site-plan.md`
-3. `docs/planning/add-spicetify-skill/docs-content-architecture.md`
-4. `docs/planning/add-spicetify-skill/docs-site-implementation-plan.md`
+2. `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`
+3. `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`
+4. `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`
 5. `openspec/changes/add-spicetify-skill/specs/docs-site/spec.md`
 6. `openspec/changes/add-spicetify-skill/specs/docs-content/spec.md`
 7. `openspec/changes/add-spicetify-skill/specs/docs-ui/spec.md`

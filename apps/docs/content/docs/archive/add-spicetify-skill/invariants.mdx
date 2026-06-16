@@ -1,0 +1,46 @@
+---
+title: Invariants: `/spicetify`
+description: Migrated /spicetify planning content for Invariants: `/spicetify`.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/invariants.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Invariants: `/spicetify`
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/invariants.mdx`
+**Purpose:** Non-waivable safety, state, and execution invariants that every implementation slice must preserve.
+**Status:** Proposed
+**Load/use when:** Reviewing policy, executor, snapshot, rollback, automation, or regression-test behavior.
+
+## Principle
+
+`/spicetify` is allowed to be powerful only because its authority is narrow, typed, reversible, and inspectable. These invariants are stronger than user profiles, manifests, convenience modes, and future automation presets.
+
+## Non-waivable invariants
+
+| ID | Invariant | Enforcement points | Regression evidence |
+|---|---|---|---|
+| INV-DRY-RUN | Any operation that may mutate config, files, launch flags, Spotify patch state, or third-party asset state MUST produce a dry-run plan before execution. | mode router, plan builder, policy engine | mutating prompts return `OperationPlan` first |
+| INV-NO-RAW-SHELL | The engine MUST NOT execute arbitrary user-provided shell, README instructions, Marketplace metadata, package scripts, or model-generated command strings. | command registry, runner, audit, policy | shell metacharacter and installer-script fixtures are blocked |
+| INV-ARGV-ONLY | All allowed Spicetify calls MUST use typed argv arrays with `shell:false`; combined commands MUST be decomposed into checkpointed steps. | command registry, executor | runner tests reject string commands and combined shortcuts |
+| INV-SNAPSHOT-FIRST | Medium/high-risk mutations MUST require a verified snapshot before the first mutation step. | policy, snapshot store, executor | failed snapshot prevents mutation |
+| INV-PLAN-BOUND-CONFIRM | Confirmation MUST be bound to plan hash, risk class, target paths, command set, snapshot state, and expiry; drift invalidates approval. | confirmation flow, operation state machine | stale-plan fixture stops before execution |
+| INV-SINGLE-WRITER | Only one mutating operation may hold the local operation lock for a discovered Spicetify userdata root. | executor, state store | concurrent mutation fixture rejects the second run |
+| INV-AUDIT-BEFORE-ENABLE | Third-party or unknown JS/CSS/custom app/theme assets MUST be staged, hashed, audited, and provenance-locked before install or enablement. | audit, provenance, customization modes | token+network and path-traversal fixtures block install |
+| INV-NO-SECRET-CAPTURE | Reports, snapshots, logs, screenshots, and DevTools evidence MUST exclude or redact secrets, prefs contents, tokens, cookies, auth headers, and unnecessary PII. | privacy, report writer, snapshot store | strict-shareable report secret scan passes |
+| INV-LAST-KNOWN-GOOD | Last-known-good MUST update only after post-operation verification succeeds; failed runs retain the prior pointer. | verifier, state store | apply-failure fixture leaves last-known-good unchanged |
+| INV-MANUAL-PLATFORM-FIXES | Package-manager actions, permission changes, launch-flag edits, shortcuts, `.desktop` files, remote debugging, installer scripts, and publishing MUST remain manual/explicitly confirmed. | platform doctor, policy, devtools, marketplace | Snap/chmod/install-script fixtures produce manual-only reports |
+| INV-FAKE-CI | Automated tests MUST use fake Spicetify and temp roots; CI MUST fail on real Spotify/Spicetify paths. | test harness, CI guard | live-path fixture fails closed |
+
+## Waiver policy
+
+The implementation MAY allow a user to accept risk for a specific high-risk plan, but it MUST NOT allow waivers for `INV-NO-RAW-SHELL`, `INV-ARGV-ONLY`, `INV-PLAN-BOUND-CONFIRM`, `INV-NO-SECRET-CAPTURE`, or `INV-FAKE-CI`.
+
+## Implementation notes
+
+- Model invariants as policy tests and executor assertions, not only documentation.
+- Add a regression prompt whenever an invariant changes.
+- If a future mode conflicts with an invariant, change the mode, not the invariant, unless the OpenSpec specs are explicitly revised and approved.

@@ -1,0 +1,16 @@
+name: spicetify
+description: Metadata-only hints for the /spicetify Agent Skill.
+skill: spicetify
+interfaces:
+  - /spicetify <prompt>
+helper_command: spicetify-agent
+authority:
+  mcp: false
+  hooks: false
+  permissions: []
+  install_scripts: false
+safety:
+  official_spicetify_cli_external: true
+  dry_run_first: true
+  arbitrary_shell: false
+  bundled_spicetify_cli: false

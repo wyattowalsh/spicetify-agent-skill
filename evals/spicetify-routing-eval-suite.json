@@ -136,7 +136,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers apply without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/apply.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/apply.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -233,7 +233,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers audit without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/audit.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/audit.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -336,7 +336,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers config without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/config.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/config.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -435,7 +435,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers custom-app without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/custom-app.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/custom-app.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -538,7 +538,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers devtools without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/devtools.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/devtools.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -641,7 +641,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers doctor without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/acceptance-matrix.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -738,7 +738,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers evolve without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/evolve.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/evolve.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -841,7 +841,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers extension without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/extension.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/extension.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -938,7 +938,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers inspect without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/eval-stack.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1029,7 +1029,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers manifest without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/manifest.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/manifest.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1124,7 +1124,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers marketplace without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/marketplace.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/marketplace.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1215,7 +1215,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers migrate without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/migrate.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/migrate.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1313,7 +1313,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers profile without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/profile.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/profile.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1416,7 +1416,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers repair without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/repair.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/repair.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1508,7 +1508,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers report without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/report.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/report.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1610,7 +1610,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers restore without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/restore.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/restore.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1710,7 +1710,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers rollback without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/rollback.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/rollback.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1809,7 +1809,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers snapshot without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snapshot.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snapshot.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -1908,7 +1908,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers snippet without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snippet.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snippet.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -2007,7 +2007,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers theme without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/theme.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/theme.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -2104,7 +2104,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers uninstall without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/uninstall.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/uninstall.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -2200,7 +2200,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers update without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/update.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/update.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -2301,7 +2301,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers watch without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/watch.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/watch.mdx"
       },
       "activation": {
         "kind": "route-mode",

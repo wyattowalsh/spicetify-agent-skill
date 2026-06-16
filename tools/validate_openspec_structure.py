@@ -90,7 +90,7 @@ def validate(root: Path) -> dict[str, object]:
     if len(set(task_ids)) < 20:
         errors.append("tasks.md does not contain the expected implementation task graph")
 
-    result = {
+    result: dict[str, object] = {
         "root": str(root),
         "change": CHANGE,
         "configuredDomainCount": len(configured_domains),

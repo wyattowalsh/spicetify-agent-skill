@@ -1,6 +1,6 @@
 [build-system]
-requires = ["uv_build>=0.11.17,<0.12"]
-build-backend = "uv_build"
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "spicetify-agent"
@@ -31,11 +31,42 @@ dev = [
 ]
 
 [project.scripts]
-spicetify-agent = "spicetify_agent.cli:main"
+spicetify-agent = "spicetify_agent:main"
+
+[tool.setuptools]
+py-modules = [
+  "spicetify_agent",
+  "_asset_inspectors",
+  "_asset_path_guard",
+  "_asset_plans",
+  "_asset_research",
+  "_asset_sources",
+  "_asset_templates",
+  "_audit",
+  "_commands",
+  "_errors",
+  "_intent_router",
+  "_modes",
+  "_platform",
+  "_policy",
+  "_privacy",
+  "_provenance",
+  "_reports",
+  "_runner",
+  "_safe_paths",
+  "_schema_data",
+  "_schemas",
+  "_state",
+  "_util",
+  "_verify",
+]
+
+[tool.setuptools.package-dir]
+"" = "skills/spicetify/scripts"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["skills/spicetify/scripts"]
 
 [tool.ruff]
 line-length = 100

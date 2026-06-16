@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
-
-from spicetify_agent.assets.inspectors import inspect_asset_path
-from spicetify_agent.audit import MAX_AUDIT_FILES, audit_path, audit_text
-from spicetify_agent.errors import PolicyBlocked, UnsafePath
-from spicetify_agent.privacy import redact
-from spicetify_agent.provenance import audit_still_valid, lock_file
-from spicetify_agent.safe_paths import ensure_within
-from spicetify_agent.state import snapshot_tree
+from _asset_inspectors import inspect_asset_path
+from _audit import MAX_AUDIT_FILES, audit_path, audit_text
+from _errors import PolicyBlocked, UnsafePath
+from _privacy import redact
+from _provenance import audit_still_valid, lock_file
+from _safe_paths import ensure_within
+from _state import snapshot_tree
 
 
 def test_audit_blocks_token_exfiltration_and_prompt_injection() -> None:
@@ -72,7 +72,7 @@ def test_audit_path_warns_when_directory_coverage_is_truncated(tmp_path: Path) -
 
     assert report["verdict"] == "warn"
     assert report["filesAudited"] == MAX_AUDIT_FILES
-    findings = report["findings"]
+    findings = cast(list[dict[str, Any]], report["findings"])
     assert isinstance(findings, list)
     assert any(finding["reason"] == "audit coverage truncated" for finding in findings)
 
@@ -130,7 +130,7 @@ def test_snapshot_excludes_sensitive_names(tmp_path: Path) -> None:
 
     manifest = snapshot_tree(root, tmp_path / "snapshots")
 
-    paths = [entry["path"] for entry in manifest["files"]]
+    paths = [entry["path"] for entry in cast(list[dict[str, Any]], manifest["files"])]
     assert "config-xpui.ini" in paths
     assert "prefs" not in paths
 

@@ -27,7 +27,7 @@ workflow implementations.
 
 - [ ] TASK-001-read-context
   - Goal: Read durable context before editing.
-  - Read: `AGENTS.md`, `README.md`, `manifest.md`, `docs/planning/add-spicetify-skill/audit-review.md`, `source-refresh.md`, `proposal.md`, `design.md`, `specs/`, `context-map.md`
+  - Read: `AGENTS.md`, `README.md`, `manifest.md`, `apps/docs/content/docs/archive/add-spicetify-skill/audit-review.mdx`, `source-refresh.md`, `proposal.md`, `design.md`, `specs/`, `context-map.md`
   - Write scope: none
   - Validation: required files exist
   - Done when: scope, risks, skill name `/spicetify`, and first task are clear
@@ -36,7 +36,7 @@ workflow implementations.
   - Goal: Inspect the target repo before implementation.
   - Depends on: TASK-001-read-context
   - Read: repo tree, package manager files, existing tests, existing OpenSpec config, existing agent instructions
-  - Write scope: `docs/planning/add-spicetify-skill/context-map.md`
+  - Write scope: `apps/docs/content/docs/archive/add-spicetify-skill/context-map.mdx`
   - Validation: context map updated with evidence, assumptions, detected package manager, command profile, and write scopes
   - Done when: implementation paths and detected commands are evidence-backed
 
@@ -44,7 +44,7 @@ workflow implementations.
   - Goal: Recheck volatile Spicetify/OpenSpec facts before implementation.
   - Depends on: TASK-001-read-context
   - Read: official Spicetify docs, Spicetify CLI changelog/source metadata, Spicetify Creator README, Marketplace wiki, OpenSpec docs/repo
-  - Write scope: `docs/planning/add-spicetify-skill/source-refresh.md`, `research.md`, `context-map.md`
+  - Write scope: `apps/docs/content/docs/archive/add-spicetify-skill/source-refresh.mdx`, `research.md`, `context-map.md`
   - Validation: source table updated with checked date and conflicts
   - Done when: no “latest/current” claim is stale or uncited in planning docs
 
@@ -160,7 +160,7 @@ workflow implementations.
 - [ ] TASK-024-implement-confirmation-contract
   - Goal: Implement plan-bound confirmation grants and invalidation semantics.
   - Depends on: TASK-010-add-core-schemas, TASK-013-implement-policy-engine
-  - Read: `schemas/confirmation.schema.json`, `docs/planning/add-spicetify-skill/confirmation-flow.md`, `specs/policy/spec.md`, `specs/state/spec.md`
+  - Read: `schemas/confirmation.schema.json`, `apps/docs/content/docs/archive/add-spicetify-skill/confirmation-flow.mdx`, `specs/policy/spec.md`, `specs/state/spec.md`
   - Write scope: confirmation/policy/run-record modules and tests
   - Validation: plan hash mismatch invalidates confirmation before mutation
   - Done when: confirmation grants are persisted, scoped, expiring, revocable, and reportable
@@ -168,7 +168,7 @@ workflow implementations.
 - [ ] TASK-025-implement-redaction-boundaries
   - Goal: Implement privacy/redaction rules for reports, logs, screenshots, snapshots, and doctor evidence.
   - Depends on: TASK-010-add-core-schemas, TASK-013-implement-policy-engine
-  - Read: `docs/planning/add-spicetify-skill/privacy-redaction.md`, `specs/policy/spec.md`, `specs/verification/spec.md`
+  - Read: `apps/docs/content/docs/archive/add-spicetify-skill/privacy-redaction.mdx`, `specs/policy/spec.md`, `specs/verification/spec.md`
   - Write scope: redaction/report/snapshot/log modules and tests
   - Validation: token-like strings, prefs content, cookies, auth headers, and private paths are masked in shareable reports
   - Done when: sensitive evidence cannot be persisted or reported without consent and redaction
@@ -310,8 +310,8 @@ workflow implementations.
 - [ ] TASK-080-add-subagent-task-graph [P]
   - Goal: Add and validate the bounded Codex subagent graph.
   - Depends on: TASK-002-ground-target-repo
-  - Read: `docs/planning/add-spicetify-skill/codex-tooling.md`, `docs/planning/add-spicetify-skill/context-map.md`, `specs/agents/spec.md`
-  - Write scope: `docs/planning/add-spicetify-skill/subagent-task-graph.md`, `schemas/subagent-task-graph.schema.json`, `schemas/subagent-result.schema.json`
+  - Read: `apps/docs/content/docs/archive/add-spicetify-skill/codex-tooling.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/context-map.mdx`, `specs/agents/spec.md`
+  - Write scope: `apps/docs/content/docs/archive/add-spicetify-skill/subagent-task-graph.mdx`, `schemas/subagent-task-graph.schema.json`, `schemas/subagent-result.schema.json`
   - Validation: graph contains orchestrator, A0 through A8, non-overlapping write scopes, result envelope, merge protocol, and sequential fallback
   - Done when: Codex can assign subagents without overlapping writes or missing stop conditions
 
@@ -319,7 +319,7 @@ workflow implementations.
   - Goal: Add a copyable Codex prompt for swarm, planning-only, implementation, and final-review kickoff.
   - Depends on: TASK-080-add-subagent-task-graph
   - Read: `AGENTS.md`, `README.md`, `DESIGN.md`, `tasks.md`, `subagent-task-graph.md`, `validation.md`
-  - Write scope: `docs/planning/add-spicetify-skill/codex-kickoff-prompt.md`, `docs/planning/add-spicetify-skill/codex-handoff.md`, `docs/planning/add-spicetify-skill/goal.md`
+  - Write scope: `apps/docs/content/docs/archive/add-spicetify-skill/codex-kickoff-prompt.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/codex-handoff.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/goal.mdx`
   - Validation: prompt includes read-first files, write scopes, validation commands, stop conditions, and final response contract
   - Done when: the prompt can be pasted into Codex without requiring chat history
 
@@ -353,6 +353,6 @@ workflow implementations.
 - [ ] TASK-095-prepare-archive-readiness
   - Goal: Document whether implementation is ready for verify/sync/archive.
   - Depends on: TASK-090-run-validation
-  - Write scope: `docs/planning/add-spicetify-skill/validation.md`, `docs/planning/add-spicetify-skill/acceptance-matrix.md`, `PLANS.md`
+  - Write scope: `apps/docs/content/docs/archive/add-spicetify-skill/validation.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx`, `PLANS.md`
   - Validation: no archive action performed without user approval
   - Done when: archive criteria and blockers are explicit

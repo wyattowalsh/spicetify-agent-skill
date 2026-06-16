@@ -1,0 +1,29 @@
+---
+title: Config and profile workflow
+description: Migrated /spicetify planning content for Config and profile workflow.
+section: workflows
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/workflows/config-profile.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Config and profile workflow
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/workflows/config-profile.mdx`
+**Purpose:** Defines config parsing and declarative profile switching.
+**Status:** Draft
+**Load/use when:** Read when implementing this cross-cutting workflow.
+
+
+## Config strategy
+
+- Discover path with `spicetify -c`.
+- Prefer `spicetify config <key> <value>`.
+- Parse before and after.
+- Protect `[Patch]` by default.
+- Use direct INI transaction only for exact-list replacement or comment-preserving edits.
+
+## Profile strategy
+
+Profiles are exact desired state. A switch computes add/remove diffs for themes, color schemes, extensions, custom apps, snippets, and selected AdditionalOptions.

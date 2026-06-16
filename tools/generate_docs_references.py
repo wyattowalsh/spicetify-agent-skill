@@ -97,7 +97,7 @@ def schema_rows(root: Path) -> list[dict[str, object]]:
 
 
 def spec_rows(root: Path) -> list[dict[str, object]]:
-    rows = []
+    rows: list[dict[str, object]] = []
     spec_root = root / "openspec" / "changes" / "add-spicetify-skill" / "specs"
     for path in sorted(spec_root.glob("*/spec.md")):
         text = path.read_text(encoding="utf-8")
@@ -114,9 +114,11 @@ def spec_rows(root: Path) -> list[dict[str, object]]:
 
 
 def mode_rows(root: Path) -> list[dict[str, object]]:
-    rows = []
-    mode_root = root / "docs" / "planning" / "add-spicetify-skill" / "modes"
-    for path in sorted(mode_root.glob("*.md")):
+    rows: list[dict[str, object]] = []
+    mode_root = (
+        root / "apps" / "docs" / "content" / "docs" / "archive" / "add-spicetify-skill" / "modes"
+    )
+    for path in sorted(mode_root.glob("*.mdx")):
         text = path.read_text(encoding="utf-8")
         rows.append(
             {
@@ -215,7 +217,7 @@ def render_modes(root: Path, rows: list[dict[str, object]]) -> str:
         frontmatter(
             "Mode Contract Reference",
             "Generated inventory of /spicetify mode contracts and source paths.",
-            "docs/planning/add-spicetify-skill/modes",
+            "apps/docs/content/docs/archive/add-spicetify-skill/modes",
         ),
         GENERATED_NOTICE,
         "",

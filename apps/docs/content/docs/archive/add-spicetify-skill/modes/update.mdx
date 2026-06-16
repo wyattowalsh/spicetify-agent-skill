@@ -1,0 +1,102 @@
+---
+title: Mode: update
+description: Migrated /spicetify planning content for Mode: update.
+section: modes
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/modes/update.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Mode: update
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/modes/update.mdx`
+**Purpose:** Detailed contract for `/spicetify update` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `update` behavior.
+
+## Purpose
+
+Disambiguate update-related user intents: theme hot-reload, post-Spotify-update repair, or Spicetify maintenance planning.
+
+## Inputs
+
+`target: theme-hot-reload|spicetify-maintenance-plan|post-spotify-update-repair|auto-detect`, optional theme name, symptoms, package hints.
+
+## Preconditions
+
+Inspect has discovered command availability, config path, userdata path, Spotify path, and install-method hints when possible.
+
+## Commands/files touched
+
+- `spicetify update` only for explicit theme hot-reload.
+- `spicetify backup` and `spicetify apply` only when delegated to repair flow.
+- `spicetify upgrade` only as a high-risk maintenance plan for script-based installs, with confirmation.
+- No package-manager commands or install scripts in normal automation.
+
+## Safety checks
+
+- Reject ambiguous “update” requests until target is clear.
+- Snapshot before any mutation.
+- Package-manager, install-script, permission, and launch-flag changes are manual/approval-gated.
+- Stop if docs/source claims conflict with discovered local behavior.
+
+## Plan output
+
+`UpdatePlan` with explicit target, reason, allowed commands, manual actions, verification, and rollback.
+
+## Execution flow
+
+Classify target → inspect environment → build target-specific dry-run → policy check → snapshot if mutating → execute allowed commands → verify.
+
+## Verification flow
+
+- Theme hot-reload: CLI success plus theme files and config checks.
+- Repair delegation: doctor/repair verification.
+- Maintenance plan: CLI maintenance or installer action remains manual unless separately approved.
+
+## Rollback flow
+
+- Hot-reload rollback restores previous theme/config snapshot if mutation occurred.
+- Repair rollback follows repair mode.
+- Maintenance plans have no automatic downgrade path unless the user supplied an approved snapshot/installer strategy.
+
+## Idempotency notes
+
+A request that is already satisfied becomes a no-op verification. Ambiguous requests never emit mutation commands.
+
+## Failure modes and recovery
+
+- `COMMAND_INTENT_AMBIGUOUS`: ask for target or offer safe choices.
+- `PACKAGE_MANAGER_ACTION_REQUIRED`: produce manual checklist.
+- `UNSUPPORTED_SPOTIFY_UPDATE`: stop and recommend issue-tracker/source check.
+
+
+## Data contracts
+
+Primary contracts: `operation-plan, policy-decision, verification-report`. Any implementation-specific schema expansion MUST update `apps/docs/content/docs/archive/add-spicetify-skill/schemas/index.mdx`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify hot reload my theme`
+- `/spicetify Spotify updated and Spicetify broke`
+- `/spicetify update Spicetify safely`
+
+## Example structured response
+
+```json
+{
+  "mode": "update",
+  "target": "auto-detect",
+  "status": "needs-disambiguation",
+  "choices": ["theme-hot-reload", "post-spotify-update-repair", "spicetify-maintenance-plan"],
+  "mutations": []
+}
+```

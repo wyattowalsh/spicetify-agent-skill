@@ -130,7 +130,7 @@
       "rationale": "Inspect must discover state through allowlisted read commands and never mutate local Spotify or Spicetify state.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/eval-stack.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -232,7 +232,7 @@
       "rationale": "Doctor must rank likely failures and safe next actions without jumping to mutating repair.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/acceptance-matrix.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -332,7 +332,7 @@
       "rationale": "Snapshot is the recovery foundation and must avoid leaking prefs, logs, cookies, and canary secrets.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snapshot.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snapshot.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -433,7 +433,7 @@
       "rationale": "Restore can overwrite state and must bind execution to snapshot and confirmation gates.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/restore.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/restore.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -540,7 +540,7 @@
       "rationale": "Repair must avoid combined raw upstream commands and preserve checkpointed recovery.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/repair.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/repair.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -645,7 +645,7 @@
       "rationale": "Apply is the central mutation path and must show every safety checkpoint before execution.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/apply.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/apply.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -752,7 +752,7 @@
       "rationale": "Config changes must be normalized into allowlisted argv and reject path-like unsafe values.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/config.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/config.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -849,7 +849,7 @@
       "rationale": "Profiles should become deterministic desired-state plans with rollback before any apply.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/profile.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/profile.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -939,7 +939,7 @@
       "rationale": "Desired-state manifests cannot gain execution authority.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/manifest.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/manifest.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1037,7 +1037,7 @@
       "rationale": "Theme creation is common and file-mutating, so it must remain dry-run-first.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/theme.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/theme.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1139,7 +1139,7 @@
       "rationale": "Extensions are high-risk third-party JavaScript and require audit/provenance before enablement.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/extension.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/extension.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1237,7 +1237,7 @@
       "rationale": "Custom apps can involve package scripts, so generation and enablement must be separately gated.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/custom-app.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/custom-app.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1335,7 +1335,7 @@
       "rationale": "Small snippets still need audit, snapshot, and rollback because they modify customization state.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snippet.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snippet.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1428,7 +1428,7 @@
       "rationale": "Marketplace popularity and README claims must not replace audit and provenance requirements.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/marketplace.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/marketplace.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1525,7 +1525,7 @@
       "rationale": "Audit must handle adversarial third-party code and report evidence without enabling it.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/audit.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/audit.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1632,7 +1632,7 @@
       "rationale": "DevTools can expose private data and requires consent plus redaction.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/devtools.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/devtools.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1737,7 +1737,7 @@
       "rationale": "Watch can become uncontrolled automation and therefore needs high-risk confirmation.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/watch.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/watch.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1827,7 +1827,7 @@
       "rationale": "Migration should describe export/import and manual-only platform steps without executing installers.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/migrate.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/migrate.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -1922,7 +1922,7 @@
       "rationale": "General update requests can imply installer scripts; the safe behavior is clarification/manual-only guidance.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/update.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/update.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2021,7 +2021,7 @@
       "rationale": "Rollback needs explicit state and failure reporting instead of blind destructive repair.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/rollback.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/rollback.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2117,7 +2117,7 @@
       "rationale": "Uninstall is destructive and must prove path containment and rollbackability.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/uninstall.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/uninstall.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2208,7 +2208,7 @@
       "rationale": "Reports are the primary leakage surface and must pass canary redaction checks.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/report.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/report.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2304,7 +2304,7 @@
       "rationale": "Evolve should use eval evidence to rank improvements but never self-apply or weaken safety.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/evolve.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/evolve.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2615,7 +2615,7 @@
       "rationale": "Serialized operation plans must be revalidated immediately before fake or real execution.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/confirmation-flow.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/confirmation-flow.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2711,7 +2711,7 @@
       "rationale": "Real-looking Spotify and Spicetify paths must remain synthetic canaries and never become live filesystem targets.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/eval-stack.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx"
       },
       "activation": {
         "kind": "direct-mode",
@@ -2803,7 +2803,7 @@
       "rationale": "Skill evals must catch false-positive activation on unrelated Spotify content requests.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/eval-stack.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx"
       },
       "activation": {
         "kind": "negative-trigger",
@@ -2904,7 +2904,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers apply without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/apply.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/apply.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3001,7 +3001,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers audit without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/audit.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/audit.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3104,7 +3104,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers config without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/config.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/config.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3203,7 +3203,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers custom-app without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/custom-app.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/custom-app.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3306,7 +3306,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers devtools without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/devtools.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/devtools.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3409,7 +3409,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers doctor without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/acceptance-matrix.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3506,7 +3506,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers evolve without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/evolve.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/evolve.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3609,7 +3609,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers extension without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/extension.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/extension.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3706,7 +3706,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers inspect without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/eval-stack.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3797,7 +3797,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers manifest without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/manifest.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/manifest.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3892,7 +3892,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers marketplace without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/marketplace.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/marketplace.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -3983,7 +3983,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers migrate without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/migrate.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/migrate.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4081,7 +4081,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers profile without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/profile.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/profile.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4184,7 +4184,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers repair without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/repair.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/repair.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4276,7 +4276,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers report without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/report.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/report.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4378,7 +4378,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers restore without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/restore.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/restore.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4478,7 +4478,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers rollback without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/rollback.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/rollback.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4577,7 +4577,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers snapshot without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snapshot.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snapshot.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4676,7 +4676,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers snippet without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/snippet.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/snippet.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4775,7 +4775,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers theme without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/theme.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/theme.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4872,7 +4872,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers uninstall without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/uninstall.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/uninstall.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -4968,7 +4968,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers update without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/update.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/update.mdx"
       },
       "activation": {
         "kind": "route-mode",
@@ -5069,7 +5069,7 @@
       "rationale": "Route-mode coverage ensures the prompt activates /spicetify and infers watch without injecting the expected mode.",
       "source": {
         "kind": "planning-doc",
-        "path": "docs/planning/add-spicetify-skill/modes/watch.md"
+        "path": "apps/docs/content/docs/archive/add-spicetify-skill/modes/watch.mdx"
       },
       "activation": {
         "kind": "route-mode",

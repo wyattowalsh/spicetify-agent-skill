@@ -1,4 +1,7 @@
+import { getContentMap } from "../../lib/content";
+
 export function GET() {
+  const contentMap = getContentMap();
   const body = [
     "# /spicetify",
     "",
@@ -9,6 +12,9 @@ export function GET() {
     "- Allowlisted argv-only Spicetify commands",
     "- Third-party code audit and provenance",
     "- Redacted reports",
+    "",
+    `Modes: ${contentMap.modePages.join(", ")}`,
+    `Docs: ${contentMap.sections.flatMap((section) => section.pages).map((page) => (page === "index" ? "/docs" : `/docs/${page}`)).join(", ")}`,
   ].join("\n");
 
   return new Response(body, { headers: { "content-type": "text/plain; charset=utf-8" } });

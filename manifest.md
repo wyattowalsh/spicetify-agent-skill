@@ -12,7 +12,7 @@
 | OpenSpec behavior | `openspec/changes/add-spicetify-skill/specs/**/spec.md` | Observable requirements and scenarios. |
 | Root design | `DESIGN.md` | Concise architecture for `/spicetify` and the companion docs site. |
 | Change intent/design/tasks | `proposal.md`, `design.md`, `tasks.md` | Scope, architecture, implementation graph. |
-| Human planning | `docs/planning/add-spicetify-skill/*.md` | Research, audit, tradeoffs, validation, examples, handoff. |
+| Human planning | `apps/docs/content/docs/archive/add-spicetify-skill/*.mdx` | Research, audit, tradeoffs, validation, examples, handoff. |
 | Skill package | `skills/spicetify/` | Compact skill router and references. |
 | Skill distribution | `agent-bundle.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json` | Single-skill source metadata for `npx skills add ... --skill spicetify` and metadata-only plugin discovery. |
 | Contracts | `schemas/*.schema.json` | Request/plan/run/report/audit/snapshot/profile/policy/manifest/privacy/consent/recovery/invariant schemas. |
@@ -22,29 +22,29 @@
 
 | Path | Why it exists |
 |---|---|
-| `docs/planning/add-spicetify-skill/audit-review.md` | End-to-end critique, severity findings, and remediation decisions. |
-| `docs/planning/add-spicetify-skill/source-refresh.md` | Current source table and verified-vs-assumed facts. |
-| `docs/planning/add-spicetify-skill/platform-matrix.md` | OS/package-specific support and stop rules. |
-| `docs/planning/add-spicetify-skill/threat-model.md` | Agent/security threat model and controls. |
-| `docs/planning/add-spicetify-skill/policy-matrix.md` | Risk classification and confirmation gates. |
-| `docs/planning/add-spicetify-skill/confirmation-flow.md` | Plan-bound confirmation grants and invalidation rules. |
-| `docs/planning/add-spicetify-skill/privacy-redaction.md` | Data collection, redaction, snapshot, log, and screenshot boundaries. |
-| `docs/planning/add-spicetify-skill/operation-state-machine.md` | Plan/execute/verify/rollback state transitions. |
-| `docs/planning/add-spicetify-skill/invariants.md` | Non-waivable execution, privacy, state, audit, and CI invariants. |
-| `docs/planning/add-spicetify-skill/failure-recovery-catalog.md` | Known failure modes, stop rules, recovery plans, and rollback behavior. |
-| `docs/planning/add-spicetify-skill/cli-ux-contract.md` | Human and JSON interaction contract for dry-runs, confirmations, and errors. |
-| `docs/planning/add-spicetify-skill/provenance-lockfile.md` | Third-party source lock and audit acceptance model. |
-| `docs/planning/add-spicetify-skill/traceability.md` | Goals → requirements → tasks → validation map. |
-| `docs/planning/add-spicetify-skill/acceptance-matrix.md` | User story → mode → spec → schema → test completion matrix. |
-| `docs/planning/add-spicetify-skill/mvp-cutline.md` | Recommended implementation cutline and deferrals. |
-| `docs/planning/add-spicetify-skill/desired-state-manifest.md` | Repeatable manifest import/export and replay model. |
-| `docs/planning/add-spicetify-skill/scaffold-templates.md` | Maintained local templates and Creator compatibility boundary. |
-| `docs/planning/add-spicetify-skill/automation-boundaries.md` | Headless and batch automation constraints. |
-| `docs/planning/add-spicetify-skill/fumadocs-site-plan.md` | Full Fumadocs + shadcn/ui companion site plan. |
-| `docs/planning/add-spicetify-skill/docs-site.md` | Docs-site overview and implementation guardrails. |
-| `docs/planning/add-spicetify-skill/docs-content-architecture.md` | Content model, generated-reference pipeline, and editorial rules. |
-| `docs/planning/add-spicetify-skill/docs-site-design-system.md` | shadcn/ui component and token plan for docs. |
-| `docs/planning/add-spicetify-skill/docs-site-implementation-plan.md` | Dependency-aware docs-site implementation sequence. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/audit-review.mdx` | End-to-end critique, severity findings, and remediation decisions. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/source-refresh.mdx` | Current source table and verified-vs-assumed facts. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/platform-matrix.mdx` | OS/package-specific support and stop rules. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/threat-model.mdx` | Agent/security threat model and controls. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/policy-matrix.mdx` | Risk classification and confirmation gates. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/confirmation-flow.mdx` | Plan-bound confirmation grants and invalidation rules. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/privacy-redaction.mdx` | Data collection, redaction, snapshot, log, and screenshot boundaries. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/operation-state-machine.mdx` | Plan/execute/verify/rollback state transitions. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/invariants.mdx` | Non-waivable execution, privacy, state, audit, and CI invariants. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/failure-recovery-catalog.mdx` | Known failure modes, stop rules, recovery plans, and rollback behavior. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/cli-ux-contract.mdx` | Human and JSON interaction contract for dry-runs, confirmations, and errors. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/provenance-lockfile.mdx` | Third-party source lock and audit acceptance model. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/traceability.mdx` | Goals → requirements → tasks → validation map. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx` | User story → mode → spec → schema → test completion matrix. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/mvp-cutline.mdx` | Recommended implementation cutline and deferrals. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/desired-state-manifest.mdx` | Repeatable manifest import/export and replay model. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/scaffold-templates.mdx` | Maintained local templates and Creator compatibility boundary. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/automation-boundaries.mdx` | Headless and batch automation constraints. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx` | Full Fumadocs + shadcn/ui companion site plan. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site.mdx` | Docs-site overview and implementation guardrails. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx` | Content model, generated-reference pipeline, and editorial rules. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx` | shadcn/ui component and token plan for docs. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx` | Dependency-aware docs-site implementation sequence. |
 
 ## Read order by use case
 
@@ -70,15 +70,15 @@ dependency changes, pushes, PRs, and deployment remain approval-gated.
 
 | Path | Why it exists |
 |---|---|
-| `docs/planning/add-spicetify-skill/docs-site.md` | Companion Fumadocs + shadcn/ui site product plan. |
-| `docs/planning/add-spicetify-skill/docs-site-content-map.md` | Full page tree and content acceptance rules. |
-| `docs/planning/add-spicetify-skill/docs-site-design-system.md` | shadcn/ui tokens, components, variants, and copy rules. |
-| `docs/planning/add-spicetify-skill/workflows/docs-site.md` | Earlier companion docs-site workflow; kept as compatible summary. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site.mdx` | Companion Fumadocs + shadcn/ui site product plan. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-content-map.mdx` | Full page tree and content acceptance rules. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx` | shadcn/ui tokens, components, variants, and copy rules. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/workflows/docs-site.mdx` | Earlier companion docs-site workflow; kept as compatible summary. |
 | `DESIGN.md` | Root-level design narrative for the skill and accompanying docs site. |
-| `docs/planning/add-spicetify-skill/fumadocs-site-plan.md` | Full Fumadocs + shadcn/ui site plan. |
-| `docs/planning/add-spicetify-skill/docs-content-architecture.md` | Content model, navigation, generated references, and editorial workflow. |
-| `docs/planning/add-spicetify-skill/docs-site-implementation-plan.md` | Implementation waves and validation for the docs app. |
-| `docs/planning/add-spicetify-skill/workflows/fumadocs-site.md` | Cross-cutting docs-site workflow. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx` | Full Fumadocs + shadcn/ui site plan. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx` | Content model, navigation, generated references, and editorial workflow. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx` | Implementation waves and validation for the docs app. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/workflows/fumadocs-site.mdx` | Cross-cutting docs-site workflow. |
 | `openspec/changes/add-spicetify-skill/specs/docs-site/spec.md` | Behavior requirements for the docs app boundary. |
 | `openspec/changes/add-spicetify-skill/specs/docs-content/spec.md` | Behavior requirements for docs content and generated references. |
 | `openspec/changes/add-spicetify-skill/specs/docs-ui/spec.md` | Behavior requirements for Fumadocs UI and shadcn/ui integration. |
@@ -87,9 +87,9 @@ dependency changes, pushes, PRs, and deployment remain approval-gated.
 
 | Path | Purpose | Status |
 |---|---|---|
-| `docs/planning/add-spicetify-skill/subagent-task-graph.md` | Bounded subagent DAG, roster, write scopes, result envelope, merge protocol, and fallback. | proposed |
-| `docs/planning/add-spicetify-skill/codex-kickoff-prompt.md` | Copyable Codex kickoff prompt for swarm or sequential execution. | proposed |
-| `docs/planning/add-spicetify-skill/workflows/subagent-swarm.md` | Operational workflow for subagent use and consolidation. | proposed |
+| `apps/docs/content/docs/archive/add-spicetify-skill/subagent-task-graph.mdx` | Bounded subagent DAG, roster, write scopes, result envelope, merge protocol, and fallback. | proposed |
+| `apps/docs/content/docs/archive/add-spicetify-skill/codex-kickoff-prompt.mdx` | Copyable Codex kickoff prompt for swarm or sequential execution. | proposed |
+| `apps/docs/content/docs/archive/add-spicetify-skill/workflows/subagent-swarm.mdx` | Operational workflow for subagent use and consolidation. | proposed |
 | `openspec/changes/add-spicetify-skill/specs/agents/spec.md` | Behavior requirements for subagent task graph and kickoff prompt. | proposed |
 | `schemas/subagent-task-graph.schema.json` | Machine-readable swarm task graph contract. | proposed |
 | `schemas/subagent-result.schema.json` | Machine-readable subagent result envelope. | proposed |

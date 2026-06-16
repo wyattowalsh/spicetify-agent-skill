@@ -1,24 +1,9 @@
 import { RiskBadge } from "../components/spicetify/risk-badge";
-
-const modes = [
-  "inspect",
-  "doctor",
-  "audit",
-  "snapshot",
-  "apply",
-  "rollback",
-  "repair",
-  "theme",
-  "extension",
-  "custom-app",
-  "snippet",
-  "marketplace",
-  "devtools",
-  "watch",
-  "update",
-];
+import { getContentMap } from "../lib/content";
 
 export default function HomePage() {
+  const modes = getContentMap().modePages;
+
   return (
     <main className="page">
       <section className="intro">
@@ -42,6 +27,9 @@ export default function HomePage() {
             <li key={mode}>{mode}</li>
           ))}
         </ul>
+        <p>
+          <a href="/docs">Browse the full docs</a>
+        </p>
       </section>
     </main>
   );

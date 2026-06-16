@@ -3,8 +3,9 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from spicetify_agent.commands import build_command
-from spicetify_agent.runner import SpicetifyRunner
+from _commands import build_command
+from _runner import SpicetifyRunner
+
 from tests.helpers.fake_spicetify import read_jsonl, write_fake_spicetify_script
 
 

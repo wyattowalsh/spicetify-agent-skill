@@ -1,0 +1,7 @@
+:root {
+  --spicetify-template-accent: #1db954;
+}
+
+.main-rootlist-rootlistItemLink {
+  outline-color: var(--spicetify-template-accent);
+}

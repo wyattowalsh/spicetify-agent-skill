@@ -76,3 +76,78 @@ h2 {
   border-radius: 8px;
   padding: 10px 12px;
 }
+
+a {
+  color: #0f766e;
+}
+
+code {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92em;
+}
+
+pre {
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, CanvasText 14%, Canvas);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid color-mix(in srgb, CanvasText 14%, Canvas);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.docs-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 40px;
+}
+
+.docs-layout aside {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+
+.docs-layout nav h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.docs-layout nav ul {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+.docs-layout nav li {
+  margin: 5px 0;
+}
+
+.doc-article {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .docs-layout {
+    display: block;
+  }
+
+  .docs-layout aside {
+    position: static;
+    margin-bottom: 28px;
+  }
+}

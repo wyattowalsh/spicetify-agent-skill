@@ -1,0 +1,149 @@
+---
+title: Docs content architecture
+description: Migrated /spicetify planning content for Docs content architecture.
+section: planning
+source: migrated
+sourcePath: apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Docs content architecture
+
+**Path:** `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`
+**Purpose:** Content model, navigation, synchronization, and editorial rules for the accompanying Fumadocs site.
+**Status:** Proposed
+**Load/use when:** Designing or reviewing the docs information architecture and generated-reference pipeline.
+
+## Content principles
+
+- Progressive disclosure: landing page and quickstart first; deep OpenSpec details behind reference pages.
+- Source-grounded: every generated reference page links back to the local OpenSpec/planning/schema source path.
+- No giant prompt dumps: docs pages summarize and link; the bundle remains the source of truth.
+- Safe examples: all examples use fake paths, fake snapshots, fake plan IDs, and fake audit IDs unless explicitly user-provided and redacted.
+- Auditable generation: generated content is deterministic and diffable.
+
+## Content source tree
+
+```text
+apps/docs/content/docs/
+  index.mdx
+  quickstart.mdx
+  installation.mdx
+  concepts/
+    dry-run-planning.mdx
+    snapshots-rollback.mdx
+    safety-policy.mdx
+    provenance.mdx
+    desired-state.mdx
+  modes/
+    index.mdx
+    inspect.mdx
+    doctor.mdx
+    ...
+    evolve.mdx
+  workflows/
+    spotify-update-repair.mdx
+    terminal-theme.mdx
+    github-theme-safe-install.mdx
+    extension-audit.mdx
+    profile-switching.mdx
+    scaffold-extension.mdx
+    rollback.mdx
+  security/
+    threat-model.mdx
+    blocked-actions.mdx
+    privacy-redaction.mdx
+    devtools-logs.mdx
+  reference/
+    command-registry.mdx
+    operation-plan-schema.mdx
+    report-schema.mdx
+    error-taxonomy.mdx
+    open-spec-traceability.mdx
+  development/
+    architecture.mdx
+    fake-environments.mdx
+    testing.mdx
+    codex-handoff.mdx
+  generated/
+    schemas/
+    modes/
+    requirements/
+```
+
+## Frontmatter contract
+
+Every content page should include:
+
+```yaml
+title: Human-readable title
+description: One-sentence outcome for the reader
+section: concepts | modes | workflows | security | reference | development | docs-site
+source: curated | generated
+sourcePath: path/to/source.md
+owner: docs
+status: proposed | reviewed | generated
+safetyLevel: read | low | medium | high
+```
+
+## Generated content inputs
+
+| Input | Generated output | Rules |
+|---|---|---|
+| `apps/docs/content/docs/archive/add-spicetify-skill/modes/*.mdx` | mode reference pages | Preserve purpose, inputs, safety, verification, rollback, examples. |
+| `schemas/*.schema.json` | schema field tables and JSON examples | Validate JSON before rendering; redact sample secrets. |
+| `openspec/changes/add-spicetify-skill/specs/**/spec.md` | requirement reference pages | Keep Requirement/Scenario headings intact. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/traceability.mdx` | traceability table | Link goals to modes, tasks, validation. |
+| `evals/regression-prompts.json` | regression prompt catalog | Mark prompts as test fixtures, not user guidance. |
+| `apps/docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx` | eval stack and evolve reference | Mark structured evals as local/fake-only unless optional adapters are approved. |
+
+## Navigation model
+
+Use `meta.json` files per section to keep the sidebar curated and avoid exposing raw generated file order. Suggested sidebar order:
+
+1. Overview
+2. Quickstart
+3. Safety first
+4. Core workflows
+5. Modes
+6. Profiles and manifests
+7. Auditing third-party code
+8. Repair after Spotify updates
+9. Developer scaffolds
+10. Reference
+11. Implementation guide
+12. Docs-site design
+
+## Editorial workflow
+
+1. Update OpenSpec/planning/schema source.
+2. Run content sync in dry-run mode.
+3. Review generated diff.
+4. Run docs validation.
+5. Commit generated docs only with the source change that caused them.
+
+## Content validation rules
+
+- No unresolved `pending` or placeholder braces in user-facing docs.
+- No release labels or numbered artifact lineage.
+- No raw secrets, tokens, cookies, private user paths, or real Spotify prefs content.
+- No instructions that bypass `/spicetify` confirmation gates.
+- No external registry install instructions without explicit approval note.
+- All internal links resolve.
+- All code blocks either compile, are marked as pseudocode, or are marked as proposed shell commands.
+- Generated pages include source-path metadata.
+
+## LLM docs model
+
+The site should expose AI-readable routes, but only after applying the same redaction rules used for reports. The generated text should prioritize stable content:
+
+- mode summaries,
+- safety invariants,
+- schema summaries,
+- command registry boundaries,
+- repair flow summaries,
+- eval stack and evolve summaries,
+- Codex handoff read order.
+
+It should omit local paths, user reports, screenshots, DevTools logs, and any private run records.

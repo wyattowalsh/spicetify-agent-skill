@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from spicetify_agent.errors import CommandRejected, PolicyBlocked, SpicetifyAgentError
-from spicetify_agent.reports import json_report
-from spicetify_agent.util import read_json, repo_root, stable_hash, stable_json, write_json
+from _errors import CommandRejected, PolicyBlocked, SpicetifyAgentError
+from _reports import json_report
+from _util import read_json, repo_root, stable_hash, stable_json, write_json
 
 
 def test_stable_json_and_hash_are_order_independent() -> None:
@@ -28,7 +28,7 @@ def test_write_json_round_trips_and_leaves_no_temp_file(tmp_path: Path) -> None:
 
 
 def test_repo_root_finds_bundle_root_from_nested_path() -> None:
-    nested = Path("docs/planning/add-spicetify-skill").resolve()
+    nested = Path("apps/docs/content/docs/archive/add-spicetify-skill").resolve()
 
     assert repo_root(nested) == Path.cwd().resolve()
 

@@ -6,14 +6,15 @@ import sys
 from pathlib import Path
 
 import pytest
-
-from spicetify_agent.assets import build_asset_workflow_plan, build_research_report
-from spicetify_agent.assets.inspectors import inspect_asset_path
-from spicetify_agent.assets.templates import template_manifest
-from spicetify_agent.errors import PolicyBlocked
-from spicetify_agent.intent import route_prompt
-from spicetify_agent.modes import plan_mode
-from spicetify_agent.provenance import lock_asset_source
+from _asset_inspectors import inspect_asset_path
+from _asset_plans import build_asset_workflow_plan
+from _asset_research import build_research_report
+from _asset_templates import template_manifest
+from _errors import PolicyBlocked
+from _intent_router import route_prompt
+from _modes import plan_mode
+from _provenance import lock_asset_source
+from _schema_data import SCHEMAS
 
 
 def test_prompt_first_research_routes_to_read_only_report() -> None:
@@ -59,7 +60,9 @@ def test_router_confidence_and_clarification_for_ambiguous_prompt() -> None:
 
     assert route["primaryIntent"] == "inspect"
     assert route["nextArtifact"] == "clarification"
-    assert route["confidence"] < 0.45
+    confidence = route["confidence"]
+    assert isinstance(confidence, int | float)
+    assert confidence < 0.45
 
 
 def test_research_report_never_trusts_marketplace_metadata() -> None:
@@ -204,9 +207,7 @@ def test_new_schemas_exist_in_root_and_package_data() -> None:
         "asset-workflow-plan.schema.json",
     ):
         root_schema = json.loads(Path("schemas", name).read_text(encoding="utf-8"))
-        package_schema = json.loads(
-            Path("src/spicetify_agent/schema_data", name).read_text(encoding="utf-8")
-        )
+        package_schema = json.loads(SCHEMAS[name])
         assert root_schema == package_schema
 
 
@@ -215,13 +216,13 @@ def test_cli_prompt_first_plan_shape() -> None:
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "plan",
             "/spicetify find a playlist sorting extension",
         ],
         check=False,
         capture_output=True,
-        env={"PYTHONPATH": "src"},
+        env={"PYTHONPATH": "skills/spicetify/scripts"},
         text=True,
     )
 
@@ -236,7 +237,7 @@ def test_cli_research_alias_is_read_only() -> None:
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "research",
             "compare",
             "playlist",
@@ -245,7 +246,7 @@ def test_cli_research_alias_is_read_only() -> None:
         ],
         check=False,
         capture_output=True,
-        env={"PYTHONPATH": "src"},
+        env={"PYTHONPATH": "skills/spicetify/scripts"},
         text=True,
     )
 
@@ -264,7 +265,7 @@ def test_cli_audit_target_uses_explicit_asset_root(tmp_path: Path) -> None:
         [
             sys.executable,
             "-m",
-            "spicetify_agent.cli",
+            "spicetify_agent",
             "audit",
             "--asset-root",
             str(staged),
@@ -273,7 +274,7 @@ def test_cli_audit_target_uses_explicit_asset_root(tmp_path: Path) -> None:
         ],
         check=False,
         capture_output=True,
-        env={"PYTHONPATH": "src"},
+        env={"PYTHONPATH": "skills/spicetify/scripts"},
         text=True,
     )
 

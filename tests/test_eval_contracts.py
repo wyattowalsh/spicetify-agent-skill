@@ -7,8 +7,9 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from spicetify_agent.modes import plan_mode
-from spicetify_agent.privacy import redact
+from _modes import plan_mode
+from _privacy import redact
+
 from tools.run_skill_evals import (
     CaseResult,
     assert_forbidden,

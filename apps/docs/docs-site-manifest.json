@@ -5,12 +5,12 @@
   "source": {
     "schemas": "schemas",
     "openspec": "openspec/changes/add-spicetify-skill/specs",
-    "modes": "docs/planning/add-spicetify-skill/modes"
+    "modes": "apps/docs/content/docs/archive/add-spicetify-skill/modes"
   },
   "generatedReferences": [
     "schemas",
     "openspec/changes/add-spicetify-skill/specs",
-    "docs/planning/add-spicetify-skill/modes"
+    "apps/docs/content/docs/archive/add-spicetify-skill/modes"
   ],
   "safety": {
     "runtimeStateAccess": false,
@@ -21,6 +21,8 @@
   },
   "routes": [
     "/",
+    "/docs",
+    "/docs/[[...slug]]",
     "/llms.txt",
     "/llms-full.txt"
   ]

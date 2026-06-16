@@ -44,7 +44,7 @@ The system SHALL provide local deterministic evals that validate skill activatio
 
 #### Scenario: Eval suite proves behavior with fake fixtures
 - GIVEN the local skill eval suite runs in strict mode
-- WHEN a case references a missing fixture, emits an invalid trace, leaks a synthetic secret, or claims an unproduced report artifact
+- WHEN a case references a missing fixture, emits an invalid trace, leaks a synthetic secret, or claims an unplanned report artifact
 - THEN the eval run fails before acceptance
 - AND fake execution cases run only through the approved fake Spicetify gate
 
