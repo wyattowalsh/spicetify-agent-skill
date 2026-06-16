@@ -3,6 +3,7 @@
 **Path:** `manifest.md`
 **Purpose:** Root artifact index and progressive-disclosure read map.
 **Status:** Implemented baseline
+**Current release:** `v0.1.0`
 **Load/use when:** Locating the source of truth for review or implementation.
 
 ## Source of truth
@@ -15,6 +16,7 @@
 | Human planning | `apps/docs/content/docs/archive/add-spicetify-skill/*.mdx` | Research, audit, tradeoffs, validation, examples, handoff. |
 | Skill package | `skills/spicetify/` | Compact skill router and references. |
 | Skill distribution | `agent-bundle.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json` | Single-skill source metadata for `npx skills add ... --skill spicetify` and metadata-only plugin discovery. |
+| Release checklist | `CHANGELOG.md`, `RELEASE.md`, `apps/docs/content/docs/reference/release-checklist.mdx` | Versioned release notes, validation commands, and public install verification. |
 | Contracts | `schemas/*.schema.json` | Request/plan/run/report/audit/snapshot/profile/policy/manifest/privacy/consent/recovery/invariant schemas. |
 | Regression | `evals/regression-prompts.json` | Behavior prompts for future plan and implementation audits. |
 

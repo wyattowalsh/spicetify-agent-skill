@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
 
+import spicetify_agent
 from _schema_data import SCHEMAS
 
 SCRIPT_PATH = str(Path("skills/spicetify/scripts").resolve())
@@ -28,6 +30,26 @@ def test_runtime_package_has_no_registry_dependencies() -> None:
     assert data["project"]["dependencies"] == []
     assert "optional-dependencies" not in data["project"]
     assert sorted(data["dependency-groups"]["dev"]) == ["pytest", "ruff", "ty"]
+
+
+def test_release_version_metadata_is_synchronized() -> None:
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    version = pyproject["project"]["version"]
+
+    assert version == "0.1.0"
+    assert spicetify_agent.__version__ == version
+    assert json.loads(Path("agent-bundle.json").read_text(encoding="utf-8"))["version"] == version
+    assert (
+        json.loads(Path(".codex-plugin/plugin.json").read_text(encoding="utf-8"))["version"]
+        == version
+    )
+    assert (
+        json.loads(Path(".claude-plugin/plugin.json").read_text(encoding="utf-8"))["version"]
+        == version
+    )
+    assert f'version: "{version}"' in Path("skills/spicetify/agents/openai.yaml").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_packaged_schema_data_matches_root_schemas() -> None:

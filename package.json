@@ -1,5 +1,6 @@
 {
   "name": "spicetify-agent-workspace",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "docs:build": "pnpm --filter docs build",

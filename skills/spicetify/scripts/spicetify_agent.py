@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import cast
 
-__version__ = "0.1.1"
+__version__ = "0.1.0"
 
 from _commands import validate_command_invocation
 from _errors import PolicyBlocked, SpicetifyAgentError

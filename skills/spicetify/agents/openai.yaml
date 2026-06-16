@@ -1,4 +1,5 @@
 name: spicetify
+version: "0.1.0"
 description: Metadata-only hints for the /spicetify Agent Skill.
 skill: spicetify
 interfaces:

@@ -10,10 +10,10 @@ Local checkout:
 npx skills add <repo-checkout> --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
 ```
 
-Public source after release:
+Pinned public v0.1.0 release:
 
 ```bash
-npx skills add github:wyattowalsh/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+npx skills add github:wyattowalsh/spicetify-agent-skill@v0.1.0 --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
 ```
 
 ## Helper CLI
@@ -21,8 +21,8 @@ npx skills add github:wyattowalsh/spicetify-agent-skill --skill spicetify -y -g 
 Use `spicetify-agent` for plans, schema checks, reports, and guarded execution:
 
 ```bash
-uvx --from github:wyattowalsh/spicetify-agent-skill spicetify-agent --help
-uvx --from github:wyattowalsh/spicetify-agent-skill spicetify-agent plan "spotify updated and spicetify broke"
+uvx --from git+https://github.com/wyattowalsh/spicetify-agent-skill.git@v0.1.0 spicetify-agent --help
+uvx --from git+https://github.com/wyattowalsh/spicetify-agent-skill.git@v0.1.0 spicetify-agent plan "spotify updated and spicetify broke"
 ```
 
 From a local checkout:

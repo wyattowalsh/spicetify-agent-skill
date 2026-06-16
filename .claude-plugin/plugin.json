@@ -1,5 +1,6 @@
 {
   "name": "spicetify-agent-skill",
+  "version": "0.1.0",
   "description": "Portable /spicetify skill for safe local Spicetify planning, audit, repair, apply, rollback, and reporting workflows.",
   "homepage": "https://github.com/wyattowalsh/spicetify-agent-skill",
   "repository": "https://github.com/wyattowalsh/spicetify-agent-skill",

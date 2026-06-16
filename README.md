@@ -4,6 +4,8 @@
 
 The executable is intentionally named `spicetify-agent` so it does not shadow the real `spicetify` CLI.
 
+Current release: `v0.1.0`.
+
 ## Install and run
 
 Install the portable Agent Skill into supported harnesses from this checkout:
@@ -12,10 +14,10 @@ Install the portable Agent Skill into supported harnesses from this checkout:
 npx skills add <repo-checkout> --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
 ```
 
-Install from the public repository after release:
+Install from the tagged public release:
 
 ```bash
-npx skills add github:wyattowalsh/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+npx skills add github:wyattowalsh/spicetify-agent-skill@v0.1.0 --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
 ```
 
 The installed skill is self-contained under `skills/spicetify/`. It does not bundle the official Spicetify CLI. Users must install upstream Spicetify separately, and agents must not run installer scripts or package-manager commands without explicit approval.
@@ -33,9 +35,15 @@ Local package commands:
 ```bash
 uv run spicetify-agent --help
 uvx --from . spicetify-agent --help
-uv build --offline
+uv build
 pip install dist/*.whl
 spicetify-agent --help
+```
+
+Run the helper from the tagged release:
+
+```bash
+uvx --from git+https://github.com/wyattowalsh/spicetify-agent-skill.git@v0.1.0 spicetify-agent --help
 ```
 
 ## Safety model
@@ -59,6 +67,7 @@ spicetify-agent --help
 - `apps/docs/content/docs/` — durable documentation, generated references, workflows, modes, and validation guidance.
 - `apps/docs/` — isolated Fumadocs + shadcn/ui-compatible documentation app.
 - `tests/` — fake-environment, policy, command, mode, audit, privacy, snapshot, CLI, and bundle validation tests.
+- `CHANGELOG.md` and `RELEASE.md` — release notes and the validation checklist for `v0.1.0`.
 
 ## Prompt-first routing
 

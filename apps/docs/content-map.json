@@ -43,6 +43,7 @@
       "title": "Reference",
       "pages": [
         "reference/index",
+        "reference/release-checklist",
         "reference/schemas",
         "reference/openspec",
         "reference/modes"

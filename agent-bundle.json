@@ -1,13 +1,15 @@
 {
   "schemaVersion": 1,
   "name": "spicetify-agent-skill",
+  "version": "0.1.0",
   "displayName": "Spicetify Agent Skill",
   "description": "Portable /spicetify skill and dry-run-first helper CLI for safe local Spicetify workflows.",
   "source": {
     "type": "github",
     "repository": "wyattowalsh/spicetify-agent-skill",
     "defaultRef": "main",
-    "skillsSource": "github:wyattowalsh/spicetify-agent-skill"
+    "releaseRef": "v0.1.0",
+    "skillsSource": "github:wyattowalsh/spicetify-agent-skill@v0.1.0"
   },
   "components": {
     "skills": "./skills/"
@@ -15,7 +17,7 @@
   "adapters": {
     "agent-skills-cli": {
       "installLocal": "npx skills add <repo-checkout> --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode",
-      "install": "npx skills add github:wyattowalsh/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode",
+      "install": "npx skills add github:wyattowalsh/spicetify-agent-skill@v0.1.0 --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode",
       "update": "npx skills update",
       "supportedAgents": [
         "antigravity",

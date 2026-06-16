@@ -11,8 +11,11 @@ import hashlib
 import json
 import pathlib
 import re
+import tomllib
 
 CHANGE = "add-spicetify-skill"
+RELEASE_VERSION = "0.1.0"
+RELEASE_TAG = f"v{RELEASE_VERSION}"
 SKIP_PARTS = {
     ".git",
     ".next",
@@ -218,6 +221,10 @@ def is_generated_path(path: pathlib.Path) -> bool:
 
 def read(path: pathlib.Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
+
+
+def read_json(path: pathlib.Path) -> dict[str, object]:
+    return json.loads(read(path))
 
 
 def sha256(path: pathlib.Path) -> str:
@@ -592,19 +599,93 @@ def main() -> int:
     if root_readme.exists() and ("spicetify" + "-skill engine") in read(root_readme):
         warnings.append("root README still contains an alternate product name; use /spicetify")
 
+    release_label_allowed_roots = {
+        ".claude-plugin",
+        ".codex-plugin",
+        "apps",
+        "skills",
+    }
+    release_label_allowed_files = {
+        "AGENTS.md",
+        "CHANGELOG.md",
+        "DESIGN.md",
+        "README.md",
+        "RELEASE.md",
+        "agent-bundle.json",
+        "manifest.md",
+        "package.json",
+        "pyproject.toml",
+        "uv.lock",
+    }
+
+    pyproject_path = root / "pyproject.toml"
+    if pyproject_path.exists():
+        project = tomllib.loads(read(pyproject_path)).get("project", {})
+        if project.get("version") != RELEASE_VERSION:
+            errors.append(f"pyproject.toml must declare version {RELEASE_VERSION}")
+
+    uv_lock = root / "uv.lock"
+    if uv_lock.exists() and f'name = "spicetify-agent"\nversion = "{RELEASE_VERSION}"' not in read(
+        uv_lock
+    ):
+        errors.append(f"uv.lock must record spicetify-agent {RELEASE_VERSION}")
+
+    cli_path = root / "skills/spicetify/scripts/spicetify_agent.py"
+    if cli_path.exists() and f'__version__ = "{RELEASE_VERSION}"' not in read(cli_path):
+        errors.append(f"spicetify_agent.py must expose {RELEASE_VERSION}")
+
+    for rel in [
+        "agent-bundle.json",
+        ".codex-plugin/plugin.json",
+        ".claude-plugin/plugin.json",
+        "package.json",
+        "apps/docs/package.json",
+    ]:
+        path = root / rel
+        if path.exists() and read_json(path).get("version") != RELEASE_VERSION:
+            errors.append(f"{rel} must declare version {RELEASE_VERSION}")
+
+    agent_meta = root / "skills/spicetify/agents/openai.yaml"
+    if agent_meta.exists() and f'version: "{RELEASE_VERSION}"' not in read(agent_meta):
+        errors.append(f"skills/spicetify/agents/openai.yaml must declare {RELEASE_VERSION}")
+
+    for rel in [
+        "README.md",
+        "CHANGELOG.md",
+        "RELEASE.md",
+        "skills/spicetify/references/runtime.md",
+        "apps/docs/content/docs/index.mdx",
+        "apps/docs/content/docs/quickstart.mdx",
+        "apps/docs/content/docs/reference/release-checklist.mdx",
+    ]:
+        path = root / rel
+        if path.exists() and RELEASE_TAG not in read(path):
+            errors.append(f"{rel} must mention {RELEASE_TAG}")
+
+    def allows_release_label(path: pathlib.Path) -> bool:
+        rel = path.relative_to(root)
+        return (
+            rel.name in release_label_allowed_files or rel.parts[0] in release_label_allowed_roots
+        )
+
     forbidden_patterns = [
         (r"spicetify_skill_planning_bundle_" + "v", "release-labeled bundle filename"),
         (r"source-refresh-" + r"20[0-9]{2}-[0-9]{2}-[0-9]{2}", "dated source-refresh filename"),
-        (r"\bv[0-9]+(?:\.[0-9]+)+\b", "release label"),
         (r"profile\.v[0-9]+\b", "release-style profile schema constant"),
         (r"provenance-lock\.v[0-9]+\b", "release-style provenance schema constant"),
     ]
+    release_label_pattern = re.compile(r"\bv[0-9]+(?:\.[0-9]+)+\b")
     for path in root.rglob("*"):
         if not path.is_file() or is_generated_path(path) or path.name.endswith(".zip"):
             continue
         if path.suffix.lower() not in {".md", ".json", ".py", ".yaml", ".yml"}:
             continue
         text = read(path)
+        if release_label_pattern.search(text) and not allows_release_label(path):
+            errors.append(
+                f"{path.relative_to(root)} contains release label outside release metadata/docs"
+            )
+            continue
         for pattern, label in forbidden_patterns:
             if re.search(pattern, text):
                 errors.append(

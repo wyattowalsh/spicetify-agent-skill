@@ -7,6 +7,8 @@ export function GET() {
   const body = [
     "# /spicetify full docs index",
     "",
+    "Current release: v0.1.0.",
+    "",
     "This route is generated from stable docs metadata only. It excludes local reports, logs, screenshots, prefs, and live Spicetify state.",
     "",
     `Content root: ${docsSource.root}`,

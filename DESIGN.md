@@ -2,7 +2,7 @@
 
 **Path:** `DESIGN.md`
 **Purpose:** Root-level design narrative tying the `/spicetify` skill, local Python runtime, OpenSpec artifacts, and accompanying Fumadocs + shadcn/ui site into one coherent implementation.
-**Status:** Implemented scaffold
+**Status:** Implemented baseline for v0.1.0
 **Load/use when:** A reviewer or coding agent needs the shortest design-first orientation before reading deeper OpenSpec and planning docs.
 
 ## Design thesis
@@ -43,9 +43,9 @@ OpenSpec artifacts
 
 ## Runtime design decisions
 
-- Use a typed, packageable Python runtime for schemas, filesystem transactions, process spawning, static JS/CSS auditing, and local CLI UX.
+- Use a typed, packageable Python runtime under `skills/spicetify/scripts/` for schemas, filesystem transactions, process spawning, static JS/CSS auditing, and local CLI UX.
 - Expose the installable console command as `spicetify-agent`; keep `/spicetify` as the user-facing skill name so the real `spicetify` CLI is never shadowed.
-- Support `pip install .`, `uv run spicetify-agent`, and `uvx --from . spicetify-agent` as local execution shapes.
+- Support `pip install .`, `uv run spicetify-agent`, `uvx --from . spicetify-agent`, and the tagged `v0.1.0` helper install path as release execution shapes.
 - Use `shell: false` process execution and an allowlisted Spicetify command registry.
 - Prefer Spicetify CLI config edits; use direct INI edits only when a precise state cannot be represented through CLI commands.
 - Treat Spicetify backup and `/spicetify` snapshots as separate state systems.

@@ -5,6 +5,8 @@ export function GET() {
   const body = [
     "# /spicetify",
     "",
+    "Current release: v0.1.0.",
+    "",
     "Safe local Spicetify operations through the spicetify-agent tool.",
     "",
     "- Dry-run-first plans",
