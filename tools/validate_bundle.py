@@ -209,7 +209,11 @@ TASK_RE = re.compile(r"TASK-[0-9]{3}-[a-z0-9]+(?:-[a-z0-9]+)*")
 
 
 def is_generated_path(path: pathlib.Path) -> bool:
-    return path.name.endswith(".tsbuildinfo") or any(part in SKIP_PARTS for part in path.parts)
+    return (
+        path.name.endswith(".tsbuildinfo")
+        or any(part in SKIP_PARTS for part in path.parts)
+        or any(part.endswith(".egg-info") for part in path.parts)
+    )
 
 
 def read(path: pathlib.Path) -> str:

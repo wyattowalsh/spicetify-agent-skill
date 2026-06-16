@@ -1356,8 +1356,8 @@
     },
     {
       "path": "tools/validate_bundle.py",
-      "bytes": 23586,
-      "sha256": "2047a326af45f272daf464cb8f6935f4c2befeb26adf9fb0334e611d44de9442"
+      "bytes": 23676,
+      "sha256": "d05904f133da186c5b846ddca4aefef487cf223b387b0a8050fc8ed205139be5"
     },
     {
       "path": "tools/validate_openspec_structure.py",
