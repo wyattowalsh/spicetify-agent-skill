@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/asset-source.schema.json",
+  "title": "/spicetify Asset Source",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceId",
+    "kind",
+    "assetKind",
+    "query",
+    "locator",
+    "pinnedRef",
+    "confidence",
+    "networkRequired",
+    "networkApproved",
+    "metadataOnly",
+    "trusted",
+    "notes"
+  ],
+  "properties": {
+    "sourceId": { "type": "string" },
+    "kind": {
+      "enum": [
+        "user-source",
+        "github-repo",
+        "github-topic",
+        "marketplace-metadata",
+        "local-path"
+      ]
+    },
+    "assetKind": {
+      "enum": ["theme", "extension", "custom-app", "snippet", "marketplace", "unknown"]
+    },
+    "query": { "type": "string" },
+    "locator": { "type": "string" },
+    "pinnedRef": { "type": ["string", "null"] },
+    "confidence": { "enum": ["low", "medium", "high"] },
+    "networkRequired": { "type": "boolean" },
+    "networkApproved": { "type": "boolean" },
+    "metadataOnly": { "type": "boolean" },
+    "trusted": { "const": false },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

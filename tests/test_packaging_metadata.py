@@ -20,7 +20,7 @@ def test_runtime_package_has_no_registry_dependencies() -> None:
 
     assert data["project"]["dependencies"] == []
     assert "optional-dependencies" not in data["project"]
-    assert sorted(data["dependency-groups"]["dev"]) == ["mypy", "pytest", "ruff"]
+    assert sorted(data["dependency-groups"]["dev"]) == ["pytest", "ruff", "ty"]
 
 
 def test_packaged_schema_data_matches_root_schemas() -> None:

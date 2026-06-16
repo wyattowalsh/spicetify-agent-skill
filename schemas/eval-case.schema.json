@@ -281,6 +281,52 @@
         "mode": {
           "$ref": "#/$defs/mode"
         },
+        "primaryIntent": {
+          "type": "string",
+          "enum": [
+            "research",
+            "inspect",
+            "audit",
+            "create",
+            "install-plan",
+            "repair",
+            "debug",
+            "evolve",
+            "refuse"
+          ]
+        },
+        "assetKind": {
+          "type": "string",
+          "enum": [
+            "theme",
+            "extension",
+            "custom-app",
+            "snippet",
+            "marketplace",
+            "unknown"
+          ]
+        },
+        "sourceKind": {
+          "type": "string",
+          "enum": [
+            "local",
+            "github",
+            "marketplace",
+            "generated",
+            "unknown"
+          ]
+        },
+        "nextArtifact": {
+          "type": "string",
+          "enum": [
+            "answer",
+            "research-report",
+            "audit-report",
+            "dry-run-plan",
+            "clarification",
+            "refusal"
+          ]
+        },
         "policy": {
           "$ref": "#/$defs/policyDecision"
         },
@@ -319,6 +365,7 @@
               "operation-run",
               "operation-report",
               "audit-report",
+              "asset-analysis",
               "snapshot-manifest",
               "verification-report",
               "evolution-report"
@@ -337,6 +384,8 @@
               "redacted-report",
               "snapshot-manifest",
               "provenance-lock",
+              "asset-analysis",
+              "research-report",
               "rollback-metadata",
               "evolution-report"
             ]

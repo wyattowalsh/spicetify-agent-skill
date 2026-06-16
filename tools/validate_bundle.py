@@ -15,7 +15,6 @@ import re
 CHANGE = "add-spicetify-skill"
 SKIP_PARTS = {
     ".git",
-    ".mypy_cache",
     ".next",
     ".pytest_cache",
     ".ruff_cache",
@@ -124,8 +123,12 @@ REQUIRED_SCHEMAS = {
     "fixture-manifest.schema.json",
     "desired-state-manifest.schema.json",
     "asset-manifest.schema.json",
+    "asset-analysis.schema.json",
+    "asset-source.schema.json",
+    "asset-workflow-plan.schema.json",
     "redaction-policy.schema.json",
     "consent-grant.schema.json",
+    "intent-route.schema.json",
     "invariant.schema.json",
     "failure-recovery.schema.json",
     "docs-site-config.schema.json",
@@ -184,6 +187,8 @@ REQUIRED_WORKFLOWS = {
 REQUIRED_SKILL_REFERENCES = {
     "references/runtime.md",
     "references/mode-router.md",
+    "references/research.md",
+    "references/asset-workflows.md",
     "references/safety-policy.md",
     "references/troubleshooting.md",
     "references/spicetify-facts.md",

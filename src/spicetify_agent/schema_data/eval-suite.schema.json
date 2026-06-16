@@ -6,6 +6,7 @@
   "additionalProperties": false,
   "required": [
     "suiteId",
+    "suiteKind",
     "schemaRevision",
     "description",
     "runner",
@@ -18,6 +19,13 @@
       "type": "string",
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
     },
+    "suiteKind": {
+      "type": "string",
+      "enum": [
+        "canonical",
+        "focused"
+      ]
+    },
     "schemaRevision": {
       "type": "string",
       "enum": [
@@ -27,6 +35,9 @@
     "description": {
       "type": "string",
       "minLength": 1
+    },
+    "allowUnusedFixtures": {
+      "type": "boolean"
     },
     "runner": {
       "type": "object",
@@ -80,7 +91,7 @@
           "maximum": 1
         },
         "modeCoverageRequired": {
-          "const": true
+          "type": "boolean"
         }
       }
     },
@@ -90,14 +101,14 @@
         "$ref": "eval-case.schema.json#/$defs/mode"
       },
       "uniqueItems": true,
-      "minItems": 23
+      "minItems": 1
     },
     "cases": {
       "type": "array",
       "items": {
         "$ref": "eval-case.schema.json"
       },
-      "minItems": 23
+      "minItems": 1
     }
   }
 }

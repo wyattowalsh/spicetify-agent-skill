@@ -7,6 +7,7 @@ import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 from .commands import validate_command_invocation
 from .errors import PolicyBlocked
@@ -78,6 +79,7 @@ class SpicetifyRunner:
         program = "spicetify"
         argv = command["argv"]
         assert isinstance(argv, list)
+        argv = cast(list[str], argv)
         executable = self.fake_binary or program
         fake = self.fake_binary is not None
         if fake and os.environ.get(ALLOW_FAKE_BINARY_ENV) != "1":

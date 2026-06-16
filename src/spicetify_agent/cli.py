@@ -8,6 +8,7 @@ import os
 import sys
 from collections.abc import Sequence
 from pathlib import Path
+from typing import cast
 
 from . import __version__
 from .commands import validate_command_invocation
@@ -36,6 +37,32 @@ def build_parser() -> argparse.ArgumentParser:
     plan.add_argument("prompt", nargs="*", help="Prompt text after /spicetify.")
     plan.add_argument("--mode", choices=ALL_MODES, default="plan")
     plan.add_argument("--target")
+    plan.add_argument(
+        "--asset-root",
+        type=Path,
+        action="append",
+        help="Approved local/staged asset root for --target audit or inspect reads.",
+    )
+    plan.add_argument(
+        "--allow-network-research",
+        action="store_true",
+        help="Mark ecosystem research as user-approved for network discovery.",
+    )
+
+    research = sub.add_parser("research", help="Build a read-only research report from a prompt.")
+    research.add_argument("prompt", nargs="*", help="Research prompt after /spicetify.")
+    research.add_argument("--target")
+    research.add_argument(
+        "--asset-root",
+        type=Path,
+        action="append",
+        help="Approved local/staged asset root for --target audit or inspect reads.",
+    )
+    research.add_argument(
+        "--allow-network-research",
+        action="store_true",
+        help="Mark ecosystem research as user-approved for network discovery.",
+    )
 
     for mode in ALL_MODES:
         if mode == "plan":
@@ -43,6 +70,17 @@ def build_parser() -> argparse.ArgumentParser:
         cmd = sub.add_parser(mode, help=f"Build a dry-run plan for {mode}.")
         cmd.add_argument("prompt", nargs="*", help="Optional prompt text.")
         cmd.add_argument("--target")
+        cmd.add_argument(
+            "--asset-root",
+            type=Path,
+            action="append",
+            help="Approved local/staged asset root for --target audit or inspect reads.",
+        )
+        cmd.add_argument(
+            "--allow-network-research",
+            action="store_true",
+            help=argparse.SUPPRESS,
+        )
 
     apply = sub.add_parser("execute-plan", help="Execute a saved plan through the guarded runner.")
     apply.add_argument("plan_file", type=Path)
@@ -96,9 +134,30 @@ def _dispatch(
         return _execute_plan(args)
     if args.command == "plan":
         prompt = " ".join(args.prompt)
-        return plan_mode(args.mode, prompt=prompt, target=args.target)
+        return plan_mode(
+            args.mode,
+            prompt=prompt,
+            target=args.target,
+            allow_network_research=args.allow_network_research,
+            asset_roots=args.asset_root,
+        )
+    if args.command == "research":
+        prompt = " ".join(args.prompt)
+        return plan_mode(
+            "plan",
+            prompt=f"/spicetify research {prompt}",
+            target=args.target,
+            allow_network_research=args.allow_network_research,
+            asset_roots=args.asset_root,
+        )
     prompt = " ".join(getattr(args, "prompt", []))
-    return plan_mode(args.command, prompt=prompt, target=getattr(args, "target", None))
+    return plan_mode(
+        args.command,
+        prompt=prompt,
+        target=getattr(args, "target", None),
+        allow_network_research=getattr(args, "allow_network_research", False),
+        asset_roots=getattr(args, "asset_root", None),
+    )
 
 
 def _execute_plan(args: argparse.Namespace) -> dict[str, object]:
@@ -121,7 +180,7 @@ def _execute_plan(args: argparse.Namespace) -> dict[str, object]:
     if mutates:
         snapshot_value = plan.get("snapshot")
         snapshot_info: dict[str, object] = (
-            snapshot_value if isinstance(snapshot_value, dict) else {}
+            cast(dict[str, object], snapshot_value) if isinstance(snapshot_value, dict) else {}
         )
         if snapshot_info.get("required") is not False:
             if args.userdata_root is None or args.state_root is None:
@@ -141,7 +200,7 @@ def _execute_plan(args: argparse.Namespace) -> dict[str, object]:
     for command in command_values:
         if not isinstance(command, dict):
             continue
-        result = runner.run(command)
+        result = runner.run(cast(dict[str, object], command))
         results.append(result.__dict__)
         if result.returncode != 0:
             break
@@ -224,12 +283,12 @@ def _load_verified_plan(path: Path) -> dict[str, object]:
 
 def _decision_from_plan(plan: dict[str, object]) -> PolicyDecision:
     policy = plan.get("policy") if isinstance(plan.get("policy"), dict) else {}
-    assert isinstance(policy, dict)
+    policy_dict = cast(dict[str, object], policy)
     return PolicyDecision(
-        risk=str(policy.get("risk", "medium")),
-        allowed=bool(policy.get("allowed", True)),
-        requires_confirmation=bool(policy.get("requiresConfirmation", True)),
-        reason=str(policy.get("reason", "confirmation required")),
+        risk=str(policy_dict.get("risk", "medium")),
+        allowed=bool(policy_dict.get("allowed", True)),
+        requires_confirmation=bool(policy_dict.get("requiresConfirmation", True)),
+        reason=str(policy_dict.get("reason", "confirmation required")),
     )
 
 

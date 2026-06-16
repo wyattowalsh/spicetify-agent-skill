@@ -25,9 +25,9 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-  "mypy",
   "pytest",
   "ruff",
+  "ty",
 ]
 
 [project.scripts]
@@ -46,8 +46,3 @@ select = ["E", "F", "I", "UP", "B", "S"]
 ignore = [
   "S101",
 ]
-
-[tool.mypy]
-python_version = "3.11"
-strict = true
-files = ["src/spicetify_agent"]

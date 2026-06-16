@@ -41,6 +41,17 @@ The system SHALL treat snippets and Marketplace assets as customization sources 
 - WHEN the skill plans installation
 - THEN the plan stages, audits, snapshots, copies, applies, and verifies rather than running install scripts
 
+#### Scenario: Research existing Marketplace assets
+- GIVEN the user asks `/spicetify` to find or compare existing Marketplace themes, extensions, custom apps, or snippets
+- WHEN the skill researches candidates
+- THEN it produces a read-only asset analysis report with compatibility, maintenance, risk, provenance readiness, confidence, and recommended next action
+- AND it never calls a candidate trusted, safe to install, or installed from research metadata alone
+
+#### Scenario: Existing asset advances to install planning
+- GIVEN a user selects a researched third-party asset for possible installation
+- WHEN the skill builds the next plan
+- THEN explicit approval, immutable source pinning, temp staging, path guards, file hashes, inspection, audit, and provenance lock are required before any dry-run install plan
+
 ### Requirement: Creator Compatibility Boundary
 The system SHALL treat Spicetify Creator as a compatibility path rather than the default scaffold generator.
 

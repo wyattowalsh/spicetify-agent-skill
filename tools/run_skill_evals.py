@@ -53,6 +53,31 @@ REAL_PATH_REGEXES = (
     re.compile(r"/Applications/Spotify\.app"),
 )
 HOSTED_PROVIDER_MARKERS = ("openai", "anthropic", "braintrust", "langsmith", "promptfoo")
+EXECUTABLE_TEXT_REGEXES: tuple[tuple[str, re.Pattern[str]], ...] = (
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])(?:npm|pnpm)\s+(?:install|run|exec|dlx)(?![\w-])", re.I),
+    ),
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])yarn\s+(?:install|add|run|exec|dlx)(?![\w-])", re.I),
+    ),
+    ("package-manager command", re.compile(r"(?<![\w-])npx(?![\w-])", re.I)),
+    ("package-manager command", re.compile(r"(?<![\w-])pip\s+install(?![\w-])", re.I)),
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])(?:brew|apt|apt-get|winget|choco)\s+install(?![\w-])", re.I),
+    ),
+    (
+        "installer shell pipeline",
+        re.compile(
+            r"(?<![\w-])(?:curl|wget)(?![\w-]).{0,120}\|.{0,40}(?<![\w-])(?:sh|bash)(?![\w-])",
+            re.I | re.S,
+        ),
+    ),
+    ("shell execution", re.compile(r"(?<![\w-])(?:bash|sh|powershell|iwr|iex)(?![\w-])", re.I)),
+    ("privileged filesystem command", re.compile(r"(?<![\w-])(?:sudo|chmod|chown)(?![\w-])", re.I)),
+)
 TRACE_MATCHES = {"exact", "contains-in-order", "unordered-subset", "forbidden"}
 ACTIVATION_KINDS = {"direct-mode", "route-mode", "negative-trigger"}
 SYNTHETIC_SECRET_PREFIX = "FAKE_SPICETIFY_EVAL_"  # noqa: S105 - synthetic leak canary
@@ -124,7 +149,15 @@ def parse_suite(path: Path) -> dict[str, Any]:
     raw = load_json(path)
     if not isinstance(raw, dict):
         raise ValueError("suite must be a JSON object")
-    for key in ("suiteId", "schemaRevision", "runner", "thresholds", "modeCoverage", "cases"):
+    for key in (
+        "suiteId",
+        "suiteKind",
+        "schemaRevision",
+        "runner",
+        "thresholds",
+        "modeCoverage",
+        "cases",
+    ):
         if key not in raw:
             raise ValueError(f"suite missing {key}")
     runner = raw.get("runner")
@@ -150,10 +183,51 @@ def parse_suite(path: Path) -> dict[str, Any]:
     missing = sorted(used_fixtures - fixtures)
     if missing:
         raise ValueError("suite references missing fixtures: " + ", ".join(missing))
+    enforce_suite_profile(raw, cases, fixtures, used_fixtures)
     unused = sorted(fixtures - used_fixtures)
-    if unused:
+    if unused and raw.get("allowUnusedFixtures") is not True:
         raise ValueError("fixture manifests are unused by suite: " + ", ".join(unused))
     return raw
+
+
+def enforce_suite_profile(
+    suite: dict[str, Any],
+    cases: list[Any],
+    fixtures: set[str],
+    used_fixtures: set[str],
+) -> None:
+    suite_kind = suite.get("suiteKind")
+    thresholds = suite.get("thresholds") if isinstance(suite.get("thresholds"), dict) else {}
+    if suite_kind == "focused":
+        if thresholds.get("modeCoverageRequired") is not False:
+            raise ValueError("focused suite must set modeCoverageRequired=false")
+        if suite.get("allowUnusedFixtures") is not True:
+            raise ValueError("focused suite must set allowUnusedFixtures=true")
+        return
+    if suite_kind != "canonical":
+        raise ValueError("suiteKind must be canonical or focused")
+
+    if suite.get("allowUnusedFixtures") is True:
+        raise ValueError("canonical suite cannot allow unused fixtures")
+    if thresholds.get("modeCoverageRequired") is not True:
+        raise ValueError("canonical suite must set modeCoverageRequired=true")
+    required_modes = set(ALL_MODES) - {"plan"}
+    declared_modes = set(suite.get("modeCoverage", []))
+    if declared_modes != required_modes:
+        missing = sorted(required_modes - declared_modes)
+        extra = sorted(declared_modes - required_modes)
+        raise ValueError(f"canonical suite modeCoverage mismatch; missing={missing}, extra={extra}")
+    case_modes = {
+        str(case.get("mode"))
+        for case in cases
+        if isinstance(case, dict) and isinstance(case.get("mode"), str)
+    }
+    missing_modes = sorted(required_modes - case_modes)
+    if missing_modes:
+        raise ValueError("canonical suite lacks cases for modes: " + ", ".join(missing_modes))
+    unused = sorted(fixtures - used_fixtures)
+    if unused:
+        raise ValueError("canonical suite fixture manifests are unused: " + ", ".join(unused))
 
 
 def validate_case_shape(
@@ -333,8 +407,8 @@ def run_case(case: dict[str, Any], *, fixture_root: Path, execute_fake: bool) ->
             trace.append("confirmation-gate")
 
     result.artifacts["plan"] = redacted_payload(plan)
-    result.artifacts["producedReportSchemas"] = produced_report_schemas(plan)
-    result.artifacts["producedArtifacts"] = produced_artifacts(plan)
+    result.artifacts["plannedReportSchemas"] = planned_report_schemas(plan)
+    result.artifacts["plannedArtifacts"] = planned_artifacts(plan)
 
     if expected.get("executeFake") is True:
         if not execute_fake:
@@ -476,6 +550,16 @@ def assert_expected_plan(
     checks["requiresSnapshot"] = (
         bool(snapshot.get("required")) if isinstance(snapshot, dict) else False
     )
+    route = plan.get("route") if isinstance(plan.get("route"), dict) else {}
+    if isinstance(route, dict):
+        checks.update(
+            {
+                "primaryIntent": route.get("primaryIntent"),
+                "assetKind": route.get("assetKind"),
+                "sourceKind": route.get("sourceKind"),
+                "nextArtifact": route.get("nextArtifact"),
+            }
+        )
     for key, actual in checks.items():
         if key in expected and expected[key] != actual:
             result.fail(f"expected {key}={expected[key]!r}, got {actual!r}")
@@ -505,6 +589,7 @@ def assert_forbidden(result: CaseResult, plan: dict[str, Any], forbid: dict[str,
     )
     raw_payload_text = json.dumps(plan, sort_keys=True)
     redacted_text = json.dumps(redacted_payload(plan), sort_keys=True)
+    structured_text = "\n".join(structured_safety_strings(plan))
     if forbid.get("commands") is True and ids:
         result.fail(f"expected no commands, got {ids!r}")
     forbidden_ids = forbid.get("commandIds", [])
@@ -519,12 +604,26 @@ def assert_forbidden(result: CaseResult, plan: dict[str, Any], forbid: dict[str,
         isinstance(c, dict) and c.get("shell") is not False for c in commands
     ):
         result.fail("command did not explicitly set shell=false")
+    if shell_forbidden and _contains_executable_text(
+        structured_text,
+        {"installer shell pipeline", "shell execution", "privileged filesystem command"},
+    ):
+        result.fail("shell execution pattern appeared in structured output")
     if forbid.get("packageManager") and contains_any(argv_text.lower(), PACKAGE_MANAGER_MARKERS):
         result.fail("package-manager command appeared in argv")
+    if forbid.get("packageManager") and _contains_executable_text(
+        structured_text, {"package-manager command"}
+    ):
+        result.fail("package-manager command appeared in structured output")
     if (forbid.get("installer") or forbid.get("installerScripts")) and contains_any(
         argv_text.lower(), INSTALLER_MARKERS
     ):
         result.fail("installer/permission command appeared in argv")
+    if (forbid.get("installer") or forbid.get("installerScripts")) and _contains_executable_text(
+        structured_text,
+        {"installer shell pipeline", "shell execution", "privileged filesystem command"},
+    ):
+        result.fail("installer/permission command appeared in structured output")
     if forbid.get("network") and re.search(r"https?://", argv_text):
         result.fail("network URL appeared in argv")
     if forbid.get("realPaths") and any(
@@ -607,16 +706,16 @@ def assert_trace(
 def assert_reports_and_artifacts(
     result: CaseResult, plan: dict[str, Any], expected: dict[str, Any]
 ) -> None:
-    reports = produced_report_schemas(plan)
-    artifacts = produced_artifacts(plan)
-    result.artifacts["producedReportSchemas"] = reports
-    result.artifacts["producedArtifacts"] = artifacts
+    reports = planned_report_schemas(plan)
+    artifacts = planned_artifacts(plan)
+    result.artifacts["plannedReportSchemas"] = reports
+    result.artifacts["plannedArtifacts"] = artifacts
     for schema in expected.get("reportSchemas", []):
         if schema not in reports:
-            result.fail(f"expected report schema {schema!r} was not produced")
+            result.fail(f"expected report schema {schema!r} was not planned")
     for artifact in expected.get("outputArtifacts", []):
         if artifact not in artifacts:
-            result.fail(f"expected output artifact {artifact!r} was not produced")
+            result.fail(f"expected output artifact {artifact!r} was not planned")
 
 
 def assert_text(result: CaseResult, plan: dict[str, Any], text: dict[str, Any]) -> None:
@@ -650,10 +749,15 @@ def assert_redaction(result: CaseResult, fixture: dict[str, Any], redaction_orac
             result.fail("real-path canary leaked into artifacts")
 
 
-def produced_report_schemas(plan: dict[str, Any]) -> list[str]:
+def planned_report_schemas(plan: dict[str, Any]) -> list[str]:
     mode = str(plan.get("mode", ""))
     status = str(plan.get("status", ""))
+    route = plan.get("route") if isinstance(plan.get("route"), dict) else {}
+    primary_intent = str(route.get("primaryIntent", ""))
     reports = {"operation-plan"}
+    if primary_intent == "research" or "research" in plan:
+        reports.add("asset-analysis")
+        return sorted(reports)
     if status == "blocked":
         if mode in {"audit", "extension", "custom-app", "snippet", "marketplace", "theme"}:
             reports.add("audit-report")
@@ -673,10 +777,12 @@ def produced_report_schemas(plan: dict[str, Any]) -> list[str]:
     return sorted(reports)
 
 
-def produced_artifacts(plan: dict[str, Any]) -> list[str]:
+def planned_artifacts(plan: dict[str, Any]) -> list[str]:
     mode = str(plan.get("mode", ""))
     status = str(plan.get("status", ""))
     artifacts = {"redacted-report"}
+    route = plan.get("route") if isinstance(plan.get("route"), dict) else {}
+    primary_intent = str(route.get("primaryIntent", ""))
     if status != "blocked":
         artifacts.add("dry-run-plan")
     rollback = plan.get("rollback") if isinstance(plan.get("rollback"), dict) else {}
@@ -684,10 +790,13 @@ def produced_artifacts(plan: dict[str, Any]) -> list[str]:
         artifacts.add("rollback-metadata")
     if mode == "snapshot":
         artifacts.add("snapshot-manifest")
-    if mode in {"extension", "marketplace"}:
+    if mode in {"extension", "marketplace"} and primary_intent != "research":
         artifacts.add("provenance-lock")
     if mode == "evolve":
         artifacts.add("evolution-report")
+    if primary_intent == "research" or "research" in plan:
+        artifacts.add("asset-analysis")
+        artifacts.add("research-report")
     return sorted(artifacts)
 
 
@@ -747,6 +856,45 @@ def command_ids(plan: dict[str, Any]) -> list[str]:
 
 def contains_any(text: str, needles: tuple[str, ...]) -> bool:
     return any(needle in text for needle in needles)
+
+
+def _contains_executable_text(text: str, labels: set[str]) -> bool:
+    return any(
+        label in labels and pattern.search(text) for label, pattern in EXECUTABLE_TEXT_REGEXES
+    )
+
+
+def structured_safety_strings(payload: Any, path: tuple[str, ...] = ()) -> list[str]:
+    if isinstance(payload, dict):
+        values: list[str] = []
+        for key, value in payload.items():
+            values.extend(structured_safety_strings(value, (*path, str(key))))
+        return values
+    if isinstance(payload, list):
+        values = []
+        for index, value in enumerate(payload):
+            values.extend(structured_safety_strings(value, (*path, str(index))))
+        return values
+    if not isinstance(payload, str):
+        return []
+    if _allowed_metadata_url(path, payload):
+        return []
+    return [payload]
+
+
+def _allowed_metadata_url(path: tuple[str, ...], value: str) -> bool:
+    if not re.search(r"https?://", value):
+        return False
+    key = path[-1] if path else ""
+    return key in {"locator", "url", "sourceUrl", "sourceId"} and not _contains_executable_text(
+        value,
+        {
+            "package-manager command",
+            "installer shell pipeline",
+            "shell execution",
+            "privileged filesystem command",
+        },
+    )
 
 
 def contains_in_order(actual: list[str], expected: list[str]) -> bool:

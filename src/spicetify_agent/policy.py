@@ -2,25 +2,38 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from typing import cast
 
 from .errors import ConfirmationRequired, PolicyBlocked
 
-BLOCKED_PATTERNS = (
-    "curl ",
-    "wget ",
-    "bash ",
-    "sh ",
-    "sudo ",
-    "chmod ",
-    "chown ",
-    "npm install",
-    "pnpm install",
-    "yarn install",
-    "pip install",
+BLOCKED_REGEXES: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("network downloader", re.compile(r"(?<![\w-])(?:curl|wget)(?![\w-])")),
+    ("shell execution", re.compile(r"(?<![\w-])(?:bash|sh|powershell|iwr|iex)(?![\w-])")),
+    ("privileged filesystem command", re.compile(r"(?<![\w-])(?:sudo|chmod|chown)(?![\w-])")),
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])(?:npm|pnpm)\s+(?:install|run|exec|dlx)(?![\w-])"),
+    ),
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])yarn\s+(?:install|add|run|exec|dlx)(?![\w-])"),
+    ),
+    ("package-manager command", re.compile(r"(?<![\w-])npx(?![\w-])")),
+    ("package-manager command", re.compile(r"(?<![\w-])pip\s+install(?![\w-])")),
+    (
+        "package-manager command",
+        re.compile(r"(?<![\w-])(?:brew|apt|apt-get|winget|choco)\s+install(?![\w-])"),
+    ),
+    ("remote debugging flag", re.compile(r"remote\s*-\s*debugging")),
+)
+BLOCKED_OPERATORS = (
     "|",
     "&&",
     ";",
+    "$(",
+    "`",
 )
 
 HIGH_RISK_COMMANDS = {"restore", "enable-devtools", "watch"}
@@ -43,13 +56,18 @@ class PolicyDecision:
 
 
 def classify_prompt(text: str) -> PolicyDecision:
-    lowered = text.lower()
-    for pattern in BLOCKED_PATTERNS:
-        if pattern in lowered:
-            return PolicyDecision(
-                "blocked", False, False, f"Blocked unsafe pattern: {pattern.strip()}"
-            )
+    lowered = _normalize_policy_text(text)
+    for operator in BLOCKED_OPERATORS:
+        if operator in lowered:
+            return PolicyDecision("blocked", False, False, "Blocked unsafe shell operator")
+    for label, pattern in BLOCKED_REGEXES:
+        if pattern.search(lowered):
+            return PolicyDecision("blocked", False, False, f"Blocked unsafe {label}")
     return PolicyDecision("read", True, False, "No blocked shell or installer pattern detected")
+
+
+def _normalize_policy_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text.casefold()).strip()
 
 
 def evaluate_plan(plan: dict[str, object]) -> PolicyDecision:
@@ -57,7 +75,11 @@ def evaluate_plan(plan: dict[str, object]) -> PolicyDecision:
     if not isinstance(commands, list):
         return PolicyDecision("blocked", False, False, "Plan commands must be a list")
     mutates = bool(plan.get("mutates"))
-    high = any(isinstance(c, dict) and str(c.get("id")) in HIGH_RISK_COMMANDS for c in commands)
+    high = any(
+        str(cast(dict[str, object], command).get("id")) in HIGH_RISK_COMMANDS
+        for command in commands
+        if isinstance(command, dict)
+    )
     if high:
         return PolicyDecision(
             "high", True, True, "High-risk command requires explicit confirmation"

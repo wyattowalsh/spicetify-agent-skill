@@ -80,8 +80,8 @@ PY
 uv run --frozen pytest
 uv run --frozen ruff check .
 uv run --frozen ruff format --check .
-uv run --frozen mypy src
-uv build --no-index
+uv run --frozen ty check src
+uv build --offline
 uvx --from . spicetify-agent --help
 pnpm --filter docs lint
 pnpm --filter docs typecheck

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/intent-route.schema.json",
+  "title": "/spicetify Intent Route",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "prompt",
+    "primaryIntent",
+    "secondaryIntents",
+    "assetKind",
+    "sourceKind",
+    "risk",
+    "confidence",
+    "nextArtifact",
+    "requiresNetworkApproval",
+    "requiresSnapshot",
+    "requiresConfirmation",
+    "blockedReason"
+  ],
+  "properties": {
+    "prompt": { "type": "string" },
+    "primaryIntent": {
+      "enum": [
+        "research",
+        "inspect",
+        "audit",
+        "create",
+        "install-plan",
+        "repair",
+        "debug",
+        "evolve",
+        "refuse"
+      ]
+    },
+    "secondaryIntents": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assetKind": {
+      "enum": ["theme", "extension", "custom-app", "snippet", "marketplace", "unknown"]
+    },
+    "sourceKind": {
+      "enum": ["local", "github", "marketplace", "generated", "unknown"]
+    },
+    "risk": { "enum": ["low", "medium", "high", "blocked"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "nextArtifact": {
+      "enum": [
+        "answer",
+        "research-report",
+        "audit-report",
+        "dry-run-plan",
+        "clarification",
+        "refusal"
+      ]
+    },
+    "requiresNetworkApproval": { "type": "boolean" },
+    "requiresSnapshot": { "type": "boolean" },
+    "requiresConfirmation": { "type": "boolean" },
+    "blockedReason": { "type": ["string", "null"] }
+  }
+}

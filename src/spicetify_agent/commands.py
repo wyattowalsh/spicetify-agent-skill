@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass
+from typing import cast
 
 from .errors import CommandRejected
 
@@ -102,6 +103,7 @@ def validate_command_invocation(command: dict[str, object]) -> dict[str, object]
         raise CommandRejected("Command invocation must include id and argv")
     if not all(isinstance(arg, str) for arg in argv):
         raise CommandRejected("Command argv must be a string array")
+    argv = cast(list[str], argv)
 
     if command_id == "config":
         if len(argv) != 3 or argv[0] != "config":

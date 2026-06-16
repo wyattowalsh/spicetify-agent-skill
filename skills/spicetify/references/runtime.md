@@ -22,7 +22,7 @@ Use `spicetify-agent` for plans, schema checks, reports, and guarded execution:
 
 ```bash
 uvx --from github:wyattowalsh/spicetify-agent-skill spicetify-agent --help
-uvx --from github:wyattowalsh/spicetify-agent-skill spicetify-agent plan --mode repair "spotify updated and spicetify broke"
+uvx --from github:wyattowalsh/spicetify-agent-skill spicetify-agent plan "spotify updated and spicetify broke"
 ```
 
 From a local checkout:

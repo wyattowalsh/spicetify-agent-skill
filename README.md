@@ -9,7 +9,7 @@ The executable is intentionally named `spicetify-agent` so it does not shadow th
 Install the portable Agent Skill into supported harnesses from this checkout:
 
 ```bash
-npx skills add /Users/ww/dev/projects/spicetify-agent-skill --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+npx skills add <repo-checkout> --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
 ```
 
 Install from the public repository after release:
@@ -24,7 +24,8 @@ From this checkout:
 
 ```bash
 PYTHONPATH=src python3 -m spicetify_agent.cli --help
-PYTHONPATH=src python3 -m spicetify_agent.cli plan --mode repair "spotify updated and spicetify broke"
+PYTHONPATH=src python3 -m spicetify_agent.cli plan "/spicetify Spotify updated and Spicetify broke"
+PYTHONPATH=src python3 -m spicetify_agent.cli research "find a playlist sorting extension"
 ```
 
 Local package commands:
@@ -32,7 +33,7 @@ Local package commands:
 ```bash
 uv run spicetify-agent --help
 uvx --from . spicetify-agent --help
-uv build --no-index
+uv build --offline
 pip install dist/*.whl
 spicetify-agent --help
 ```
@@ -40,6 +41,8 @@ spicetify-agent --help
 ## Safety model
 
 - All potentially mutating requests produce a dry-run plan first.
+- The public skill interface is prompt-first: `/spicetify <prompt input>`.
+- Existing plugin, extension, theme, custom app, snippet, and Marketplace research is read-only and never installation approval.
 - Mutating plans include policy, plan hash, snapshot requirement, verification, report, and rollback metadata.
 - Execution uses a central argv-only runner with `shell=False`.
 - Real Spicetify execution is blocked in CI and disabled locally unless explicitly opted in.
@@ -57,6 +60,27 @@ spicetify-agent --help
 - `apps/docs/` — isolated Fumadocs + shadcn/ui-compatible documentation app.
 - `tests/` — fake-environment, policy, command, mode, audit, privacy, snapshot, CLI, and bundle validation tests.
 
+## Prompt-first routing
+
+The user-facing interface is natural language:
+
+```text
+/spicetify <prompt input>
+```
+
+The runtime infers intent, asset kind, source kind, risk, confidence, and the safest next artifact. Internal modes remain useful for traces, reports, and tests, but users should not need to select them up front.
+
+Examples:
+
+- `/spicetify find an extension for playlist sorting` returns a read-only research report.
+- `/spicetify is this GitHub theme safe?` returns an audit-oriented report.
+- `/spicetify safely install this Marketplace theme` returns a source-pin/stage/audit dry-run plan that requires confirmation before mutation.
+- `/spicetify make a small extension that hides podcasts` returns a generated-local scaffold plan with audit and dry-run gates.
+
+Research existing plugins, extensions, themes, custom apps, snippets, and Marketplace items as metadata only. GitHub topics, Marketplace presence, README claims, stars, and screenshots never imply trust or install approval.
+
+Local filesystem audit/inspect targets must be staged under an approved asset root. The helper CLI defaults relative `--target` paths to the current working directory and accepts explicit staged roots with `--asset-root`; it rejects symlinks, root escapes, secret-like names, and real Spotify/Spicetify state paths.
+
 ## Validation
 
 Safe checks that do not run real Spotify or Spicetify:
@@ -69,8 +93,8 @@ uv run --frozen pytest tests/unit
 uv run --frozen pytest tests/integration
 uv run --frozen ruff check .
 uv run --frozen ruff format --check .
-uv run --frozen mypy src
-uv build --no-index
+uv run --frozen ty check src
+uv build --offline
 uvx --from . spicetify-agent --help
 PYTHONPATH=src python3 -m pytest tests
 PYTHONPATH=src python3 -m spicetify_agent.cli validate-schemas

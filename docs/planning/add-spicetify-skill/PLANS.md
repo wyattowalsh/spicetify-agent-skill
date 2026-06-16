@@ -78,7 +78,7 @@ only until executable steps exist.
 - `spicetify-agent` is the installable console command so it does not shadow the real `spicetify` binary.
 - Python package metadata is in `pyproject.toml`; docs-site Node metadata is isolated under `apps/docs/`.
 - A docs subagent initially triggered docs dependency artifacts before approval; those artifacts were removed, then the user explicitly approved docs dependency install/build work. `pnpm-lock.yaml` is now tracked, `node_modules/` remains local/ignored, and `.gitignore` excludes generated dependency/cache outputs.
-- `uv_build` is the package build backend, allowing offline `uv build --no-index` with the installed `uv` executable.
+- `uv_build` is the package build backend, allowing offline `uv build --offline` with the installed `uv` executable.
 - Runtime dependencies remain empty; dev/test tools are isolated in the `dev` dependency group so `uv run pytest`, `uv run ruff`, and `uv run mypy` are reproducible without adding runtime package authority.
 - On this host, `python` is unavailable but `python3` is available at `/opt/homebrew/bin/python3`; use `python3` for local bundle checks while recording literal `python` command failures.
 - `openspec` is unavailable on PATH in this session, but approved `npx --package @fission-ai/openspec@1.4.1 openspec ...` strict validation passes for the active change and all changes.
@@ -180,7 +180,7 @@ only until executable steps exist.
 | `python3 tools/validate_openspec_structure.py --root .` | passed | 2026-06-13: local structural fallback reported 23 configured domains, 23 spec domains, 38 task IDs, and no errors. |
 | `node apps/docs/scripts/validate-docs-content.mjs` | passed | 2026-06-13: strict docs validator reported 12 MDX pages ok. |
 | `uv --version` | passed | 2026-06-13: `uv 0.11.17` is available. |
-| `uv build --no-index` | passed | 2026-06-13: built sdist and wheel with bundled `uv_build`. |
+| `uv build --offline` | passed | 2026-06-13: built sdist and wheel with bundled `uv_build`. |
 | `uv lock` | passed | 2026-06-13: resolved 14 packages including isolated dev tools; runtime dependency set remains empty. |
 | `uv lock --offline` | passed | 2026-06-13: lock resolution stayed available from local cache after the dev group was added. |
 | `uv lock --check` | passed | 2026-06-13: lockfile remained current. |
@@ -281,7 +281,7 @@ Validation evidence from this finish:
 | `python3 tools/validate_openspec_structure.py --root .` | passed | 23 configured domains, 23 spec domains, 38 task IDs. |
 | `python3 -m json.tool evals/regression-prompts.json >/dev/null` | passed | JSON parsed. |
 | `schemas/*.json` parse loop | passed | Printed `schemas ok`. |
-| `uv build --no-index && uvx --from . spicetify-agent --help` | passed | Built sdist/wheel and ran local package command. |
+| `uv build --offline && uvx --from . spicetify-agent --help` | passed | Built sdist/wheel and ran local package command. |
 | `pnpm --filter docs lint && pnpm --filter docs typecheck && pnpm --filter docs validate:content && pnpm --filter docs build` | passed | Docs lint, typecheck, content validation, and Next.js build passed. |
 | `openspec validate add-spicetify-skill --strict && openspec validate --all --strict` | not available | Direct `openspec` binary was not installed. |
 | `npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict && npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict` | passed | Change valid; 1 passed, 0 failed. |
