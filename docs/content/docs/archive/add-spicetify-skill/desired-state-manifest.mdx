@@ -1,0 +1,116 @@
+---
+title: Desired-state manifest
+description: Migrated /spicetify planning content for Desired-state manifest.
+section: planning
+source: migrated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/desired-state-manifest.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Desired-state manifest
+
+**Path:** `docs/content/docs/archive/add-spicetify-skill/desired-state-manifest.mdx`
+**Purpose:** Defines repeatable `/spicetify` setup manifests for profiles, assets, provenance, safety, and verification.
+**Status:** Proposed
+**Load/use when:** Implementing `profile`, `migrate`, `report`, automation, or manifest import/export.
+
+## Design goal
+
+A desired-state manifest is the power-user automation layer above profiles. It is not a script and it is not a bypass around policy. It declares what local Spicetify state should look like, then `/spicetify` computes a dry-run diff, audits missing or third-party assets, snapshots before mutation, and verifies the result.
+
+## Canonical responsibilities
+
+| Concern | Manifest responsibility | Runtime responsibility |
+|---|---|---|
+| Config | Declare desired keys and exact lists. | Parse current config, diff, choose CLI or transactional edit. |
+| Profiles | Declare named exact states. | Switch, verify, and rollback. |
+| Assets | Declare local/generated/third-party references. | Stage, audit, hash, install, or report missing assets. |
+| Provenance | Reference locks and expected hashes. | Invalidate audit acceptance on drift. |
+| Safety | Declare allowed low-risk automation preferences. | Enforce non-waivable invariants. |
+| Verification | Declare expected checks. | Run checks and emit report. |
+
+## Manifest shape
+
+```yaml
+schema: spicetify.desired-state
+name: workstation
+summary: Local Spicetify setup for daily use and development.
+config:
+  current_theme: TerminalDark
+  color_scheme: Dark
+  additionalOptions:
+    inject_css: true
+    inject_theme_js: false
+profiles:
+  minimal:
+    theme: TerminalDark
+    colorScheme: Dark
+    extensions: []
+    customApps: []
+  dev:
+    theme: TerminalDark
+    colorScheme: Dark
+    extensions:
+      - spicetify-devtools-helper.js
+    customApps: []
+assets:
+  - id: theme.terminal-dark
+    kind: theme
+    trust: generated
+    path: Themes/TerminalDark
+    expectedFiles:
+      - color.ini
+      - user.css
+provenance:
+  lockfile: .spicetify/provenance-lock.json
+safety:
+  requireSnapshot: true
+  allowThirdPartyEnableByDefault: false
+verification:
+  required:
+    - configMatchesManifest
+    - filesExist
+    - spicetifyApplySuccess
+```
+
+## Import flow
+
+1. Parse and schema-validate the manifest.
+2. Classify every asset as `generated`, `local-trusted`, `third-party`, `marketplace`, `built-in`, or `unknown`.
+3. Compare manifest against discovered local state.
+4. Produce a dry-run diff with no-op, add, remove, modify, audit, and approval steps.
+5. Require provenance/audit for third-party and Marketplace-derived assets.
+6. Snapshot before any mutation.
+7. Apply exact approved plan hash only.
+8. Verify and report drift or success.
+
+## Export flow
+
+1. Inspect current config, themes, extensions, custom apps, snippets, and Marketplace references.
+2. Ask whether to include skill-generated assets, local trusted assets, or only references.
+3. Exclude sensitive local data and absolute private paths by default.
+4. Record provenance locks for third-party assets where source is known.
+5. Emit a manifest plus an operation report that lists assumptions and missing provenance.
+
+## Non-waivable invariants
+
+Manifests and policy presets cannot disable:
+
+- no arbitrary shell execution;
+- no auto-running installer scripts or package-manager actions;
+- snapshot requirements for medium/high mutations;
+- path traversal and symlink escape checks;
+- third-party code audit before enablement;
+- redaction of logs/reports;
+- explicit confirmation for destructive, permission, launch-flag, remote-debug, publishing, or external-network expansion.
+
+## Failure modes
+
+| Failure | Recovery |
+|---|---|
+| Missing asset | Report missing reference; optionally create a staging/audit plan. |
+| Hash drift | Invalidate provenance acceptance and require re-audit. |
+| Manifest references unsafe override | Reject override and explain invariant. |
+| Imported paths are machine-specific | Normalize to discovered roots or require user mapping. |
+| Config differs after apply | Stop, report drift, and offer rollback. |

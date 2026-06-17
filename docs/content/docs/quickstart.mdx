@@ -1,0 +1,50 @@
+---
+title: Quickstart
+description: Run the first /spicetify workflow as a dry run before allowing any local mutation.
+section: overview
+source: curated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx
+owner: docs
+status: proposed
+safetyLevel: read
+---
+
+# Quickstart
+
+Install the released skill payload:
+
+```bash
+npx skills add github:wyattowalsh/spicetify-agent-skill@v0.1.0 --skill spicetify -y -g -a antigravity claude-code codex crush cursor gemini-cli github-copilot opencode
+```
+
+Start with a read-only request:
+
+```text
+/spicetify inspect my current setup
+```
+
+The expected response is an evidence-backed summary of detected Spicetify paths,
+config state, enabled assets, platform caveats, and safe next actions. It should
+not edit files, run package managers, change launch flags, or enable assets.
+
+For a mutating request, `/spicetify` produces a dry-run plan first:
+
+```text
+/spicetify create a dark terminal-style theme
+```
+
+The plan must name the files it would create, the allowlisted Spicetify argv
+arrays it would use, the required snapshot, the verification checks, and the
+rollback path. Execution requires a confirmation tied to the exact plan hash.
+
+## Before applying
+
+Check these fields before approving a plan:
+
+- The policy decision is not `blocked` or `manual-only`.
+- The snapshot requirement is present and can complete.
+- The command plan uses argv arrays, not shell strings.
+- Third-party code has an audit and provenance entry.
+- Verification and rollback steps are explicit.
+
+If any part is missing, ask for a revised dry run instead of confirming.

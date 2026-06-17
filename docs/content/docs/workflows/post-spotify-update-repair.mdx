@@ -1,0 +1,30 @@
+---
+title: Post-Spotify-Update Repair
+description: Plan a safe repair when a Spotify update breaks Spicetify customizations.
+section: workflows
+source: curated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/workflows/doctor-repair.mdx
+owner: docs
+status: proposed
+safetyLevel: high
+---
+
+# Post-Spotify-Update Repair
+
+Use this workflow when Spotify updates and Spicetify no longer applies cleanly.
+
+```text
+/spicetify Spotify updated and Spicetify broke, fix it
+```
+
+The first response must be a dry run. A safe plan includes:
+
+- `doctor` evidence for current Spotify and Spicetify state.
+- A snapshot requirement before any repair command.
+- A primary repair path using supported Spicetify commands.
+- A verification plan for config, applied files, and user-visible state.
+- A rollback path if verification fails.
+- A separate confirmation gate for restore-style fallback actions.
+
+If the Spotify build is unsupported or package permissions are broken, the plan
+must stop with a manual next action rather than forcing changes.

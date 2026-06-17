@@ -28,7 +28,7 @@ def test_write_json_round_trips_and_leaves_no_temp_file(tmp_path: Path) -> None:
 
 
 def test_repo_root_finds_bundle_root_from_nested_path() -> None:
-    nested = Path("apps/docs/content/docs/archive/add-spicetify-skill").resolve()
+    nested = Path("docs/content/docs/archive/add-spicetify-skill").resolve()
 
     assert repo_root(nested) == Path.cwd().resolve()
 

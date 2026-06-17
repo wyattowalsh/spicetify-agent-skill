@@ -9,8 +9,10 @@ from pathlib import Path
 
 import spicetify_agent
 from _schema_data import SCHEMAS
+from _schemas import load_schema
 
 SCRIPT_PATH = str(Path("skills/spicetify/scripts").resolve())
+SCHEMA_ROOT = Path("skills/spicetify/assets/schemas")
 
 
 def test_pyproject_uses_setuptools_flat_modules_and_non_shadowing_console_command() -> None:
@@ -52,13 +54,14 @@ def test_release_version_metadata_is_synchronized() -> None:
     )
 
 
-def test_packaged_schema_data_matches_root_schemas() -> None:
-    root_schema_names = sorted(path.name for path in Path("schemas").glob("*.json"))
+def test_packaged_schema_data_matches_skill_local_schemas() -> None:
+    schema_names = sorted(path.name for path in SCHEMA_ROOT.glob("*.json"))
     package_schema_names = sorted(SCHEMAS)
 
-    assert package_schema_names == root_schema_names
-    for name in root_schema_names:
-        assert SCHEMAS[name] == Path("schemas", name).read_text(encoding="utf-8")
+    assert not (Path.cwd() / "schemas").exists()
+    assert package_schema_names == schema_names
+    for name in schema_names:
+        assert SCHEMAS[name] == (SCHEMA_ROOT / name).read_text(encoding="utf-8")
 
 
 def test_installable_skill_payload_is_self_contained() -> None:
@@ -103,3 +106,14 @@ def test_validate_schemas_works_outside_repo_root(tmp_path: Path) -> None:
 
     assert result.returncode == 0, result.stderr
     assert "operation-plan.schema.json" in result.stdout
+
+
+def test_schema_loader_rejects_path_like_names() -> None:
+    assert load_schema("request.schema.json")["title"] == "/spicetify Request"
+    for name in ("../templates/custom-app/manifest.json", "request", "/request.schema.json"):
+        try:
+            load_schema(name)
+        except FileNotFoundError:
+            pass
+        else:  # pragma: no cover - assertion message carries the unsafe input.
+            raise AssertionError(f"schema loader accepted path-like name: {name}")

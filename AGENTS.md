@@ -11,26 +11,26 @@
 - Behavior requirements: `openspec/changes/add-spicetify-skill/specs/**/spec.md`
 - Design: `openspec/changes/add-spicetify-skill/design.md`
 - Task graph: `openspec/changes/add-spicetify-skill/tasks.md`
-- Planning context: `apps/docs/content/docs/archive/add-spicetify-skill/`
+- Planning context: `docs/content/docs/archive/add-spicetify-skill/`
 - Skill router: `skills/spicetify/SKILL.md`
 
 ## Read first
 
 1. `README.md`
 2. `DESIGN.md`
-3. `apps/docs/content/docs/archive/add-spicetify-skill/audit-review.mdx`
+3. `docs/content/docs/archive/add-spicetify-skill/audit-review.mdx`
 4. `openspec/changes/add-spicetify-skill/proposal.md`
 5. `openspec/changes/add-spicetify-skill/tasks.md`
 6. `openspec/changes/add-spicetify-skill/specs/skill/spec.md`
 7. `openspec/changes/add-spicetify-skill/design.md`
-8. `apps/docs/content/docs/archive/add-spicetify-skill/context-map.mdx`
-9. `apps/docs/content/docs/archive/add-spicetify-skill/policy-matrix.mdx`
-10. `apps/docs/content/docs/archive/add-spicetify-skill/operation-state-machine.mdx`
-11. `apps/docs/content/docs/archive/add-spicetify-skill/confirmation-flow.mdx`
-12. `apps/docs/content/docs/archive/add-spicetify-skill/privacy-redaction.mdx`
-13. `apps/docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx`
-14. `apps/docs/content/docs/archive/add-spicetify-skill/codex-handoff.mdx`
-15. For docs-site tasks: `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-site.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`
+8. `docs/content/docs/archive/add-spicetify-skill/context-map.mdx`
+9. `docs/content/docs/archive/add-spicetify-skill/policy-matrix.mdx`
+10. `docs/content/docs/archive/add-spicetify-skill/operation-state-machine.mdx`
+11. `docs/content/docs/archive/add-spicetify-skill/confirmation-flow.mdx`
+12. `docs/content/docs/archive/add-spicetify-skill/privacy-redaction.mdx`
+13. `docs/content/docs/archive/add-spicetify-skill/acceptance-matrix.mdx`
+14. `docs/content/docs/archive/add-spicetify-skill/codex-handoff.mdx`
+15. For docs-site tasks: `docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-site.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`
 
 ## Implementation rules
 
@@ -38,7 +38,7 @@
 - Distinguish implemented release surfaces from archived planning/OpenSpec artifacts.
 - Keep behavior requirements in `spec.md`; put implementation details in design/tasks/planning docs.
 - Preserve `/spicetify` as the only user-facing skill name.
-- Keep the installable helper runtime in Python flat modules under `skills/spicetify/scripts/`; keep TypeScript isolated to the `apps/docs` Fumadocs app.
+- Keep the installable helper runtime in Python flat modules under `skills/spicetify/scripts/`; keep TypeScript isolated to the `docs` Fumadocs app.
 - Preserve detected package manager; do not migrate npm/yarn/pnpm/bun without approval.
 - Use fake Spicetify environments in tests. Do not mutate real Spotify/Spicetify in CI.
 - Treat desired-state manifests as declarative data, not executable scripts.
@@ -66,7 +66,7 @@ python -m json.tool evals/regression-prompts.json >/dev/null
 python - <<'PY'
 from pathlib import Path
 import json
-for p in Path('schemas').glob('*.json'):
+for p in Path('skills/spicetify/assets/schemas').glob('*.json'):
     json.load(open(p))
 print('schemas ok')
 PY
@@ -84,12 +84,12 @@ openspec validate --all --strict
 
 ## Context budget
 
-Keep this file stable and compact. Do not put task-specific implementation discoveries here; update `apps/docs/content/docs/archive/add-spicetify-skill/plans.mdx` and the relevant planning doc instead.
+Keep this file stable and compact. Do not put task-specific implementation discoveries here; update `docs/content/docs/archive/add-spicetify-skill/plans.mdx` and the relevant planning doc instead.
 
 ## Companion docs site
 
-The bundle includes a companion Fumadocs + shadcn/ui docs app. For docs-site work, read `DESIGN.md`, `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx`, `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`, and `apps/docs/content/docs/archive/add-spicetify-skill/workflows/fumadocs-site.mdx`. Do not install packages, access registries, deploy, or overwrite an existing docs site without approval.
+The bundle includes a companion Fumadocs + shadcn/ui docs app. For docs-site work, read `DESIGN.md`, `docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-site-design-system.mdx`, `docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`, and `docs/content/docs/archive/add-spicetify-skill/workflows/fumadocs-site.mdx`. Do not install packages, access registries, deploy, or overwrite an existing docs site without approval.
 
 ## Subagent / swarm work
 
-Use subagents only from `apps/docs/content/docs/archive/add-spicetify-skill/subagent-task-graph.mdx` and `apps/docs/content/docs/archive/add-spicetify-skill/codex-kickoff-prompt.mdx`. Preserve bounded read scopes, non-overlapping write scopes, result envelopes, validation, stop conditions, and orchestrator consolidation. Do not let subagents install packages, access network, touch real Spotify/Spicetify state, change permissions, commit, push, deploy, create releases, enable hooks/MCP, or request secrets without explicit approval.
+Use subagents only from `docs/content/docs/archive/add-spicetify-skill/subagent-task-graph.mdx` and `docs/content/docs/archive/add-spicetify-skill/codex-kickoff-prompt.mdx`. Preserve bounded read scopes, non-overlapping write scopes, result envelopes, validation, stop conditions, and orchestrator consolidation. Do not let subagents install packages, access network, touch real Spotify/Spicetify state, change permissions, commit, push, deploy, create releases, enable hooks/MCP, or request secrets without explicit approval.

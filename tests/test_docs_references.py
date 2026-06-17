@@ -18,7 +18,7 @@ def test_generated_docs_references_are_current():
 
 
 def test_generated_reference_pages_have_source_traceability():
-    reference_root = ROOT / "apps" / "docs" / "content" / "docs" / "reference"
+    reference_root = ROOT / "docs" / "content" / "docs" / "reference"
     for name in ["index.mdx", "schemas.mdx", "openspec.mdx", "modes.mdx"]:
         text = (reference_root / name).read_text(encoding="utf-8")
         assert "sourcePath:" in text

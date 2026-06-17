@@ -43,15 +43,16 @@ REQUIRED_EVAL_MODES = {
     "report",
     "evolve",
 }
+SCHEMA_ROOT = Path("skills/spicetify/assets/schemas")
 
 
 def test_eval_schemas_parse() -> None:
-    for path in sorted(Path("schemas").glob("eval-*.schema.json")):
+    for path in sorted(SCHEMA_ROOT.glob("eval-*.schema.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
         assert data["$schema"] == "https://json-schema.org/draft/2020-12/schema"
         assert data["type"] == "object"
 
-    case_schema = json.loads(Path("schemas/eval-case.schema.json").read_text(encoding="utf-8"))
+    case_schema = json.loads((SCHEMA_ROOT / "eval-case.schema.json").read_text(encoding="utf-8"))
     assert "traceOracle" in case_schema["required"]
     forbid_properties = case_schema["properties"]["forbid"]["properties"]
     for key in (
@@ -68,7 +69,9 @@ def test_eval_schemas_parse() -> None:
         assert forbid_properties[key]["const"] is True
     assert case_schema["allOf"]
 
-    evolution = json.loads(Path("schemas/evolution-report.schema.json").read_text(encoding="utf-8"))
+    evolution = json.loads(
+        (SCHEMA_ROOT / "evolution-report.schema.json").read_text(encoding="utf-8")
+    )
     assert evolution["title"] == "/spicetify Evolution Report"
 
 

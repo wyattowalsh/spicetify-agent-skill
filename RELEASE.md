@@ -18,7 +18,6 @@ checklist pass.
 
 ```bash
 git status --short --branch --untracked-files=all
-uv lock --offline
 PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest
 uv run --frozen ruff format --check .
 uv run --frozen ruff check .

@@ -1,0 +1,71 @@
+---
+title: Release Checklist
+description: Versioned release gates for the portable /spicetify skill and spicetify-agent helper.
+section: reference
+source: curated
+sourcePath: RELEASE.md
+owner: docs
+status: implemented
+safetyLevel: read
+---
+
+# Release Checklist
+
+Current release: `v0.1.0`.
+
+Use this checklist before tagging or publishing a release. It is intentionally
+local-only: it does not run real Spotify, real Spicetify mutation, package
+publishing, docs deployment, installer scripts, or package-manager lifecycle
+scripts.
+
+## Version Surfaces
+
+- `pyproject.toml` declares `0.1.0`.
+- `spicetify-agent --version` reports `spicetify-agent 0.1.0`.
+- `agent-bundle.json`, plugin metadata, and `skills/spicetify/agents/openai.yaml`
+  declare `0.1.0`.
+- README, skill references, `CHANGELOG.md`, `RELEASE.md`, docs index, quickstart,
+  and LLM routes point to `v0.1.0`.
+
+## Blocking Gates
+
+Run the release gates from a clean tree:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 uv run --frozen pytest
+uv run --frozen ruff format --check .
+uv run --frozen ruff check .
+PYTHONPATH=skills/spicetify/scripts PYTHONDONTWRITEBYTECODE=1 uv run --frozen ty check skills/spicetify/scripts tools tests
+python3 tools/validate_bundle.py --root . --write-manifest
+python3 tools/validate_bundle.py --root .
+python3 tools/validate_openspec_structure.py --root .
+python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake --json
+python3 tools/run_skill_evals.py --suite evals/spicetify-routing-eval-suite.json --strict --json
+python3 tools/run_skill_evals.py --suite evals/spicetify-research-eval-suite.json --strict --json
+uv build
+uvx --from . spicetify-agent --help
+npx skills add . --skill spicetify --list
+HOME="$(mktemp -d)" XDG_CONFIG_HOME="$(mktemp -d)" npx skills add . --skill spicetify -y -g -a codex
+npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict
+npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict
+pnpm --filter docs lint
+pnpm --filter docs typecheck
+pnpm --filter docs validate:content
+pnpm --filter docs build
+```
+
+## Release Actions
+
+1. Commit the release-prep changes.
+2. Tag the commit as `v0.1.0`.
+3. Push `main` and the tag.
+4. Create the GitHub release from `CHANGELOG.md`.
+5. Verify the public skill install command:
+
+```bash
+npx skills add github:wyattowalsh/spicetify-agent-skill@v0.1.0 --skill spicetify --list
+```
+
+The release must not install or bundle the official Spicetify CLI, create a
+command named `spicetify`, or weaken dry-run, audit, snapshot, confirmation,
+verification, redaction, and rollback guarantees.

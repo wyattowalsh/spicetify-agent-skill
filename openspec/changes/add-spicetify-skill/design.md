@@ -101,7 +101,7 @@ Spicetify vanilla backups and `/spicetify` snapshots are separate concepts.
 - A mutating operation has pre-snapshot, operation log, verification report, and rollback pointer.
 - `last-known-good` updates only after verification.
 
-See `apps/docs/content/docs/archive/add-spicetify-skill/operation-state-machine.mdx`.
+See `docs/content/docs/archive/add-spicetify-skill/operation-state-machine.mdx`.
 
 ## Desired-state and automation model
 
@@ -160,13 +160,13 @@ Recommended implementation stack:
 
 - Python 3.11+ package with `pyproject.toml`, `setuptools`, and the `spicetify-agent` console command
 - standard-library-first runtime modules for CLI, schema loading, filesystem guards, snapshots, command planning, subprocess execution, reports, and tests
-- JSON Schema files under `schemas/` as the root contract surface
+- JSON Schema files under `skills/spicetify/assets/schemas/` as the skill-local contract surface
 - fake Spicetify binary for integration tests
 - Python `pytest`, `ruff`, and `ty` as external development validation tools
 - pnpm workspace metadata only for the isolated companion docs app
 - Fumadocs MDX and Fumadocs UI for the companion documentation site
 - shadcn/ui-compatible local components for the docs-site design system
-- TypeScript only inside `apps/docs`, not as the runtime authority layer
+- TypeScript only inside `docs`, not as the runtime authority layer
 
 ## Rollout / rollback
 
@@ -192,12 +192,12 @@ Implementation detail belongs in code and tests, but the observable contract is 
 
 The implementation plan includes an accompanying documentation app. This is not part of the local mutation boundary, but it is part of the product surface because it makes safety behavior, modes, schemas, and implementation contracts reviewable.
 
-Recommended app path: `apps/docs`.
+Recommended app path: `docs`.
 
 Primary design:
 
 ```text
-apps/docs
+docs
   -> Next app router
   -> Fumadocs MDX content source
   -> Fumadocs UI docs layout

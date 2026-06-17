@@ -31,6 +31,8 @@ def write_json(path: Path, data: Any) -> None:
 def repo_root(start: Path | None = None) -> Path:
     current = (start or Path.cwd()).resolve()
     for candidate in [current, *current.parents]:
-        if (candidate / "schemas").is_dir() and (candidate / "skills").is_dir():
+        if (candidate / "skills" / "spicetify" / "assets" / "schemas").is_dir() and (
+            candidate / "skills"
+        ).is_dir():
             return candidate
     return Path.cwd().resolve()

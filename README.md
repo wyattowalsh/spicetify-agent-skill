@@ -62,10 +62,10 @@ uvx --from git+https://github.com/wyattowalsh/spicetify-agent-skill.git@v0.1.0 s
 
 - `skills/spicetify/scripts/` — installed-skill Python runtime and CLI.
 - `skills/spicetify/` — compact `/spicetify` Skill router and references.
-- `schemas/` — JSON contracts for plans, runs, reports, policy, provenance, privacy, snapshots, docs, and fixtures.
+- `skills/spicetify/assets/schemas/` — skill-local JSON contracts for plans, runs, reports, policy, provenance, privacy, snapshots, docs, and fixtures.
 - `openspec/changes/add-spicetify-skill/` — behavior requirements and task graph.
-- `apps/docs/content/docs/` — durable documentation, generated references, workflows, modes, and validation guidance.
-- `apps/docs/` — isolated Fumadocs + shadcn/ui-compatible documentation app.
+- `docs/content/docs/` — durable documentation, generated references, workflows, modes, and validation guidance.
+- `docs/` — isolated Fumadocs + shadcn/ui-compatible documentation app.
 - `tests/` — fake-environment, policy, command, mode, audit, privacy, snapshot, CLI, and bundle validation tests.
 - `CHANGELOG.md` and `RELEASE.md` — release notes and the validation checklist for `v0.1.0`.
 
@@ -95,7 +95,6 @@ Local filesystem audit/inspect targets must be staged under an approved asset ro
 Safe checks that do not run real Spotify or Spicetify:
 
 ```bash
-uv lock --offline
 uv run --frozen spicetify-agent --help
 uv run --frozen pytest
 uv run --frozen pytest tests/unit
@@ -103,7 +102,7 @@ uv run --frozen pytest tests/integration
 uv run --frozen ruff check .
 uv run --frozen ruff format --check .
 uv run --frozen ty check skills/spicetify/scripts
-uv build --offline
+uv build
 uvx --from . spicetify-agent --help
 PYTHONPATH=skills/spicetify/scripts python3 -m pytest tests
 PYTHONPATH=skills/spicetify/scripts python3 -m spicetify_agent validate-schemas
@@ -115,7 +114,7 @@ python3 -m json.tool evals/regression-prompts.json >/dev/null
 python3 - <<'PY'
 from pathlib import Path
 import json
-for p in Path('schemas').glob('*.json'):
+for p in Path('skills/spicetify/assets/schemas').glob('*.json'):
     json.load(open(p))
 print('schemas ok')
 PY

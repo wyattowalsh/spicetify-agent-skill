@@ -16,10 +16,17 @@ import tomllib
 CHANGE = "add-spicetify-skill"
 RELEASE_VERSION = "0.1.0"
 RELEASE_TAG = f"v{RELEASE_VERSION}"
+DOCS_APP_ROOT = pathlib.Path("docs")
+DOCS_CONTENT_ROOT = DOCS_APP_ROOT / "content" / "docs"
+STALE_DOCS_APP_ROOT = pathlib.Path("apps") / "docs"
+STALE_DOCS_APP_TEXT = "apps" + "/docs"
+SKILL_SCHEMA_ROOT = pathlib.Path("skills") / "spicetify" / "assets" / "schemas"
+STALE_ROOT_SCHEMA_ROOT = pathlib.Path("schemas")
 SKIP_PARTS = {
     ".git",
     ".next",
     ".pytest_cache",
+    ".mypy_cache",
     ".ruff_cache",
     ".tmp-clean-venv",
     ".turbo",
@@ -29,9 +36,15 @@ SKIP_PARTS = {
     "dist",
     "node_modules",
 }
+STALE_TEXT_SCAN_SKIP_FILES = {
+    "pnpm-lock.yaml",
+    "uv.lock",
+}
 ROOT_REQUIRED = [
     "README.md",
     "manifest.md",
+    "CHANGELOG.md",
+    "RELEASE.md",
     "agent-bundle.json",
     ".codex-plugin/plugin.json",
     ".claude-plugin/plugin.json",
@@ -57,6 +70,7 @@ APP_DOCS_REQUIRED = [
     "workflows/audit-extension.mdx",
     "security/blocked-actions.mdx",
     "reference/index.mdx",
+    "reference/release-checklist.mdx",
     "docs-site/implementation-boundary.mdx",
     "archive/add-spicetify-skill/index.mdx",
     "archive/add-spicetify-skill/plans.mdx",
@@ -209,6 +223,8 @@ REQUIRED_SKILL_REFERENCES = {
     "references/evals.md",
 }
 TASK_RE = re.compile(r"TASK-[0-9]{3}-[a-z0-9]+(?:-[a-z0-9]+)*")
+ROOT_SCHEMA_REF_RE = re.compile(r"(?<!assets/)schemas/[A-Za-z0-9_.-]+\.schema\.json")
+ROOT_SCHEMA_DIR_RE = re.compile(r"(Path\(['\"]schemas['\"]\)|root / ['\"]schemas['\"])")
 
 
 def is_generated_path(path: pathlib.Path) -> bool:
@@ -255,6 +271,26 @@ def generated_manifest(root: pathlib.Path, files: list[pathlib.Path]) -> dict[st
     }
 
 
+def expected_schema_data(root: pathlib.Path) -> str:
+    entries = []
+    for path in sorted((root / SKILL_SCHEMA_ROOT).glob("*.json")):
+        text = read(path)
+        entries.append(f"    {path.name!r}: {json.dumps(text)},")
+    body = "\n".join(entries)
+    return (
+        "# ruff: noqa: E501\n"
+        "# fmt: off\n"
+        '"""Bundled JSON schemas for installed /spicetify skill runtime.\n\n'
+        "Generated from skills/spicetify/assets/schemas/*.json. Do not edit by hand.\n"
+        '"""\n\n'
+        "from __future__ import annotations\n\n"
+        "SCHEMAS: dict[str, str] = {\n"
+        f"{body}\n"
+        "}\n"
+        "# fmt: on\n"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default=".")
@@ -280,14 +316,49 @@ def main() -> int:
         if not (root / rel).exists():
             errors.append(f"missing {rel}")
 
-    if (root / "docs").exists():
-        errors.append("root docs/ must be migrated into apps/docs and removed")
+    docs_app_root = root / DOCS_APP_ROOT
+    docs_content_root = root / DOCS_CONTENT_ROOT
+    stale_docs_app_root = root / STALE_DOCS_APP_ROOT
 
-    docs_content_root = root / "apps" / "docs" / "content" / "docs"
+    if not docs_app_root.exists():
+        errors.append("missing docs/")
+    if stale_docs_app_root.exists():
+        errors.append(f"stale {STALE_DOCS_APP_TEXT}/ must be moved to docs/")
+
     planning = docs_content_root / "archive" / CHANGE
     for rel in APP_DOCS_REQUIRED:
         if not (docs_content_root / rel).exists():
-            errors.append(f"missing apps/docs/content/docs/{rel}")
+            errors.append(f"missing docs/content/docs/{rel}")
+
+    for path in files:
+        if path.name == "manifest.generated.json" or is_generated_path(path):
+            continue
+        if path.name in STALE_TEXT_SCAN_SKIP_FILES:
+            continue
+        if path.relative_to(root).as_posix() == "tools/validate_bundle.py":
+            continue
+        if path.suffix.lower() not in {
+            ".md",
+            ".mdx",
+            ".json",
+            ".py",
+            ".yaml",
+            ".yml",
+            ".ts",
+            ".tsx",
+            ".mjs",
+        }:
+            continue
+        text = read(path)
+        if STALE_DOCS_APP_TEXT in text:
+            errors.append(
+                f"{path.relative_to(root)} contains stale {STALE_DOCS_APP_TEXT} reference"
+            )
+        if ROOT_SCHEMA_REF_RE.search(text) or ROOT_SCHEMA_DIR_RE.search(text):
+            errors.append(
+                f"{path.relative_to(root)} contains stale root schema reference; "
+                f"use {SKILL_SCHEMA_ROOT.as_posix()}/"
+            )
 
     scripts_dir = root / "skills" / "spicetify" / "scripts"
     found_script_modules = (
@@ -325,11 +396,21 @@ def main() -> int:
         if "MUST" not in text and "SHALL" not in text:
             warnings.append(f"{rel} lacks normative MUST/SHALL wording")
 
-    schemas_dir = root / "schemas"
+    stale_schema_root = root / STALE_ROOT_SCHEMA_ROOT
+    if stale_schema_root.exists():
+        errors.append("root schemas/ must be moved into skills/spicetify/assets/schemas/")
+
+    schemas_dir = root / SKILL_SCHEMA_ROOT
     found_schemas = {p.name for p in schemas_dir.glob("*.json")} if schemas_dir.exists() else set()
     missing_schemas = sorted(REQUIRED_SCHEMAS - found_schemas)
     if missing_schemas:
         errors.append("missing schemas: " + ", ".join(missing_schemas))
+    schema_data_path = root / "skills/spicetify/scripts/_schema_data.py"
+    if schema_data_path.exists() and read(schema_data_path) != expected_schema_data(root):
+        errors.append(
+            "skills/spicetify/scripts/_schema_data.py is stale; run "
+            "`python3 tools/generate_schema_data.py --root .`"
+        )
     for path in sorted(root.rglob("*.json")):
         if is_generated_path(path):
             continue
@@ -535,7 +616,7 @@ def main() -> int:
     if docs_plan.exists():
         dp = read(docs_plan)
         for marker in [
-            "apps/docs",
+            "docs",
             "shadcn",
             "Fumadocs",
             "llms.txt",
@@ -602,7 +683,7 @@ def main() -> int:
     release_label_allowed_roots = {
         ".claude-plugin",
         ".codex-plugin",
-        "apps",
+        "docs",
         "skills",
     }
     release_label_allowed_files = {
@@ -639,14 +720,18 @@ def main() -> int:
         ".codex-plugin/plugin.json",
         ".claude-plugin/plugin.json",
         "package.json",
-        "apps/docs/package.json",
+        "docs/package.json",
     ]:
         path = root / rel
-        if path.exists() and read_json(path).get("version") != RELEASE_VERSION:
+        if not path.exists():
+            errors.append(f"missing release metadata file {rel}")
+        elif read_json(path).get("version") != RELEASE_VERSION:
             errors.append(f"{rel} must declare version {RELEASE_VERSION}")
 
     agent_meta = root / "skills/spicetify/agents/openai.yaml"
-    if agent_meta.exists() and f'version: "{RELEASE_VERSION}"' not in read(agent_meta):
+    if not agent_meta.exists():
+        errors.append("missing skills/spicetify/agents/openai.yaml")
+    elif f'version: "{RELEASE_VERSION}"' not in read(agent_meta):
         errors.append(f"skills/spicetify/agents/openai.yaml must declare {RELEASE_VERSION}")
 
     for rel in [
@@ -654,12 +739,14 @@ def main() -> int:
         "CHANGELOG.md",
         "RELEASE.md",
         "skills/spicetify/references/runtime.md",
-        "apps/docs/content/docs/index.mdx",
-        "apps/docs/content/docs/quickstart.mdx",
-        "apps/docs/content/docs/reference/release-checklist.mdx",
+        "docs/content/docs/index.mdx",
+        "docs/content/docs/quickstart.mdx",
+        "docs/content/docs/reference/release-checklist.mdx",
     ]:
         path = root / rel
-        if path.exists() and RELEASE_TAG not in read(path):
+        if not path.exists():
+            errors.append(f"missing release tag surface {rel}")
+        elif RELEASE_TAG not in read(path):
             errors.append(f"{rel} must mention {RELEASE_TAG}")
 
     def allows_release_label(path: pathlib.Path) -> bool:

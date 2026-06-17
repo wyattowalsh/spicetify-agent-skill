@@ -7,20 +7,26 @@ from pathlib import Path
 from typing import Any
 
 from _schema_data import SCHEMAS
-from _util import repo_root
+
+SKILL_SCHEMA_DIR = Path(__file__).resolve().parents[1] / "assets" / "schemas"
 
 
 def schema_dir() -> Path | None:
-    candidate = repo_root() / "schemas"
-    if candidate.is_dir() and any(candidate.glob("*.json")):
-        return candidate
+    if SKILL_SCHEMA_DIR.is_dir() and any(SKILL_SCHEMA_DIR.glob("*.json")):
+        return SKILL_SCHEMA_DIR
     return None
 
 
 def load_schema(name: str) -> dict[str, Any]:
+    requested = Path(name)
+    if requested.name != name or requested.suffix != ".json":
+        raise FileNotFoundError(f"Bundled schema not found: {name}")
     directory = schema_dir()
     if directory is not None:
-        with (directory / name).open("r", encoding="utf-8") as fh:
+        schema_path = directory / name
+        if not schema_path.is_file():
+            raise FileNotFoundError(f"Bundled schema not found: {name}")
+        with schema_path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)
     else:
         try:

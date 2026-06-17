@@ -1,0 +1,29 @@
+{
+  "site": "/spicetify-docs",
+  "appRoot": "docs",
+  "contentRoot": "docs/content/docs",
+  "source": {
+    "schemas": "skills/spicetify/assets/schemas",
+    "openspec": "openspec/changes/add-spicetify-skill/specs",
+    "modes": "docs/content/docs/archive/add-spicetify-skill/modes"
+  },
+  "generatedReferences": [
+    "skills/spicetify/assets/schemas",
+    "openspec/changes/add-spicetify-skill/specs",
+    "docs/content/docs/archive/add-spicetify-skill/modes"
+  ],
+  "safety": {
+    "runtimeStateAccess": false,
+    "redactionRequired": true,
+    "noSecrets": true,
+    "noDeploymentWithoutApproval": true,
+    "syntheticExamplesOnly": true
+  },
+  "routes": [
+    "/",
+    "/docs",
+    "/docs/[[...slug]]",
+    "/llms.txt",
+    "/llms-full.txt"
+  ]
+}

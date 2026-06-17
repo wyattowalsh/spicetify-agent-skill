@@ -1,0 +1,102 @@
+---
+title: Eval stack
+description: Migrated /spicetify planning content for Eval stack.
+section: planning
+source: migrated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Eval stack
+
+**Path:** `docs/content/docs/archive/add-spicetify-skill/eval-stack.mdx`
+**Purpose:** Planning contract for rigorous local evals and `/spicetify evolve`.
+**Status:** Proposed
+**Load/use when:** Designing eval schemas, eval runners, mode coverage, or evolve behavior.
+
+## Goals
+
+- Catch regressions in skill triggering, mode routing, policy decisions, command allowlists, state transitions, redaction, and user-facing guidance.
+- Make every safety invariant executable against fake fixtures before it is trusted.
+- Use eval failures and redacted skill-use evidence to drive `evolve` improvements.
+- Keep the default eval stack offline, deterministic, fake-only, and CI-safe.
+
+## Canonical artifacts
+
+| Artifact | Purpose |
+|---|---|
+| `eval-case` | One prompt or scenario plus expected structured behavior. |
+| `eval-suite` | Versioned collection of cases, fixtures, taxonomy tags, and thresholds. |
+| `eval-result` | Immutable run output with repo state, suite version, scores, failures, and artifacts. |
+| `eval-trace` | Redacted local trace of prompt, routing, policy, commands, fake observations, state changes, report output, and redaction metadata. |
+| `evolution-report` | Ranked improvement proposals based on eval results and approved redacted traces. |
+
+These artifacts are executable contracts in the repo root. The local runner loads fake fixtures, evaluates direct/route/negative activation, records trace events, emits schema-shaped results, and optionally executes approved fake plans.
+
+## Oracle hierarchy
+
+1. Hard safety oracles: no real paths, no arbitrary shell, no package managers, no installer scripts, no network, no secrets, and no unapproved binary.
+2. Structured behavior oracles: expected mode, risk, policy decision, mutation flag, command IDs, confirmation, snapshot, provenance, and report status.
+3. Fake state oracles: temp-root filesystem diff, fake argv log, snapshot manifest, last-known-good behavior, and rollback exactness.
+4. Trace oracles: exact order, contains-in-order, unordered subset, or forbidden-step matching for well-defined workflows.
+5. Text oracles: required and forbidden user-facing phrases for clarity only.
+6. Optional model or human oracles: calibrated secondary scoring for ambiguous quality; never the default safety gate.
+
+## Mode-specific eval strategy
+
+| Mode | Best eval method | Why |
+|---|---|---|
+| `inspect` | Read-only fake environment probes, missing CLI cases, no-mutation filesystem diff. | Its value is accurate local diagnosis without side effects. |
+| `doctor` | Fault-injected fixtures with ranked findings and safe next actions. | It must triage broken setups without jumping to repair. |
+| `snapshot` | Hash manifest, exclusion list, secret canaries, atomic-write checks. | Snapshot correctness is the recovery foundation. |
+| `restore` | Fake restore from known snapshot plus mismatch/failure cases. | It must restore exact state and stop on drift. |
+| `repair` | Broken Spotify-update fixtures, fallback refusal, snapshot-before-apply trace. | Repair is high-value and mutation-adjacent, so sequence matters. |
+| `apply` | Dry-run plan, plan hash, snapshot, confirmation, fake argv, verification. | Apply is the main mutation path and needs full trajectory evals. |
+| `config` | Config parser roundtrip, exact key diff, invalid key refusal. | Config errors can silently break user setups. |
+| `profile` | Idempotent profile switch, exact list replacement, rollback. | Profiles require deterministic desired-state behavior. |
+| `manifest` | Desired-state import/export replay, unsafe authority expansion blocks. | Manifests must remain declarative data, not executable scripts. |
+| `theme` | Local theme generation, invalid CSS, overwrite collision, fake apply. | Theme is common and file-mutating, so fixtures should be rich. |
+| `extension` | Third-party JS audit, provenance lock, token/network exfiltration block. | Extensions are the highest third-party code risk. |
+| `custom-app` | Scaffold-only safe path, build-script approval gate, audit before enable. | Custom apps mix generated code and optional build steps. |
+| `snippet` | CSS/JS snippet lint/audit, scope checks, rollback. | Small snippets can still inject unsafe behavior. |
+| `marketplace` | Metadata distrust, pin/hash requirement, path traversal archive fixtures. | Marketplace popularity must never become trust. |
+| `audit` | Malicious corpus, obfuscation, prompt injection, evidence quality. | Audit needs adversarial coverage, not happy-path samples. |
+| `devtools` | Consent gate, redaction, no screenshot/log capture without grant. | DevTools evidence is privacy-sensitive. |
+| `watch` | Bounded watcher, debounce, consent, no infinite apply loop. | Watch can accidentally become uncontrolled automation. |
+| `migrate` | Source/target manifest diff, Snap/manual-only branches, no package actions. | Migration has platform and authority-expansion risks. |
+| `update` | Manual-only installer/package-manager paths, version drift report. | Updating can imply network/install scripts, so evals must gate it. |
+| `rollback` | Last-known-good, hash mismatch, partial rollback failure report. | Rollback must be reliable under stress. |
+| `uninstall` | Dry-run delete plan, snapshot, scoped deletes only, restore path. | Uninstall is destructive and needs path containment. |
+| `report` | Secret corpus, shareability decision, Markdown/JSON schema checks. | Reports are the main data leakage surface. |
+| `evolve` | Eval-result ingestion, failure clustering, no safety weakening, eval-first proposals. | It improves the skill from evidence, not intuition. |
+
+## Evolve improvement loop
+
+1. Collect approved redacted inputs.
+2. Run deterministic local evals.
+3. Cluster failures by mode, invariant, root cause, and recurrence.
+4. Classify each finding as skill behavior, runtime behavior, docs gap, fixture gap, or invalid eval.
+5. Add or update a failing eval before proposing behavior changes.
+6. Produce a ranked evolution report.
+7. Compare baseline and candidate results after a separate implementation approval.
+8. Accept only if deterministic safety gates stay green and the targeted eval improves.
+
+## Optional adapters
+
+The local Python runner and pytest gates are canonical. Promptfoo, Braintrust, LangSmith, DeepEval, Ragas, Inspect AI, or model-judge adapters are optional exports or non-blocking runs only after explicit approval for dependencies, provider credentials, and redacted data scope.
+
+## Implemented runner contract
+
+- `activation.kind` is one of `direct-mode`, `route-mode`, or `negative-trigger`.
+- Every case names an existing fixture under `tests/fixtures/evals/`; unused fixture manifests fail validation.
+- `traceOracle` is structured with `match`, `steps`, optional `forbiddenSteps`, and `allowExtra`.
+- `expected.reportSchemas` and `expected.outputArtifacts` are compatibility aliases for planned report and artifact assertions.
+- `expected.plannedReportSchemas` and `expected.plannedArtifacts` are graded against the dry-run plan, not against serialized files that the eval runner never writes.
+- `expected.executeFake: true` cases execute only when `--execute-fake` is supplied; otherwise they are skipped, not silently passed.
+
+## Suite profiles
+
+- `suiteKind: canonical` is for the full local suite. It requires all fixture references to be used, `thresholds.modeCoverageRequired: true`, and every internal mode to have coverage.
+- `suiteKind: focused` is for scoped suites such as routing or research. It sets `thresholds.modeCoverageRequired: false` and `allowUnusedFixtures: true` so focused assertions do not need to duplicate the canonical mode matrix.
+- Focused suites remain safety-blocking for their own cases: hard-safety, trace, route, policy, redaction, and planned artifact checks still fail closed.

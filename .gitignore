@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+.mypy_cache/
 .ruff_cache/
 .coverage
 coverage.xml
@@ -23,11 +24,11 @@ eval-traces/
 
 # Node/docs
 node_modules/
-apps/docs/.next/
-apps/docs/.source/
-apps/docs/out/
-apps/docs/playwright-report/
-apps/docs/test-results/
+docs/.next/
+docs/.source/
+docs/out/
+docs/playwright-report/
+docs/test-results/
 *.tsbuildinfo
 
 # OS/editor

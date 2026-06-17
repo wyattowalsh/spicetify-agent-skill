@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import shutil
 import time
 from pathlib import Path
@@ -14,6 +15,20 @@ from _safe_paths import ensure_within, reject_symlink
 from _util import write_json
 
 EXCLUDED_NAMES = {"prefs", "Cookies", "cookies", "logs"}
+SECRET_EXACT_NAMES = {
+    ".env",
+    ".env.local",
+    ".envrc",
+    "credentials",
+    "credentials.json",
+    "secrets",
+    "secrets.json",
+}
+SECRET_NAME_RE = re.compile(
+    r"(^|[._-])(token|secret|credential|authorization|session|cookie)([._-]|$)",
+    re.IGNORECASE,
+)
+MAX_SECRET_SCAN_BYTES = 64 * 1024
 
 
 def file_hash(path: Path) -> str:
@@ -22,6 +37,24 @@ def file_hash(path: Path) -> str:
         for chunk in iter(lambda: fh.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _is_secret_like_name(name: str) -> bool:
+    return name in SECRET_EXACT_NAMES or bool(SECRET_NAME_RE.search(name))
+
+
+def _is_secret_like_path(rel: Path) -> bool:
+    return any(_is_secret_like_name(part) for part in rel.parts)
+
+
+def _contains_secret_like_text(path: Path) -> bool:
+    try:
+        if path.stat().st_size > MAX_SECRET_SCAN_BYTES:
+            return False
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return False
+    return redact(text, strict=True) != text
 
 
 def snapshot_tree(source: Path, snapshot_root: Path) -> dict[str, object]:
@@ -42,13 +75,20 @@ def snapshot_tree(source: Path, snapshot_root: Path) -> dict[str, object]:
         current_path = Path(current)
         for name in dirs:
             reject_symlink(current_path / name)
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_NAMES]
+        dirs[:] = [
+            d
+            for d in dirs
+            if d not in EXCLUDED_NAMES
+            and not _is_secret_like_path((current_path / d).relative_to(source))
+        ]
         for name in files:
             if name in EXCLUDED_NAMES:
                 continue
             src = current_path / name
             reject_symlink(src)
             rel = src.relative_to(source)
+            if _is_secret_like_path(rel) or _contains_secret_like_text(src):
+                continue
             dst = ensure_within(target, target / rel)
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)

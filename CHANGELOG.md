@@ -18,5 +18,5 @@ helper CLI.
 - Adds prompt-first `/spicetify <prompt>` routing, metadata-only asset research,
   audit and provenance workflows, eval suites, and the `evolve` improvement
   loop.
-- Moves durable documentation to the Fumadocs app under `apps/docs/` and removes
-  the root `docs/` tree.
+- Moves durable documentation into the root `docs/` Fumadocs app and removes
+  the previous nested docs app.

@@ -1,0 +1,96 @@
+---
+title: Architecture
+description: Migrated /spicetify planning content for Architecture.
+section: planning
+source: migrated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/architecture.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Architecture
+
+**Path:** `docs/content/docs/archive/add-spicetify-skill/architecture.mdx`
+**Purpose:** Expanded architecture notes for implementation.
+**Status:** Draft
+**Load/use when:** Read after OpenSpec design for subsystem details.
+
+
+## Architecture principles
+
+1. Plan before execution.
+2. Snapshot before mutation.
+3. Execute only typed, allowlisted commands.
+4. Verify after every meaningful step.
+5. Roll back from known state, not vibes.
+6. Treat third-party code as untrusted until audited.
+7. Keep `/spicetify` concise; put depth in references.
+
+## Runtime boundaries
+
+| Boundary | Allowed | Blocked by default |
+|---|---|---|
+| Spicetify CLI | registered argv arrays | shell strings, pipes, unknown flags |
+| Filesystem | Spicetify userdata roots, `/spicetify` state root, project workspace | symlink escapes, arbitrary deletes, Spotify prefs contents |
+| Network | staged approved fetches | README scripts, implicit package installs, auto-updates |
+| DevTools/logs | optional redacted capture | remote debugging flags without confirmation |
+| Reports | redacted JSON/Markdown | secrets, tokens, unredacted prefs/logs |
+
+## Data flow
+
+```text
+SpicetifyRequest
+  -> ModePlanRequest
+  -> OperationPlan
+  -> SnapshotManifest
+  -> OperationRun
+  -> VerificationReport
+  -> OperationReport
+```
+
+## Mode lifecycle
+
+```text
+classify -> inspect -> preconditions -> audit/policy -> dry-run plan
+         -> confirmation gate -> snapshot -> execute -> verify -> report
+                                      | failure
+                                      v
+                                  rollback plan
+```
+
+## State roots
+
+Use discovered Spicetify paths at runtime. Proposed `/spicetify` state roots:
+
+- Windows: `%APPDATA%/spicetify/state/`
+- macOS: `~/Library/Application Support/spicetify/state/`
+- Linux: `${XDG_STATE_HOME:-~/.local/state}/spicetify/state/`
+
+## Implementation modules
+
+| Module | Responsibility |
+|---|---|
+| `skills/spicetify/scripts/_intent_router.py` | Prompt/mode routing |
+| `skills/spicetify/scripts/_policy.py`, `_asset_plans.py`, `_runner.py` | policies, inert plans, operation runner |
+| `skills/spicetify/scripts/_commands.py`, `_runner.py`, `_platform.py` | command registry, runner, output parsers, path/config discovery |
+| `skills/spicetify/scripts/_safe_paths.py`, `_asset_path_guard.py` | safe path, staging, transactions, hashing |
+| `skills/spicetify/scripts/_state.py` | snapshots, last-known-good, operation logs |
+| `skills/spicetify/scripts/_modes.py` | mode planners/executors/verifiers |
+| `skills/spicetify/scripts/_audit.py`, `_asset_inspectors.py` | JS/CSS/manifest/repo auditors |
+| `skills/spicetify/scripts/_verify.py` | verification checks |
+| `skills/spicetify/scripts/_reports.py`, `_privacy.py` | Markdown/JSON reports and redaction |
+| `skills/spicetify` | compact Skill docs and references |
+
+## Companion Fumadocs site architecture
+
+The documentation surface is an accompanying Next/Fumadocs site with shadcn/ui components. It is planned as a separate application surface that reads authored/generated documentation, not live local Spotify state. It exists to explain `/spicetify` safety, modes, workflows, schemas, reports, and recovery paths.
+
+Key constraints:
+
+- no runtime access to local Spicetify roots, snapshots, logs, screenshots, or Spotify prefs;
+- synthetic or redacted examples only;
+- shadcn/ui code and third-party registry inputs are reviewed before install;
+- Fumadocs content is sourced from local `content/docs` files and deterministic schema/mode reference generation;
+- deployment remains a proposal until a trusted repo and host are approved.
+
+See `DESIGN.md`, `fumadocs-site-plan.md`, `docs-content-architecture.md`, `docs-site-design-system.md`, and `docs-site-implementation-plan.md`.

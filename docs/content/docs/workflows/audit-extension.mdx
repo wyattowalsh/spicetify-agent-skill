@@ -1,0 +1,26 @@
+---
+title: Audit an Extension
+description: Review third-party JavaScript before any /spicetify enable plan.
+section: workflows
+source: curated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/workflows/audit.mdx
+owner: docs
+status: proposed
+safetyLevel: read
+---
+
+# Audit an Extension
+
+Use this workflow before enabling any extension from a local folder, GitHub
+checkout, Marketplace entry, or generated scaffold.
+
+```text
+/spicetify audit this extension before enabling it
+```
+
+The audit report should identify source files, risky APIs, network behavior,
+obfuscation, prompt-injection attempts in documentation, required provenance,
+and whether the asset is eligible for a dry-run install plan.
+
+Passing audit does not automatically enable the extension. It only allows the
+next dry-run plan to reference the audited artifact and request confirmation.

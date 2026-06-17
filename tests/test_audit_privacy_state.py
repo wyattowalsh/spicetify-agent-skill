@@ -127,12 +127,24 @@ def test_snapshot_excludes_sensitive_names(tmp_path: Path) -> None:
     root.mkdir()
     (root / "config-xpui.ini").write_text("[Setting]\ncurrent_theme=Test\n", encoding="utf-8")
     (root / "prefs").write_text("secret", encoding="utf-8")
+    (root / ".env").write_text("TOKEN=abcdefghijk\n", encoding="utf-8")
+    (root / "api-token.txt").write_text("not copied\n", encoding="utf-8")
+    secrets = root / "secrets"
+    secrets.mkdir()
+    (secrets / "keystore.txt").write_text("not copied\n", encoding="utf-8")
+    (root / "notes.txt").write_text("authorization: Bearer abcdefghijk\n", encoding="utf-8")
 
     manifest = snapshot_tree(root, tmp_path / "snapshots")
 
     paths = [entry["path"] for entry in cast(list[dict[str, Any]], manifest["files"])]
     assert "config-xpui.ini" in paths
     assert "prefs" not in paths
+    assert ".env" not in paths
+    assert "api-token.txt" not in paths
+    assert "secrets/keystore.txt" not in paths
+    assert "notes.txt" not in paths
+    copied_files = list((tmp_path / "snapshots").glob("snapshot-*/*"))
+    assert not any(path.name == ".env" for path in copied_files)
 
 
 def test_snapshot_rejects_symlinked_directories(tmp_path: Path) -> None:

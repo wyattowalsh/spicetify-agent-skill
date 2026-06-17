@@ -11,7 +11,14 @@ from typing import Any
 import pytest
 
 FIXTURE_ROOT = Path(__file__).resolve().parents[1] / "fixtures" / "evals"
-SCHEMA_PATH = Path(__file__).resolve().parents[2] / "schemas" / "fixture-manifest.schema.json"
+SCHEMA_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "skills"
+    / "spicetify"
+    / "assets"
+    / "schemas"
+    / "fixture-manifest.schema.json"
+)
 
 REQUIRED_FIXTURES = {
     "healthy",

@@ -57,8 +57,8 @@ OpenSpec artifacts
 - Use Fumadocs-compatible content with a Next app-router app as the documentation shell.
 - Use shadcn/ui-compatible local components and design tokens while keeping registry installs approval-gated.
 - Keep docs chrome aligned with the same local theme tokens as shadcn-compatible components.
-- Keep the docs site in an `apps/docs` workspace package so it can be built, tested, and deployed independently from the local operator.
-- Store user-facing content under `apps/docs/content/docs` and reusable UI under `apps/docs/components`.
+- Keep the docs site in an `docs` workspace package so it can be built, tested, and deployed independently from the local operator.
+- Store user-facing content under `docs/content/docs` and reusable UI under `docs/components`.
 - Generate or synchronize reference pages from schemas, OpenSpec specs, and planning mode docs, but keep generated files marked and reviewable.
 - Provide local search, `llms.txt`, and `llms-full.txt` plans without requiring hosted credentials.
 - Defer hosted analytics, cloud search, feedback backends, and deployment until explicitly approved.
@@ -66,9 +66,9 @@ OpenSpec artifacts
 ## Read next
 
 1. `openspec/changes/add-spicetify-skill/design.md`
-2. `apps/docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`
-3. `apps/docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`
-4. `apps/docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`
+2. `docs/content/docs/archive/add-spicetify-skill/fumadocs-site-plan.mdx`
+3. `docs/content/docs/archive/add-spicetify-skill/docs-content-architecture.mdx`
+4. `docs/content/docs/archive/add-spicetify-skill/docs-site-implementation-plan.mdx`
 5. `openspec/changes/add-spicetify-skill/specs/docs-site/spec.md`
 6. `openspec/changes/add-spicetify-skill/specs/docs-content/spec.md`
 7. `openspec/changes/add-spicetify-skill/specs/docs-ui/spec.md`

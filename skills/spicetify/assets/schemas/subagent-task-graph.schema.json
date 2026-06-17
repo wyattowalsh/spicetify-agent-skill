@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/subagent-task-graph.schema.json",
+  "title": "Subagent Task Graph",
+  "type": "object",
+  "required": [
+    "changeId",
+    "agents",
+    "waves",
+    "mergeProtocol"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "changeId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "orchestrator": {
+      "type": "string",
+      "minLength": 1
+    },
+    "maxParallelAgents": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "agents": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "readScope",
+          "writeScope",
+          "expectedOutput",
+          "stopConditions"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][0-9]+-[a-z0-9]+(?:-[a-z0-9]+)*$|^orchestrator$"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "parallelSafe": {
+            "type": "boolean",
+            "default": false
+          },
+          "readScope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "writeScope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expectedOutput": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "validation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "stopConditions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "waves": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "agents"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          },
+          "agents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "parallel": {
+            "type": "boolean",
+            "default": false
+          },
+          "validationGate": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        }
+      }
+    },
+    "mergeProtocol": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "singleAgentFallback": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  }
+}

@@ -1,0 +1,92 @@
+---
+title: Mode: rollback
+description: Migrated /spicetify planning content for Mode: rollback.
+section: modes
+source: migrated
+sourcePath: docs/content/docs/archive/add-spicetify-skill/modes/rollback.mdx
+owner: docs
+status: migrated
+safetyLevel: read
+---
+# Mode: rollback
+
+**Path:** `docs/content/docs/archive/add-spicetify-skill/modes/rollback.mdx`
+**Purpose:** Detailed contract for `/spicetify rollback` mode.
+**Status:** Proposed
+**Load/use when:** Implementing, testing, or reviewing `rollback` behavior.
+
+## Purpose
+
+Return to last-known-good or a selected snapshot.
+
+## Inputs
+
+`target: last-known-good|snapshotId|beforePlanId`, `applyAfter?`.
+
+## Preconditions
+
+Target snapshot validates; current state can be guard-snapshotted.
+
+## Commands/files touched
+
+Config/assets restore; optional `spicetify apply`.
+
+## Safety checks
+
+Pre-rollback snapshot; confirmation for overwrites/deletes; snapshot hash validation.
+
+## Plan output
+
+`RollbackPlan` with target snapshot, file diff, guard snapshot, verification.
+
+## Execution flow
+
+Create guard snapshot → restore target → apply if planned → verify.
+
+## Verification flow
+
+Hashes/config match target; doctor no new high findings.
+
+## Rollback flow
+
+Rollback can be rolled forward from guard snapshot.
+
+## Idempotency notes
+
+The planner MUST diff current state before emitting mutations. Re-running an already satisfied desired state SHOULD become a no-op plus verification unless the user explicitly requests refresh/reapply.
+
+## Failure modes and recovery
+
+- Snapshot invalid -> stop with manual restore report.
+- Rollback verification fails -> preserve evidence and suggest restore/manual repair.
+
+
+## Data contracts
+
+Primary contracts: `snapshot-manifest, operation-plan, operation-run`. Any implementation-specific schema expansion MUST update `docs/content/docs/archive/add-spicetify-skill/schemas/index.mdx`, `api-contracts.md`, and regression prompts.
+
+## Cross-cutting controls
+
+- Policy decision is required before execution, even for no-op verification plans.
+- Secrets, prefs content, logs, screenshots, and private paths follow `privacy-redaction.md`.
+- Third-party, Marketplace, imported, or unknown assets require provenance and audit before enablement.
+- Desired-state or automation inputs cannot waive non-negotiable safety invariants.
+
+## Example user prompts
+
+- `/spicetify roll back to last working config`
+
+## Example structured response
+
+```json
+{
+  "mode": "rollback",
+  "target": "last-known-good",
+  "requiresConfirmation": true,
+  "guardSnapshot": "snap_guard"
+}
+```
+
+## Confirmation reference
+
+Use `../confirmation-flow.md` whenever this mode crosses snapshot, mutation, destructive, third-party-code, DevTools, network, package-manager, permission, or launch-flag approval gates.

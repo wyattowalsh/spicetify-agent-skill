@@ -46,7 +46,7 @@ Use progressive disclosure:
 5. Schemas make plans and reports machine-checkable.
 6. Codex handoff/Goal/PLANS make execution resumable and bounded.
 
-The implementation ships as a Python package named `spicetify-agent`, preserves detected package managers, and uses fake Spicetify environments for CI. The companion docs app remains isolated under `apps/docs`.
+The implementation ships as a Python package named `spicetify-agent`, preserves detected package managers, and uses fake Spicetify environments for CI. The companion docs app remains isolated under `docs`.
 
 ## Capabilities
 

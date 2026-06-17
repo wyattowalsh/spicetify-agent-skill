@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/spicetify/docs-site-manifest.schema.json",
+  "title": "Docs Site Manifest",
+  "type": "object",
+  "required": ["site", "appRoot", "contentRoot", "routes", "contentSources", "ui", "validation", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "site": { "type": "string", "const": "/spicetify-docs" },
+    "appRoot": { "type": "string", "pattern": "^docs(?:/.*)?$" },
+    "contentRoot": { "type": "string", "pattern": "^docs/content/docs(?:/.*)?$" },
+    "packageManager": { "type": "string", "enum": ["pnpm", "npm", "yarn", "bun", "detected"] },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "purpose", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "purpose": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "enum": ["page", "docs", "api", "llm", "static"] },
+          "approvalRequired": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "contentSources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sourcePath", "outputPath", "mode"],
+        "additionalProperties": false,
+        "properties": {
+          "sourcePath": { "type": "string" },
+          "outputPath": { "type": "string" },
+          "mode": { "type": "string", "enum": ["curated", "generated", "hybrid"] },
+          "redactionRequired": { "type": "boolean", "default": true }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "required": ["framework", "componentPolicy", "themePolicy"],
+      "additionalProperties": false,
+      "properties": {
+        "framework": { "type": "string", "const": "fumadocs-shadcn" },
+        "componentPolicy": { "type": "string", "enum": ["local-components-only", "external-registry-approved"] },
+        "themePolicy": { "type": "string", "enum": ["shadcn-token-aligned"] },
+        "components": { "type": "array", "items": { "type": "string" }, "default": [] }
+      }
+    },
+    "validation": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "safety": {
+      "type": "object",
+      "required": ["noSecrets", "noDeploymentWithoutApproval", "noExternalRegistryWithoutApproval"],
+      "additionalProperties": false,
+      "properties": {
+        "noSecrets": { "type": "boolean", "const": true },
+        "noDeploymentWithoutApproval": { "type": "boolean", "const": true },
+        "noExternalRegistryWithoutApproval": { "type": "boolean", "const": true },
+        "redactionPolicyRef": { "type": "string" }
+      }
+    }
+  }
+}

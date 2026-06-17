@@ -199,16 +199,18 @@ def test_asset_source_lock_records_untrusted_staged_source(tmp_path: Path) -> No
     assert lock["auditRequired"] is True
 
 
-def test_new_schemas_exist_in_root_and_package_data() -> None:
+def test_new_schemas_exist_in_skill_payload_and_package_data() -> None:
     for name in (
         "intent-route.schema.json",
         "asset-source.schema.json",
         "asset-analysis.schema.json",
         "asset-workflow-plan.schema.json",
     ):
-        root_schema = json.loads(Path("schemas", name).read_text(encoding="utf-8"))
+        skill_schema = json.loads(
+            Path("skills", "spicetify", "assets", "schemas", name).read_text(encoding="utf-8")
+        )
         package_schema = json.loads(SCHEMAS[name])
-        assert root_schema == package_schema
+        assert skill_schema == package_schema
 
 
 def test_cli_prompt_first_plan_shape() -> None:
