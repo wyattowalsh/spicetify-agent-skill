@@ -19,7 +19,6 @@ concurrency:
 env:
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONPATH: skills/spicetify/scripts
-  SPICETIFY_AGENT_ALLOW_FAKE_BIN: "1"
   SPICETIFY_AGENT_ALLOW_REAL_SPICETIFY: "0"
 
 jobs:
