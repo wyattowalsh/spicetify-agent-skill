@@ -54,6 +54,26 @@ pnpm --filter docs validate:content
 pnpm --filter docs build
 ```
 
+The grouped local equivalents are:
+
+```bash
+pnpm ci:python
+pnpm ci:bundle
+pnpm ci:evals
+pnpm ci:docs
+pnpm ci:all
+```
+
+Repository automation runs these gates in GitHub Actions:
+
+- `CI` runs on pushes and pull requests to `main`.
+- `Release Verify` runs on `v*` tag pushes and manual tag verification.
+
+Both workflows keep real Spicetify disabled, activate the pinned `pnpm@11.5.2`
+version through Corepack before docs dependency installation, and validate only fake fixtures,
+local schemas, the installed skill payload, docs, OpenSpec, evals, and the
+`spicetify-agent` helper.
+
 ## Release Actions
 
 1. Commit the release-prep changes.

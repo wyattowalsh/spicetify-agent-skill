@@ -83,6 +83,101 @@ def test_validate_bundle_requires_release_surfaces_after_manifest_regeneration(
     assert "missing release tag surface RELEASE.md" in payload["errors"]
 
 
+def test_validate_bundle_requires_automation_surfaces_after_manifest_regeneration(
+    tmp_path: Path,
+) -> None:
+    repo = _copy_repo_for_validator_test(tmp_path)
+    (repo / ".github" / "workflows" / "ci.yml").unlink()
+
+    result = subprocess.run(  # noqa: S603 - test invokes this repository's validator script.
+        [sys.executable, "tools/validate_bundle.py", "--root", str(repo), "--write-manifest"],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    payload = json.loads(result.stdout)
+    assert "missing automation surface .github/workflows/ci.yml" in payload["errors"]
+
+
+def test_validate_bundle_requires_pinned_package_manager_after_manifest_regeneration(
+    tmp_path: Path,
+) -> None:
+    repo = _copy_repo_for_validator_test(tmp_path)
+    package_json = repo / "package.json"
+    payload = json.loads(package_json.read_text(encoding="utf-8"))
+    payload.pop("packageManager", None)
+    package_json.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+    result = subprocess.run(  # noqa: S603 - test invokes this repository's validator script.
+        [sys.executable, "tools/validate_bundle.py", "--root", str(repo), "--write-manifest"],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    output = json.loads(result.stdout)
+    assert "package.json must pin packageManager pnpm@11.5.2" in output["errors"]
+
+
+def test_validate_bundle_rejects_setup_node_pnpm_cache_after_manifest_regeneration(
+    tmp_path: Path,
+) -> None:
+    repo = _copy_repo_for_validator_test(tmp_path)
+    workflow = repo / ".github" / "workflows" / "ci.yml"
+    workflow.write_text(
+        workflow.read_text(encoding="utf-8") + "\n# regression probe\ncache: pnpm\n",
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(  # noqa: S603 - test invokes this repository's validator script.
+        [sys.executable, "tools/validate_bundle.py", "--root", str(repo), "--write-manifest"],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    output = json.loads(result.stdout)
+    assert (
+        ".github/workflows/ci.yml must not use setup-node cache: pnpm before pnpm activation"
+    ) in output["errors"]
+
+
+def test_validate_bundle_requires_pnpm_activation_after_manifest_regeneration(
+    tmp_path: Path,
+) -> None:
+    repo = _copy_repo_for_validator_test(tmp_path)
+    workflow = repo / ".github" / "workflows" / "release-verify.yml"
+    workflow.write_text(
+        workflow.read_text(encoding="utf-8").replace(
+            "corepack prepare pnpm@11.5.2 --activate",
+            "corepack prepare pnpm@10.0.0 --activate",
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(  # noqa: S603 - test invokes this repository's validator script.
+        [sys.executable, "tools/validate_bundle.py", "--root", str(repo), "--write-manifest"],
+        cwd=repo,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 1
+    output = json.loads(result.stdout)
+    assert (
+        ".github/workflows/release-verify.yml missing automation marker "
+        "'corepack prepare pnpm@11.5.2 --activate'"
+    ) in output["errors"]
+
+
 def test_validate_bundle_requires_root_docs_after_manifest_regeneration(tmp_path: Path) -> None:
     repo = _copy_repo_for_validator_test(tmp_path)
     shutil.rmtree(repo / "docs")

@@ -95,6 +95,16 @@ Local filesystem audit/inspect targets must be staged under an approved asset ro
 Safe checks that do not run real Spotify or Spicetify:
 
 ```bash
+pnpm ci:python
+pnpm ci:bundle
+pnpm ci:evals
+pnpm ci:docs
+pnpm ci:all
+```
+
+The package scripts expand to the same underlying gates:
+
+```bash
 uv run --frozen spicetify-agent --help
 uv run --frozen pytest
 uv run --frozen pytest tests/unit
@@ -121,6 +131,13 @@ PY
 ```
 
 `openspec validate add-spicetify-skill --strict` and `openspec validate --all --strict` should also run in environments where the OpenSpec CLI is installed. When that CLI is unavailable, `python3 tools/validate_openspec_structure.py --root .` provides a local structural check for the active change.
+
+GitHub Actions runs the same fake-only checks on pushes and pull requests to `main`. Tag pushes matching `v*` run release verification against the pinned skill install path. Docs jobs activate the pinned `pnpm@11.5.2` version through Corepack before running `pnpm install --frozen-lockfile`. To mirror the fast local gates before committing or pushing, install `pre-commit` through your normal developer tooling and then run:
+
+```bash
+pre-commit install --hook-type pre-commit --hook-type pre-push
+pre-commit run --all-files
+```
 
 ## Docs app
 

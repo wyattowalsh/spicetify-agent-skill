@@ -350,6 +350,22 @@ workflow implementations.
     ```
   - Done when: validation passes or every failure is documented with owner and next step
 
+- [ ] TASK-091-add-repository-quality-automation
+  - Goal: Add useful CI/CD and local hook automation for the finalized release surfaces.
+  - Depends on: TASK-090-run-validation
+  - Read: `AGENTS.md`, `README.md`, `RELEASE.md`, `package.json`, `pyproject.toml`, `pnpm-workspace.yaml`, testing spec, existing validators, eval suites, docs scripts
+  - Write scope: `.github/workflows/`, `.github/dependabot.yml`, `.pre-commit-config.yaml`, `package.json`, `README.md`, `RELEASE.md`, docs release checklist, testing spec
+  - Validation:
+    ```bash
+    python3 tools/validate_bundle.py --root .
+    python3 tools/validate_openspec_structure.py --root .
+    pnpm ci:bundle
+    pnpm ci:evals
+    ! rg -n "cache: pnpm" .github/workflows
+    rg -n "corepack prepare pnpm@11.5.2 --activate" .github/workflows/ci.yml .github/workflows/release-verify.yml
+    ```
+  - Done when: CI workflows, release verification, dependency update metadata, and local hooks reuse existing fake-only repo validation gates, pin pnpm setup before docs installs, and do not add runtime dependencies or live Spicetify access
+
 - [ ] TASK-095-prepare-archive-readiness
   - Goal: Document whether implementation is ready for verify/sync/archive.
   - Depends on: TASK-090-run-validation

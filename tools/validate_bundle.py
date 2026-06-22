@@ -16,6 +16,7 @@ import tomllib
 CHANGE = "add-spicetify-skill"
 RELEASE_VERSION = "0.1.0"
 RELEASE_TAG = f"v{RELEASE_VERSION}"
+PACKAGE_MANAGER = "pnpm@11.5.2"
 DOCS_APP_ROOT = pathlib.Path("docs")
 DOCS_CONTENT_ROOT = DOCS_APP_ROOT / "content" / "docs"
 STALE_DOCS_APP_ROOT = pathlib.Path("apps") / "docs"
@@ -728,6 +729,10 @@ def main() -> int:
         elif read_json(path).get("version") != RELEASE_VERSION:
             errors.append(f"{rel} must declare version {RELEASE_VERSION}")
 
+    package_json = root / "package.json"
+    if package_json.exists() and read_json(package_json).get("packageManager") != PACKAGE_MANAGER:
+        errors.append(f"package.json must pin packageManager {PACKAGE_MANAGER}")
+
     agent_meta = root / "skills/spicetify/agents/openai.yaml"
     if not agent_meta.exists():
         errors.append("missing skills/spicetify/agents/openai.yaml")
@@ -749,10 +754,42 @@ def main() -> int:
         elif RELEASE_TAG not in read(path):
             errors.append(f"{rel} must mention {RELEASE_TAG}")
 
+    required_automation = {
+        ".github/dependabot.yml": ["github-actions", "npm"],
+        ".github/workflows/ci.yml": [
+            'SPICETIFY_AGENT_ALLOW_REAL_SPICETIFY: "0"',
+            "uv run --frozen pytest",
+            "uv run --frozen ty check",
+            "python3 tools/run_skill_evals.py",
+            "pnpm --filter docs build",
+            f"corepack prepare {PACKAGE_MANAGER} --activate",
+        ],
+        ".github/workflows/release-verify.yml": [
+            "Verify tag matches package version",
+            "npx --yes skills add",
+            "uvx --from . spicetify-agent",
+            f"corepack prepare {PACKAGE_MANAGER} --activate",
+        ],
+        ".pre-commit-config.yaml": ["pre-commit", "pre-push", "pnpm ci:bundle"],
+    }
+    for rel, markers in required_automation.items():
+        path = root / rel
+        if not path.exists():
+            errors.append(f"missing automation surface {rel}")
+            continue
+        text = read(path)
+        if path.parts[-2:] == ("workflows", path.name) and "cache: pnpm" in text:
+            errors.append(f"{rel} must not use setup-node cache: pnpm before pnpm activation")
+        for marker in markers:
+            if marker not in text:
+                errors.append(f"{rel} missing automation marker {marker!r}")
+
     def allows_release_label(path: pathlib.Path) -> bool:
         rel = path.relative_to(root)
         return (
-            rel.name in release_label_allowed_files or rel.parts[0] in release_label_allowed_roots
+            rel.name in release_label_allowed_files
+            or rel.parts[0] in release_label_allowed_roots
+            or rel.parts[:2] == (".github", "workflows")
         )
 
     forbidden_patterns = [

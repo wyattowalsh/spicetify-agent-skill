@@ -41,6 +41,23 @@ pnpm --filter docs validate:content
 pnpm --filter docs build
 ```
 
+The root package scripts provide the same grouped checks:
+
+```bash
+pnpm ci:python
+pnpm ci:bundle
+pnpm ci:evals
+pnpm ci:docs
+pnpm ci:all
+```
+
+GitHub Actions also runs these release gates:
+
+- `CI` on pushes and pull requests to `main`.
+- `Release Verify` on `v*` tag pushes and manual tag verification.
+
+Both workflows keep `SPICETIFY_AGENT_ALLOW_REAL_SPICETIFY=0`, only use fake Spicetify fixtures, and activate the pinned `pnpm@11.5.2` version through Corepack before docs dependency installation.
+
 ### Release Actions
 
 1. Commit the release-prep changes.

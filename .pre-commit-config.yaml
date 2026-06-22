@@ -1,0 +1,50 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format-check
+        name: ruff format check
+        entry: uv run --frozen ruff format --check .
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-commit
+
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --frozen ruff check .
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-commit
+
+      - id: bundle-contracts
+        name: bundle contracts
+        entry: pnpm ci:bundle
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-commit
+
+      - id: python-quality
+        name: python quality
+        entry: pnpm ci:python
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+
+      - id: skill-evals
+        name: skill evals
+        entry: pnpm ci:evals
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push
+
+      - id: docs-quality
+        name: docs quality
+        entry: pnpm ci:docs
+        language: system
+        pass_filenames: false
+        stages:
+          - pre-push

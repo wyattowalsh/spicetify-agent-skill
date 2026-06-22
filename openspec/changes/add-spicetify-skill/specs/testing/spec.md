@@ -59,3 +59,30 @@ The system SHALL provide local deterministic evals that validate skill activatio
 - WHEN the eval runner grades the response
 - THEN the report is read-only and distinguishes compatibility, maintenance, popularity, provenance readiness, and safety
 - AND no candidate is treated as trusted or safe to install before staging, audit, provenance lock, dry-run plan, snapshot, confirmation, verification, and rollback metadata
+
+### Requirement: Repository Quality Automation
+The repository SHALL provide local hooks and GitHub Actions workflows that run the fake-only validation gates for runtime, skill payload, docs, evals, packaging, and OpenSpec without live Spotify or Spicetify access.
+
+#### Scenario: Pull request validation
+- GIVEN a pull request or push targets `main`
+- WHEN the CI workflow runs
+- THEN Python tests, Ruff, `ty`, bundle validation, generated-reference checks, eval suites, docs checks, package smoke checks, skill discovery, and OpenSpec validation run with fake Spicetify enabled and real Spicetify disabled
+
+#### Scenario: Release tag validation
+- GIVEN a `v*` tag is pushed
+- WHEN the release verification workflow runs
+- THEN the tag is checked against the package version
+- AND the pinned `npx skills add github:<owner>/<repo>@<tag> --skill spicetify --list` path is verified
+- AND no package publishing, docs deployment, real Spicetify execution, or official Spicetify bundling occurs
+
+#### Scenario: Pinned docs package manager
+- GIVEN a workflow installs docs dependencies
+- WHEN Node setup completes
+- THEN the workflow activates the package-manager version pinned in `package.json`
+- AND it does not use setup-node pnpm caching before pnpm activation
+
+#### Scenario: Local hook validation
+- GIVEN a maintainer installs the local pre-commit hooks
+- WHEN pre-commit and pre-push hooks run
+- THEN fast formatting, lint, bundle, Python, docs, and eval gates execute through repo-owned validation commands
+- AND the hooks do not mutate lockfiles, install dependencies, or access live Spotify/Spicetify state

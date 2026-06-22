@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  apps/docs:
+  docs:
     dependencies:
       '@mdx-js/react':
         specifier: ^3.1.0

@@ -1,0 +1,163 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONPATH: skills/spicetify/scripts
+  SPICETIFY_AGENT_ALLOW_FAKE_BIN: "1"
+  SPICETIFY_AGENT_ALLOW_REAL_SPICETIFY: "0"
+
+jobs:
+  python-quality:
+    name: Python quality (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.13"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Run pytest
+        run: uv run --frozen pytest
+
+      - name: Check formatting
+        run: uv run --frozen ruff format --check .
+
+      - name: Run ruff
+        run: uv run --frozen ruff check .
+
+      - name: Run ty
+        run: uv run --frozen ty check skills/spicetify/scripts tools tests
+
+  bundle-and-evals:
+    name: Bundle, evals, package, and specs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Check generated schema data
+        run: python3 tools/generate_schema_data.py --root . --check
+
+      - name: Check generated docs references
+        run: python3 tools/generate_docs_references.py --root . --check
+
+      - name: Validate bundle
+        run: python3 tools/validate_bundle.py --root .
+
+      - name: Validate OpenSpec structure
+        run: python3 tools/validate_openspec_structure.py --root .
+
+      - name: Parse regression prompts and schemas
+        run: |
+          python3 -m json.tool evals/regression-prompts.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          for path in Path("skills/spicetify/assets/schemas").glob("*.json"):
+              json.load(open(path))
+          print("schemas ok")
+          PY
+
+      - name: Run main eval suite
+        run: python3 tools/run_skill_evals.py --suite evals/spicetify-eval-suite.json --strict --execute-fake --json
+
+      - name: Run routing eval suite
+        run: python3 tools/run_skill_evals.py --suite evals/spicetify-routing-eval-suite.json --strict --json
+
+      - name: Run research eval suite
+        run: python3 tools/run_skill_evals.py --suite evals/spicetify-research-eval-suite.json --strict --json
+
+      - name: Build Python package
+        run: uv build
+
+      - name: Verify helper CLI through uvx
+        run: |
+          uvx --from . spicetify-agent validate-schemas
+          uvx --from . spicetify-agent --help
+
+      - name: Verify skill discovery
+        run: npx --yes skills add . --skill spicetify --list
+
+      - name: Validate OpenSpec with CLI
+        run: |
+          npx --yes --package @fission-ai/openspec@1.4.1 openspec validate add-spicetify-skill --strict
+          npx --yes --package @fission-ai/openspec@1.4.1 openspec validate --all --strict
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Activate pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.5.2 --activate
+          pnpm --version
+
+      - name: Install docs dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint docs
+        run: pnpm --filter docs lint
+
+      - name: Typecheck docs
+        run: pnpm --filter docs typecheck
+
+      - name: Validate docs content
+        run: pnpm --filter docs validate:content
+
+      - name: Build docs
+        run: pnpm --filter docs build

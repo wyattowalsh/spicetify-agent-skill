@@ -1,6 +1,6 @@
 {
   "root": ".",
-  "file_count": 277,
+  "file_count": 281,
   "flat": false,
   "self_hash_note": "manifest.generated.json omits its own hash to avoid self-reference",
   "files": [
@@ -15,9 +15,29 @@
       "sha256": "da2a252b6e52d396f0336bd165b86411d4bfe82c1e85f1403f450e0992291eb6"
     },
     {
+      "path": ".github/dependabot.yml",
+      "bytes": 409,
+      "sha256": "2210750c8024fcb0bde951b58da0613c10c0f4531cc8e72809d451a00747ac4c"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 4383,
+      "sha256": "ebb3e6960f304289b54349934622d0a5c3d48d05ae9f736acadb74ecf5320309"
+    },
+    {
+      "path": ".github/workflows/release-verify.yml",
+      "bytes": 3815,
+      "sha256": "cb5955a243daa25589056cb1738ded023c5dcbe59507b91ce0228d48d0fbe462"
+    },
+    {
       "path": ".gitignore",
       "bytes": 522,
       "sha256": "a1797642032a317185f0152bd7d486f7437bd122f02d18f89f3ad6817cc12c0e"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "bytes": 1139,
+      "sha256": "5b33a95713b114de8be94aca053505003753000c2a7358b904e9cce1823ae374"
     },
     {
       "path": "AGENTS.md",
@@ -41,13 +61,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 6542,
-      "sha256": "1dd62e386bfee4c53549670726fa078d69a29437f8511e6caead567eb8ee4499"
+      "bytes": 7212,
+      "sha256": "701d249b2099c78b4b4e800f4d666722cb8dfadc9eff7259eacd799b4b4b0ec6"
     },
     {
       "path": "RELEASE.md",
-      "bytes": 2226,
-      "sha256": "f649c0ea4aad293d8051170c2267bf835eadc75c46d4c8151f9b64363fc765b7"
+      "bytes": 2725,
+      "sha256": "65178837dfe676ac9412ac22d39969d06b2bbad894a0608db433624a01bf72ea"
     },
     {
       "path": "agent-bundle.json",
@@ -551,13 +571,13 @@
     },
     {
       "path": "docs/content/docs/reference/openspec.mdx",
-      "bytes": 2896,
-      "sha256": "5a0d1e10e1b9b66e4ed2cef57cea2ac6d47c9b4c9a8d0007fb402dd409b378c0"
+      "bytes": 2897,
+      "sha256": "9b61f50b4fe5fd38fee349b2a1b6f0a9d99bf5e3042c88b063c0f5a453932c88"
     },
     {
       "path": "docs/content/docs/reference/release-checklist.mdx",
-      "bytes": 2630,
-      "sha256": "44509a48b06f32ca85f76d0d03339e9f36d382e802fd299cfe8d83d7dd2e6c94"
+      "bytes": 3207,
+      "sha256": "a23464c2c33b722ca77e30d337b79f9d67499769c328e053d2f2ad2c9db399d6"
     },
     {
       "path": "docs/content/docs/reference/schemas.mdx",
@@ -766,8 +786,8 @@
     },
     {
       "path": "openspec/changes/add-spicetify-skill/specs/testing/spec.md",
-      "bytes": 3291,
-      "sha256": "8b5eee0f847d7013efc4afc0dd408d754ce8fa77eb73fc26bc65e14b73ede4c0"
+      "bytes": 4903,
+      "sha256": "4f406f59e3a1c24fbdd0626059a82aec1db929b452897e78e646840cbff1d403"
     },
     {
       "path": "openspec/changes/add-spicetify-skill/specs/ux/spec.md",
@@ -781,8 +801,8 @@
     },
     {
       "path": "openspec/changes/add-spicetify-skill/tasks.md",
-      "bytes": 25407,
-      "sha256": "0c5b8b955f655373aea89e8b0ae78426fb321b96f295a8fed250990857ebe4f0"
+      "bytes": 26502,
+      "sha256": "3ccabc698841169e211bce4fe5f8e6f159438ba92e2ab94b07996f3b908a6d55"
     },
     {
       "path": "openspec/config.yaml",
@@ -791,13 +811,13 @@
     },
     {
       "path": "package.json",
-      "bytes": 288,
-      "sha256": "51fa68b115c3cdfbe435efef4bf94c26207d4a9da6a14ef059df4df9c77d340c"
+      "bytes": 1504,
+      "sha256": "52429d77ee9a31fa005c7a6948bcd48b37ce074fa91164e829f5f74a66f630fc"
     },
     {
       "path": "pnpm-lock.yaml",
-      "bytes": 127109,
-      "sha256": "d1713fc6934fd84c1ec4be17831f21ae258e7bff4d78c7d402966261348ad7d0"
+      "bytes": 127104,
+      "sha256": "1f8164eb0678a0da7ee6007aba77faa48c8e5a0a4c9ae9e8b1315110fa482503"
     },
     {
       "path": "pnpm-workspace.yaml",
@@ -1346,8 +1366,8 @@
     },
     {
       "path": "tests/test_validate_bundle.py",
-      "bytes": 6263,
-      "sha256": "17f14044c026b5a640ea0978af9a0dd12757312c85b74d88ddbc55245a73a9f3"
+      "bytes": 9616,
+      "sha256": "1b2d434398e6ba9d5f2424d7da3111af5397da0bbe64c918ecc6aaec1dbb5074"
     },
     {
       "path": "tests/unit/__init__.py",
@@ -1376,8 +1396,8 @@
     },
     {
       "path": "tools/validate_bundle.py",
-      "bytes": 29733,
-      "sha256": "ed75a90bb977429705b1d4c125e767e6168577688bab55e106cee442860ccdea"
+      "bytes": 31359,
+      "sha256": "d0e64d05a14d6e47714b3de562d9c1d2bbdaa5beced954b0c2b17d33380caa2c"
     },
     {
       "path": "tools/validate_openspec_structure.py",
